@@ -71,6 +71,12 @@ public class Position {
         this.z = this.prevZ = z;
     }
 
+    public final void setAngle(int y, int p, int r) {
+        this.yaw = y;
+        this.pitch = p;
+        this.roll = r;
+    }
+
     public long getX() {
         return x;
     }

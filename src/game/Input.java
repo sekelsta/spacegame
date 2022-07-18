@@ -2,6 +2,7 @@ package sekelsta.game;
 
 import org.lwjgl.glfw.GLFW;
 import sekelsta.engine.InputManager;
+import sekelsta.engine.Position;
 import sekelsta.engine.render.Window;
 import sekelsta.game.entity.Controller;
 import sekelsta.game.entity.Mob;
@@ -24,6 +25,10 @@ public class Input extends InputManager implements Controller {
         if (action == GLFW.GLFW_PRESS) {
             if (key == GLFW.GLFW_KEY_X) {
                 player.fire();
+            }
+            if (key == GLFW.GLFW_KEY_P) {
+                Position p = player.getPosition();
+                p.accelerate(-1 * p.getVelocityX(), -1 * p.getVelocityY(), -1 * p.getVelocityZ());
             }
         }
     }

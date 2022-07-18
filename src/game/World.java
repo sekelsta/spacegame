@@ -27,8 +27,7 @@ public class World {
 
     public void update() {
         // TODO: asteroid spawn conditions
-        // DEBUG: limited asteroid spawning
-        if (mobs.size() < 10) {
+        if (true) {
             int spawnX = 0;
             int spawnY = 0;
             int spawnZ = 0;
@@ -44,10 +43,7 @@ public class World {
             spawnX += this.player.getPosition().getX();
             spawnY += this.player.getPosition().getY();
             spawnZ += this.player.getPosition().getZ();
-            // DEBUG
-            spawnZ = 0;
-            // END DEBUG
-            // TODO: Random rotation and maybe velocity
+
             this.spawn(new Asteroid(spawnX, spawnY, spawnZ, this, random));
         }
 

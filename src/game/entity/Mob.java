@@ -37,8 +37,11 @@ public class Mob extends Entity {
     protected void updateMovement() {
         position.tick();
         position.scaleVelocity(drag);
-        position.scaleAngularVelocity(0.6f);
+        position.scaleAngularVelocity(drag);
 
+    }
+/* TODO: Use or delete
+    private void faceTowardsVelocity() {
         float vx = position.getVelocityX();
         float vy = position.getVelocityY();
         double speed = Math.sqrt(vx * vx + vy * vy);
@@ -61,7 +64,7 @@ public class Mob extends Entity {
             }
             position.angularAccelerate(diff / 8, 0, 0);
         }
-    }
+    }*/
 
     public int getAccelerationXY() {
         return (int)(Position.RESOLUTION / 16);

@@ -1,6 +1,7 @@
 package sekelsta.game.entity;
 
 import java.util.Random;
+import sekelsta.engine.Position;
 import sekelsta.game.World;
 
 public class Asteroid extends Mob {
@@ -9,7 +10,19 @@ public class Asteroid extends Mob {
     public Asteroid(long x, long y, long z, World world, int s) {
         super(Entities.ASTEROID, x, y, z, world);
         size = s;
-        collisionRadius *= size;
+        collisionRadius *= getSizeScale();
+
+        Random random = new Random();
+        int velocityCap = Position.RESOLUTION * 1;
+        getPosition().accelerate(randRange(random, velocityCap), randRange(random, velocityCap), randRange(random, velocityCap));
+        getPosition().setAngle(random.nextInt((int)Position.ANGLE_RESOLUTION), 
+            random.nextInt((int)Position.ANGLE_RESOLUTION), random.nextInt((int)Position.ANGLE_RESOLUTION));
+        int rotCap = (int)(Position.ANGLE_RESOLUTION) / 64;
+        getPosition().angularAccelerate(randRange(random, rotCap), randRange(random, rotCap), randRange(random, rotCap));
+    }
+
+    private int randRange(Random random, int range) {
+        return random.nextInt(2 * range) - range;
     }
 
     public Asteroid(long x, long y, long z, World world) {
