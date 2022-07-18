@@ -1,6 +1,8 @@
 package sekelsta.game;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import sekelsta.engine.Position;
 import sekelsta.game.entity.*;
 
 public class World {
@@ -13,38 +15,62 @@ public class World {
     // For entities that don't need to update
     List<Entity> entities;
 
+    // Mobs to delete at the end of the update loop, to avoid removing from the list while iterating
+    List<Mob> killed = new ArrayList<>();
+
     public World(Controller playerController) {
         this.player = new Spaceship(0, 0, 0, this, playerController);
         this.mobs = new ArrayList<>();
-        this.entities = new ArrayList<>();
+        this.entities = new ArrayList<>(); // TODO: Unused, remove / change w/ mobs
         this.mobs.add(this.player);
     }
 
     public void update() {
         // TODO: asteroid spawn conditions
-        int spawnX = 0;
-        int spawnY = 0;
-        int spawnZ = 0;
-        boolean farEnough = false;
-        while (!farEnough) {
-            spawnX = random.nextInt(2 * spawnRadius) - spawnRadius;
-            spawnY = random.nextInt(2 * spawnRadius) - spawnRadius;
-            spawnZ = random.nextInt(2 * spawnRadius) - spawnRadius;
+        // DEBUG: limited asteroid spawning
+        if (mobs.size() < 10) {
+            int spawnX = 0;
+            int spawnY = 0;
+            int spawnZ = 0;
+            boolean farEnough = false;
+            while (!farEnough) {
+                spawnX = random.nextInt(2 * spawnRadius) - spawnRadius;
+                spawnY = random.nextInt(2 * spawnRadius) - spawnRadius;
+                spawnZ = random.nextInt(2 * spawnRadius) - spawnRadius;
 
-            farEnough = this.player.getPosition().distSquared(spawnX, spawnY, spawnZ) > spawnRadius * spawnRadius / 100;
+                farEnough = this.player.getPosition().distSquared(spawnX, spawnY, spawnZ) > spawnRadius * spawnRadius / 100;
+            }
+
+            spawnX += this.player.getPosition().getX();
+            spawnY += this.player.getPosition().getY();
+            spawnZ += this.player.getPosition().getZ();
+            // DEBUG
+            spawnZ = 0;
+            // END DEBUG
+            // TODO: Random rotation and maybe velocity
+            this.spawn(new Asteroid(spawnX, spawnY, spawnZ, this, random));
         }
-
-        spawnX += this.player.getPosition().getX();
-        spawnY += this.player.getPosition().getY();
-        spawnZ += this.player.getPosition().getZ();
-        // TODO: Random rotation and maybe velocity
-        int size = random.nextInt(9) + 1;
-        this.spawn(new Asteroid(spawnX, spawnY, spawnZ, this, size));
 
         for (Mob mob : mobs) {
             mob.update();
         }
 
+        List<Mob> collidableMobs = mobs.stream().filter(mob -> mob.hasCollisions()).collect(Collectors.toList());
+        for (Mob collider : collidableMobs) {
+            for (Mob collidee : mobs) {
+                int tolerance = collider.getCollisionRadius() + collidee.getCollisionRadius();
+                tolerance *= tolerance;
+                long distSq = collider.getPosition().distSquared(collidee.getPosition());
+                if (distSq < tolerance && collider != collidee) {
+                    collider.collide(collidee);
+                }
+            }
+        }
+
+        // Done iterating, safe to remove
+        mobs.removeAll(killed);
+        killed.clear();
+        // Despawn
         mobs.removeIf(mob -> mob.getPosition().distSquared(player.getPosition()) > 100 * spawnRadius * spawnRadius);
     }
 
@@ -61,7 +87,13 @@ public class World {
     }
 
     public Mob spawn(Mob mob) {
+        // TODO :Check if this can cause concurrent modification exceptions
         this.mobs.add(mob);
+        return mob;
+    }
+
+    public Mob kill(Mob mob) {
+        this.killed.add(mob);
         return mob;
     }
 }

@@ -4,7 +4,7 @@ import sekelsta.engine.Position;
 
 public class Entity {
     public final EntityType type;
-
+    protected int collisionRadius = Position.RESOLUTION;
     protected final Position position;
 
     public Entity(EntityType type, long x, long y, long z) {
@@ -16,6 +16,16 @@ public class Entity {
     public Position getPosition() {
         return position;
     }
+
+    public int getCollisionRadius() {
+        return collisionRadius;
+    }
+
+    public boolean hasCollisions() {
+        return false;
+    }
+
+    public void collide(Entity other) { }
 
     public float getInterpolatedX(float lerp) {
         return position.getInterpolatedX(lerp);

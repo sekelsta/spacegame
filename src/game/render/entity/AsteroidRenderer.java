@@ -20,7 +20,7 @@ public class AsteroidRenderer extends EntityRenderer {
     @Override
     public void render(Renderer renderer, Entity entity, float lerp, MatrixStack stack) {
         assert(entity instanceof Asteroid);
-        this.scale = ((Asteroid)entity).getSize();
+        this.scale = ((Asteroid)entity).getSizeScale();
         super.render(renderer, entity, lerp, stack);
     }
 }
