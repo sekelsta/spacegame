@@ -1,0 +1,3 @@
+TODO: marks something I should do and don't want to forget about, usually where to insert missing features
+TO_OPTIMIZE: marks a potetial performance improvement
+TEMP_DEBUG: marks debugging code that I intend to remove/change later

@@ -1,0 +1,30 @@
+asteroids
+https://opengameart.org/content/low-poly-rocks
+para
+CC0
+
+lunar rock texture
+https://opengameart.org/content/lunar-rock
+cron
+CC-BY 3.0
+OGA-BY 3.0
+
+tileable rock textures
+https://opengameart.org/content/tileable-rock-texture-1
+https://opengameart.org/content/tileable-rock-texture-3
+nublet
+CC0
+
+spaceship
+https://opengameart.org/content/low-poly-space-ship-180-triangles
+Gundy
+CC-BY-SA 4.0
+
+misc textures
+https://opengameart.org/content/100-seamless-textures
+Mitch Featherston
+CC0
+
+projectile.obj
+own work (seleksta)
+CC0

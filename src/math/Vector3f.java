@@ -1,0 +1,88 @@
+package sekelsta.math;
+
+public class Vector3f {
+    public float x, y, z;
+
+    public Vector3f() {}
+
+    public Vector3f(float x, float y, float z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+
+    public Vector3f add(Vector3f other) {
+        this.x += other.x;
+        this.y += other.y;
+        this.z += other.z;
+        return this;
+    }
+
+    public Vector3f addWeighted(Vector3f other, float w) {
+        this.x += other.x * w;
+        this.y += other.y * w;
+        this.z += other.z * w;
+        return this;
+    }
+
+    public Vector3f scale(float s) {
+        this.x *= s;
+        this.y *= s;
+        this.z *= s;
+        return this;
+    }
+
+    public Vector3f negate() {
+        return this.scale(-1);
+    }
+
+    public float dot(Vector3f other) {
+        return this.x * other.x + this.y * other.y + this.z * other.z;
+    }
+
+    public float length() {
+        return (float)Math.sqrt(x * x + y * y + z * z);
+    }
+
+    public Vector3f normalize() {
+        return this.scale(1f / this.length());
+    }
+
+    public static Vector3f average(Vector3f... vectors) {
+        Vector3f avg = new Vector3f(0, 0, 0);
+        for (Vector3f vector : vectors) {
+            avg.add(vector);
+        }
+        avg.scale(1f / vectors.length);
+
+        return avg;
+    }
+
+    public static Vector3f negate(Vector3f vec, Vector3f out) {
+        out.x = -1 * vec.x;
+        out.y = -1 * vec.y;
+        out.z = -1 * vec.z;
+        return out;
+    }
+
+    public static Vector3f add(Vector3f left, Vector3f right, Vector3f out) {
+        out.x = left.x + right.x;
+        out.y = left.y + right.y;
+        out.z = left.z + right.z;
+        return out;
+    }
+
+    public static Vector3f subtract(Vector3f left, Vector3f right, Vector3f out) {
+        return add(left, negate(right, out), out);
+    }
+
+    public static Vector3f cross(Vector3f left, Vector3f right, Vector3f out) {
+        float cx = left.y * right.z - left.z * right.y;
+        float cy = left.z * right.x - left.x * right.z;
+        float cz = left.x * right.y - left.y * right.x;
+        out.x = cx;
+        out.y = cy;
+        out.z = cz;
+        return out;
+    }
+}

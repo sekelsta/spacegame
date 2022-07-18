@@ -1,0 +1,73 @@
+#!/usr/bin/python3
+
+import os
+import shutil
+import sys
+
+lwjgl_libs = ['lwjgl', 'lwjgl-glfw', 'lwjgl-opengl']
+lwjgl_directory = '../lwjgl-3.2.3'
+#other_libs = ['../lwjgl-2.9.3/jar/lwjgl_util.jar']
+other_libs = []
+main_class = 'sekelsta.game.Main'
+output_directory = 'bin'
+source_directory = 'src'
+
+
+classpath = ''
+for lib in lwjgl_libs:
+    classpath += lwjgl_directory + '/' + lib + '/*:'
+for lib in other_libs:
+    classpath += lib + ':'
+
+def clean():
+    if os.path.isdir(output_directory):
+        shutil.rmtree(output_directory)
+
+def count():
+    total_lines = 0;
+    num_files = 0;
+    for root, dirs, files in os.walk(source_directory):
+        for f in files:
+            if f.endswith('.java'):
+                fio = open(os.path.join(root, f), 'r')
+                line_count = len(fio.readlines())
+                print(str(f) + ': ' + str(line_count))
+                total_lines += line_count
+                num_files += 1
+    print('Number of files: ' + str(num_files))
+    print('Total lines of code: ' + str(total_lines))
+
+def build():
+    if not os.path.isdir(output_directory):
+        os.mkdir(output_directory)
+    sources = ' '
+    for root, dirs, files in os.walk(source_directory):
+        for f in files:
+            if f.endswith('.java'):
+                sources += os.path.join(root, f) + ' '
+    command = 'javac -d ' + output_directory + sources
+    if classpath:
+        command += '-cp ' + classpath
+    print(command)
+    os.system(command)
+
+def run(args):
+    command = 'java -ea -cp ' + classpath +  output_directory + ': ' + main_class + ' ' + args
+    print(command)
+    os.system(command) 
+
+if len(sys.argv) <= 1:
+    clean()
+    build()
+    run('')
+else:
+    for task in sys.argv[1:]:
+        if task == 'clean':
+            clean()
+        elif task == 'count':
+            count();
+        elif task == 'build':
+            build()
+        elif task == 'run':
+            args = ' '.join(sys.argv[2:])
+            run(args)

@@ -1,0 +1,402 @@
+commit 38f303071e95321fa52ca0f3e3cef0ebe99e3cff (HEAD -> master)
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sat Mar 5 16:45:28 2022 -0500
+
+    Calculate normals from arbitrary meshes
+
+commit 1c34642676c73f35a13c3c0473b47dae2362a99f
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Mon Feb 28 21:33:06 2022 -0500
+
+    Support for rendering different entity types
+
+commit f0c4bc561473e2f1b56538bd8298c8b2999449dc
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sun Feb 27 18:27:42 2022 -0500
+
+    Generate RunChunks directly, much faster
+
+commit 6b48dfda60573be3addcbc5aa1dd7533e27f8a7d
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sat Feb 26 19:15:07 2022 -0500
+
+    Basic chunk culling
+
+commit 502af607f748b3d43872310de739aebe990febe5
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sun Feb 20 08:00:59 2022 -0500
+
+    Skeletal animation hierarchy works
+
+commit 752d30c6e39832123d3ad3df8c393ea294712468
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Thu Feb 10 08:53:35 2022 -0500
+
+    Fix fishtailing
+
+commit 8a68dfb30b64cffeb8ee6f7f88b92ff447f65dcb
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Wed Feb 9 09:51:46 2022 -0500
+
+    Replace deprecated matrix classes with my own
+
+commit 45ad54bf78e497c082c71f37196d66a76ecad706
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Mon Feb 7 09:47:32 2022 -0500
+
+    Parse bone hierarchy
+
+commit ece41df4f9883d3dc3aceb9ced2930d6175c5512
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Mon Feb 7 07:21:52 2022 -0500
+
+    Parse bone names
+
+commit ce511534f5a99433ed72f863e9685c76eb2c526f
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sun Feb 6 11:24:04 2022 -0500
+
+    Rearrange camera code
+
+commit c3ed7ec8e9cf646b34ea0d9438f7ea40b1c02846
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sun Feb 6 10:48:20 2022 -0500
+
+    Separate position component form entity
+
+commit d73c7bcaaee535dcad3de0b0706924b397f93620
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sun Feb 6 08:41:20 2022 -0500
+
+    Add skin weight parsing from collada
+
+commit 1212e1f2144f3ba957cd7664f3187d248c540c98
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sat Feb 5 10:03:57 2022 -0500
+
+    Add collada mesh parsing
+
+commit 83d2b0264b7975d356aad7ff86eb3c9c603820eb
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Thu Feb 3 21:21:40 2022 -0500
+
+    Discard alpha fragments
+
+commit 438ab8957694fa5607b94c1103ec3a2d1ad16255
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Thu Feb 3 09:00:34 2022 -0500
+
+    Replace Obj class with more general interchange format
+
+commit 4fb3b12a5948c306621bb32f8af32905ec522553
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Wed Feb 2 21:32:40 2022 -0500
+
+    Separate out renderers for different entities (WIP), delete unneeded obj files, add bowl from Open Game Art
+
+commit c2720a27196b8287d8fba2f39068a21f46dc254b
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Wed Feb 2 20:18:42 2022 -0500
+
+    Add skeletal aniamtion support to shader
+
+commit 8336c94ed0b0d5441134582bb7e39357c7b488d0
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Tue Feb 1 19:02:14 2022 -0500
+
+    Remove engine dependence on game
+
+commit 24dfd73e91c0a41c73ce44772928226ab27477eb
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sun Jan 30 09:43:29 2022 -0500
+
+    Rearrange
+
+commit 715d7d4c1362d9c78a9d6a84822fde0cd860bfc7
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Thu Dec 30 11:29:36 2021 -0500
+
+    super basic diffuse lighting
+
+commit 96da5097b5e3c27507e0a92c09b7f8c2c26f7f63
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Wed Dec 29 19:05:58 2021 -0500
+
+    TRansform normals by what's hopefully the right matrix
+
+commit f4ccd5acfddd2a492fab2ddd8aac962c192f4eac
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Tue Dec 28 11:11:59 2021 -0500
+
+    Check texture is power of two
+
+commit 2544156c3dae716ad62d0120497534de9b2338b7
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Tue Dec 28 10:58:50 2021 -0500
+
+    Try out using two textures
+
+commit 857029ff7edc00c40ad86f4b7f2bcdc042149c02
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Tue Dec 28 10:47:06 2021 -0500
+
+    Use a texture
+
+commit ec7018c556c4ae218e8b2436a9a279ad958f09bf
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Tue Dec 28 09:38:42 2021 -0500
+
+    Delete extra import
+
+commit c7cd59b6c435c89f31125bf5209acd1d7d45dad7
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sun Dec 26 07:49:07 2021 -0500
+
+    Fix input angle
+
+commit 45012797167baa1bc3178f5d440a96d449ef9769
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sat Dec 25 14:57:07 2021 -0500
+
+    Properly fix dicontinuity
+
+commit c4b882db54a6a20e3d66d7cea660ea2724162a84
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sat Dec 25 14:23:15 2021 -0500
+
+    Make input rotate with camera
+
+commit a85c95a66e3ab9f9f0eef94d7b54e424349e10c9
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Fri Dec 24 14:05:08 2021 -0500
+
+    Make bear face forward
+
+commit 9215625b768ea114e1664ababbe21806d33c46f3
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Fri Dec 24 07:32:33 2021 -0500
+
+    Render in different positions for different chunks
+
+commit 5b2659a379e1a9e1a129b4aa0d38a0cb94546939
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Fri Dec 24 06:54:13 2021 -0500
+
+    Render interpolation
+
+commit 33c4d09ca77e575255fcc8c7e16b8490cf558eb4
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Mon Dec 20 09:42:01 2021 -0500
+
+    Fix so it can draw two different meshes
+
+commit a7f8442b0c14a5b0fe5d80c6124349ddb720452b
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sat Dec 18 16:04:30 2021 -0500
+
+    Adjust frustum
+
+commit fea5e050a8dca6e59eece2d4df7b4dcdfe879368
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sat Dec 18 15:31:02 2021 -0500
+
+    Add placeholder terrain render, found render bug, debugging
+
+commit 05b198370e49c482f2d3722b4750fe5937d80fc8
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sat Dec 18 13:48:49 2021 -0500
+
+    Fix hash
+
+commit 735f0e23117b09b482a0d742b3e1ed4a4fd82127
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sat Dec 18 13:35:29 2021 -0500
+
+    Fix equals and hash
+
+commit b8149b0a1ce6857d66d78344ec0b49e1faeba3db
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sat Dec 18 13:03:35 2021 -0500
+
+    Change everything
+
+commit db922d2a527eae01f6cf7b571d22200662a5201b
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Tue Dec 14 21:06:21 2021 -0500
+
+    Use middle mouse to freely rotate camera
+
+commit 9b389e0243eb15748c4f9156b66a80163a91a6db
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Tue Dec 14 20:22:24 2021 -0500
+
+    Fix camera rotation
+
+commit 61f792ddc4c82fd977b90cf52a5e2ed821172050
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Tue Dec 14 20:14:51 2021 -0500
+
+    Render camera yaw and pitch
+
+commit 5f2a12c427ae9c120bfcc3bff8c1d461b88a589a
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Tue Dec 14 19:37:32 2021 -0500
+
+    Rotate bear
+
+commit 852efe6b37cdab25a6d167b4d2de2b309242c9a5
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Tue Dec 14 19:36:37 2021 -0500
+
+    Rotate camera so Z is up
+
+commit 2e50743e6ab004e50cd163f3165a18c0647725fa
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sun Dec 12 12:33:39 2021 -0500
+
+    FIX FRUSTUM
+
+commit c53ab40827629cb148bac331aa49ca2168d9fe93
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sun Dec 12 10:41:27 2021 -0500
+
+    Start adding input callbacks
+
+commit 5657226e9d4840bfdeab52ea037dba3687fe385d
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sun Dec 12 10:01:42 2021 -0500
+
+    rework window event
+
+commit 6c1fe3479680506ac06adf6ed167dcac17f3c284
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sat Dec 11 17:21:00 2021 -0500
+
+    Make camera follow player position
+
+commit 42d20640a91ae99fa28f93af136462ff632ef775
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Mon Dec 6 08:03:38 2021 -0500
+
+    Some scaffolding for entities
+
+commit b3b63bc6b8ae5e56fc6bfdbe6c115e2855c4c67e
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sun Dec 5 20:12:11 2021 -0500
+
+    Set things up for both 2D and 3D rendering later
+
+commit 3f9641298081df36cee8b541e9a59100f92a7760
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sun Dec 5 14:47:28 2021 -0500
+
+    Adjust aspect ratio when window size changes
+
+commit f4b39a9e212fbfdeb77f9e0096e055364950dc3c
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sun Dec 5 10:39:38 2021 -0500
+
+    Move choice of window size and title
+
+commit 3a329fbc0812c084112a8b9d3982648995d59fc3
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sun Dec 5 09:22:36 2021 -0500
+
+    Move frustum logic to its own class
+
+commit 467f429c8d2b47b3c213b7e9b283bf8aa87b1857
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sun Dec 5 08:14:39 2021 -0500
+
+    Combine model and view matrices
+
+commit 18d5a1dd974c7286f90144d3c127a4b0003db580
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sun Dec 5 07:44:06 2021 -0500
+
+    Make Chunk an interface
+
+commit 356b34c801bf6d114f431e2536f6442f6b97a30a
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sun Dec 5 07:43:52 2021 -0500
+
+    Render with normals
+
+commit 434521e5a048273b95152a622ac11c9bba3ed2a1
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sat Dec 4 18:41:01 2021 -0500
+
+    Put normal and texture data into the buffer too
+
+commit 7b98e5f2539005cf627dc1550a36f497dfd44ae1
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sat Dec 4 18:40:00 2021 -0500
+
+    Add unit of measure
+
+commit a53ccb98de0a7209cbbca21e7bdf07791c24c579
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sat Dec 4 18:37:56 2021 -0500
+
+    rename to make clearer
+
+commit f057aa63713e96b182cebb6bf27c9bcab9d36601
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sat Dec 4 18:23:35 2021 -0500
+
+    Fix equals and hashing
+
+commit 4f78e44c511785b47fc48c44afec6685e90deeeb
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sat Dec 4 17:49:01 2021 -0500
+
+    change stuff
+
+commit af0babf23af82ae58944b5698481e8fadf02cacd
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Thu Nov 25 11:45:54 2021 -0500
+
+    Safety check for shader uniforms
+
+commit 3683882887fb108b0779dd88a6a914d642f23003
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sun Nov 14 17:11:08 2021 -0500
+
+    Fix shader
+
+commit 8bf14a466838354133b1eeb713da92f50b1af569
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sun Nov 14 09:26:22 2021 -0500
+
+    Improve game loop
+
+commit 78ec5a5ac0a849e5edd4193f92778665815bf37a
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sat Nov 13 10:55:34 2021 -0500
+
+    Test render with core opengl
+
+commit 239c2b7782560521ccefd75cc5a84c4c80955ace
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sun Nov 7 07:55:54 2021 -0500
+
+    Move GLFW initialization to static block
+
+commit ecbe9ce01fb366130d96a507334db20220e12249
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sat Nov 6 07:28:06 2021 -0400
+
+    Fix typo
+
+commit 083746cf7454d0f4ab6f74d36e2fd9d9e159d476
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Mon Nov 1 20:55:35 2021 -0400
+
+    Handle resizing the window
+
+commit de38d977ba5942406d65723f957dcf2664c5ab18
+Author: sekelsta <sekelsta@protonmail.com>
+Date:   Sun Oct 31 19:51:10 2021 -0400
+
+    First commit, renders some triangles
+
