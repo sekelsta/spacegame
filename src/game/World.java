@@ -15,8 +15,9 @@ public class World {
     // For entities that don't need to update
     List<Entity> entities;
 
-    // Mobs to delete at the end of the update loop, to avoid removing from the list while iterating
+    // Mobs to add/remove, to avoid concurrent modififation while updating
     List<Mob> killed = new ArrayList<>();
+    List<Mob> spawned = new ArrayList<>();
 
     public World(Controller playerController) {
         this.player = new Spaceship(0, 0, 0, this, playerController);
@@ -68,6 +69,9 @@ public class World {
         killed.clear();
         // Despawn
         mobs.removeIf(mob -> mob.getPosition().distSquared(player.getPosition()) > 100 * spawnRadius * spawnRadius);
+        // Spawn
+        mobs.addAll(spawned);
+        spawned.clear();
     }
 
     public List<Mob> getMobs() {
@@ -83,8 +87,7 @@ public class World {
     }
 
     public Mob spawn(Mob mob) {
-        // TODO :Check if this can cause concurrent modification exceptions
-        this.mobs.add(mob);
+        this.spawned.add(mob);
         return mob;
     }
 

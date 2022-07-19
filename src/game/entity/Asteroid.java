@@ -43,6 +43,9 @@ public class Asteroid extends Mob {
 
     public void destroy() {
         if (size > 0) {
+            for (int i = 0; i < 2; i++) {
+                world.spawn(new Asteroid(this.getPosition().getX(), this.getPosition().getY(), this.getPosition().getZ(), world, size - 1));
+            }
             // TODO: Spawn two smaller asteroids
             System.out.println("TODO: spawn two asteroids of size " + (size - 1));
         }
