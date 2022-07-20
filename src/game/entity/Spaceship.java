@@ -8,17 +8,54 @@ public class Spaceship extends Mob {
 
     public Spaceship(int x, int y, int z, World world) {
         super(Entities.SPACESHIP, x, y, z, world);
-        collisionRadius = 3 * Position.RESOLUTION;
     }
 
     public Spaceship(int x, int y, int z, World world, Controller controller) {
         super(Entities.SPACESHIP, x, y, z, world, controller);
-        collisionRadius = 3 * Position.RESOLUTION;
+    }
+
+    @Override
+    public int getCollisionRadius() {
+        return 3 * Position.RESOLUTION;
     }
 
     @Override
     public boolean hasCollisions() {
         return true;    
+    }
+
+    public void thrust() {
+        // TODO
+    }
+
+    public void reverse() {
+        // TODO
+    }
+
+    public void pitchUp() {
+        // TODO
+    }
+
+    public void pitchDown() {
+        // TODO
+    }
+
+    public void yawLeft() {
+        // TODO
+    }
+
+    public void yawRight() {
+        // TODO
+    }
+
+    // Counterclockwise as viewed from rear
+    public void rollCounterclockwise() {
+        // TODO
+    }
+
+    // Clockwise as viewed from rear
+    public void rollClockwise() {
+        // TODO
     }
 
     public void fire() {

@@ -40,7 +40,7 @@ public class Mob extends Entity {
         position.scaleAngularVelocity(drag);
 
     }
-/* TODO: Use or delete
+/* TODO: Use this or delete it
     private void faceTowardsVelocity() {
         float vx = position.getVelocityX();
         float vy = position.getVelocityY();

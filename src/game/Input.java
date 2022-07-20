@@ -26,10 +26,12 @@ public class Input extends InputManager implements Controller {
             if (key == GLFW.GLFW_KEY_X) {
                 player.fire();
             }
+            // DEBUG
             if (key == GLFW.GLFW_KEY_P) {
                 Position p = player.getPosition();
                 p.accelerate(-1 * p.getVelocityX(), -1 * p.getVelocityY(), -1 * p.getVelocityZ());
             }
+            // END DEBUG
         }
     }
 
@@ -81,7 +83,32 @@ public class Input extends InputManager implements Controller {
         System.out.println("joystick connect/disconnect");
     }
 
-    public void update(Mob mob) {
+    public void update(Mob mob) {/* TODO
+        if (window.isKeyDown(GLFW.GLFW_KEY_SPACE)) {
+            player.thrust();
+        }
+        if (window.isKeyDown(GLFW.GLFW_KEY_V)) {
+            player.reverse();
+        }
+        if (window.isKeyDown(GLFW.GLFW_KEY_W)) {
+            player.pitchUp();
+        }
+        if (window.isKeyDown(GLFW.GLFW_KEY_S)) {
+            player.pitchDown();
+        }
+        if (window.isKeyDown(GLFW.GLFW_KEY_A)) {
+            player.yawLeft();
+        }
+        if (window.isKeyDown(GLFW.GLFW_KEY_D)) {
+            player.yawRight();
+        }
+        if (window.isKeyDown(GLFW.GLFW_KEY_Q)) {
+            player.rollCounterclockwise();
+        }
+        if (window.isKeyDown(GLFW.GLFW_KEY_E)) {
+            player.rollClockwise();
+        }
+*/
         int rawX = 0;
         int rawY = 0;
         if (window.isKeyDown(GLFW.GLFW_KEY_D)) {

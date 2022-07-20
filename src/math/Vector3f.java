@@ -1,5 +1,7 @@
 package sekelsta.math;
 
+import java.util.Random;
+
 public class Vector3f {
     public float x, y, z;
 
@@ -84,5 +86,16 @@ public class Vector3f {
         out.y = cy;
         out.z = cz;
         return out;
+    }
+
+    // Return a random vector within the unit sphere, excluding {0, 0, 0}
+    public static Vector3f randomNonzero(Vector3f v, Random random) {
+        do {
+            v.x = 2f * random.nextFloat() - 1f;
+            v.y = 2f * random.nextFloat() - 1f;
+            v.z = 2f * random.nextFloat() - 1f;
+        }
+        while (v.length() > 1f && (v.x != 0f || v.y != 0f || v.z != 0f));
+        return v;
     }
 }

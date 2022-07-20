@@ -45,7 +45,9 @@ public class World {
             spawnY += this.player.getPosition().getY();
             spawnZ += this.player.getPosition().getZ();
 
-            this.spawn(new Asteroid(spawnX, spawnY, spawnZ, this, random));
+            Asteroid asteroid = new Asteroid(spawnX, spawnY, spawnZ, this, random);
+            asteroid.setRandomVelocity(random);
+            this.spawn(asteroid);
         }
 
         for (Mob mob : mobs) {

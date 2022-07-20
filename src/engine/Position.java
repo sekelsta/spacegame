@@ -27,6 +27,12 @@ public class Position {
         velocityZ += z;
     }
 
+    public void setVelocity(int x, int y, int z) {
+        velocityX = x;
+        velocityY = y;
+        velocityZ = z;
+    }
+
     public void scaleVelocity(float drag) {
         velocityX *= drag;
         velocityY *= drag;
@@ -56,6 +62,7 @@ public class Position {
         prevYaw = yaw;
         prevRoll = roll;
         prevPitch = pitch;
+
         yaw += velocityYaw;
         pitch += velocityPitch;
         roll += velocityRoll;
