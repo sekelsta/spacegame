@@ -26,9 +26,12 @@ public abstract class EntityRenderer {
         float pitch = entity.getPosition().getInterpolatedPitch(lerp);
         float roll = entity.getPosition().getInterpolatedRoll(lerp);
 
+        stack.rotate(yaw, pitch, roll);
+/*
         stack.rotate(yaw, 0f, 0f, 1f);
         stack.rotate(pitch, 1f, 0f, 0f);
         stack.rotate(roll, 0f, 1f, 0f);
+*/
 
         texture.bind();
         specular.bindSpecular();

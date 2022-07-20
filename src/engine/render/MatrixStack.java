@@ -26,6 +26,11 @@ public class MatrixStack {
         onChange();
     }
 
+    public void rotate(float yaw, float pitch, float roll) {
+        stack.get(topIndex()).rotate(yaw, pitch, roll);
+        onChange();
+    }
+
     public void scale(float x, float y, float z) {
         stack.get(topIndex()).scale(x, y, z);
         onChange();

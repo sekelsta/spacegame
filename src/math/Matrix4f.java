@@ -221,6 +221,65 @@ public class Matrix4f {
         return rotate(angle, x, y, z, this, this);
     }
 
+    public static Matrix4f rotate(float yaw, float pitch, float roll, Matrix4f in, Matrix4f out) {
+        float cy = (float) Math.cos(yaw);
+        float sy = (float) Math.sin(yaw);
+        float cp = (float) Math.cos(pitch);
+        float sp = (float) Math.sin(pitch);
+        float cr = (float) Math.cos(roll);
+        float sr = (float) Math.sin(roll);
+
+        // 3x3 rotation matrix
+        // This is the result of multiplying the yaw, pitch, and roll rotation matrices
+        float r00 = cr * cy - sr * sp * sy;
+        float r10 = cr * sy + sr * sp * cy;
+        float r20 = -1 * sr * cp;
+        float r01 = -1 * cp * sy;
+        float r11 = cp * cy;
+        float r21 = sp;
+        float r02 = sr * cy + cr * sp * sy;
+        float r12 = sr * sy - cr * sp * cy;
+        float r22 = cr * cp;
+
+        // Multiply (same as func above)
+        float c00 = in.m00 * r00 + in.m01 * r10 + in.m02 * r20;
+        float c01 = in.m00 * r01 + in.m01 * r11 + in.m02 * r21;
+        float c02 = in.m00 * r02 + in.m01 * r12 + in.m02 * r22;
+        float c10 = in.m10 * r00 + in.m11 * r10 + in.m12 * r20;
+        float c11 = in.m10 * r01 + in.m11 * r11 + in.m12 * r21;
+        float c12 = in.m10 * r02 + in.m11 * r12 + in.m12 * r22;
+        float c20 = in.m20 * r00 + in.m21 * r10 + in.m22 * r20;
+        float c21 = in.m20 * r01 + in.m21 * r11 + in.m22 * r21;
+        float c22 = in.m20 * r02 + in.m21 * r12 + in.m22 * r22;
+        float c30 = in.m30 * r00 + in.m31 * r10 + in.m32 * r20;
+        float c31 = in.m30 * r01 + in.m31 * r11 + in.m32 * r21;
+        float c32 = in.m30 * r02 + in.m31 * r12 + in.m32 * r22;
+
+        out.m03 = in.m03;
+        out.m13 = in.m13;
+        out.m23 = in.m23;
+        out.m33 = in.m33;
+        out.m00 = c00;
+        out.m01 = c01;
+        out.m02 = c02;
+        out.m10 = c10;
+        out.m11 = c11;
+        out.m12 = c12;
+        out.m20 = c20;
+        out.m21 = c21;
+        out.m22 = c22;
+        out.m30 = c30;
+        out.m31 = c31;
+        out.m32 = c32;
+
+        return out;
+    }
+
+    // Roll, pitch, and yaw are angles in radians
+    public Matrix4f rotate(float yaw, float pitch, float roll) {
+        return rotate(yaw, pitch, roll, this, this);
+    }
+
     public Matrix4f scale(float x, float y, float z) {
         m00 *= x;
         m01 *= y;
