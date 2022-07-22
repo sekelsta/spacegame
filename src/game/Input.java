@@ -83,7 +83,7 @@ public class Input extends InputManager implements Controller {
         System.out.println("joystick connect/disconnect");
     }
 
-    public void update(Mob mob) {/* TODO
+    public void update(Mob mob) {
         if (window.isKeyDown(GLFW.GLFW_KEY_SPACE)) {
             player.thrust();
         }
@@ -108,35 +108,5 @@ public class Input extends InputManager implements Controller {
         if (window.isKeyDown(GLFW.GLFW_KEY_E)) {
             player.rollClockwise();
         }
-*/
-        int rawX = 0;
-        int rawY = 0;
-        if (window.isKeyDown(GLFW.GLFW_KEY_D)) {
-            rawX += 1;
-        }
-        if (window.isKeyDown(GLFW.GLFW_KEY_A)) {
-            rawX -= 1;
-        }
-        if (window.isKeyDown(GLFW.GLFW_KEY_W)) {
-            rawY += 1;
-        }
-        if (window.isKeyDown(GLFW.GLFW_KEY_S)) {
-            rawY -= 1;
-        }
-        // Return early if no motion
-        if (rawX == 0 && rawY == 0) {
-            return;
-        }
-
-        double speed = Math.sqrt(rawX * rawX + rawY * rawY);
-        double angle = Math.acos(rawY / speed);
-        if (rawX > 0) {
-            angle *= -1;
-        }
-        // Rotate by camera angle
-        angle = (angle + camera.getYaw()) % (2 * Math.PI);
-        int x = (int)(Math.cos(angle + Math.PI / 2) * mob.getAccelerationXY());
-        int y = (int)(Math.sin(angle + Math.PI / 2) * mob.getAccelerationXY());
-        mob.addVelocity(x, y, 0);
     }
 }

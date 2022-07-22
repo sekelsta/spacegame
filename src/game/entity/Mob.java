@@ -65,8 +65,4 @@ public class Mob extends Entity {
             position.angularAccelerate(diff / 8, 0, 0);
         }
     }*/
-
-    public int getAccelerationXY() {
-        return (int)(Position.RESOLUTION / 16);
-    }
 }

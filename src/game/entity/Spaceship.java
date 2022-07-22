@@ -5,6 +5,7 @@ import sekelsta.game.World;
 
 public class Spaceship extends Mob {
     int shootSpeed = 1 * Position.RESOLUTION;
+    private final int angularAcceleration = (int)(Position.ANGLE_RESOLUTION / 1024);
 
     public Spaceship(int x, int y, int z, World world) {
         super(Entities.SPACESHIP, x, y, z, world);
@@ -25,46 +26,43 @@ public class Spaceship extends Mob {
     }
 
     public void thrust() {
-        // TODO
+        getPosition().accelerateForwards(Position.RESOLUTION / 16);
     }
 
     public void reverse() {
-        // TODO
+        getPosition().accelerateForwards(-1 * Position.RESOLUTION / 16);
     }
 
     public void pitchUp() {
-        // TODO
+        getPosition().angularAccelerate(0, angularAcceleration, 0);
     }
 
     public void pitchDown() {
-        // TODO
+        getPosition().angularAccelerate(0, -1 * angularAcceleration, 0);
     }
 
     public void yawLeft() {
-        // TODO
+        getPosition().angularAccelerate(angularAcceleration, 0, 0);
     }
 
     public void yawRight() {
-        // TODO
+        getPosition().angularAccelerate(-1 * angularAcceleration, 0, 0);
     }
 
     // Counterclockwise as viewed from rear
     public void rollCounterclockwise() {
-        // TODO
+        getPosition().angularAccelerate(0, 0, -1 * angularAcceleration);
     }
 
     // Clockwise as viewed from rear
     public void rollClockwise() {
-        // TODO
+        getPosition().angularAccelerate(0, 0, angularAcceleration);
     }
 
     public void fire() {
         Mob projectile = world.spawn(new Projectile(this, position.getX(), position.getY(), position.getZ(), world));
         projectile.addVelocity(position.getVelocityX(), position.getVelocityY(), position.getVelocityZ());
-        // TODO: Handle pitch and roll
-        double yaw = Position.toRadians(position.getYaw());
-        int vx = (int)(-1 * shootSpeed * Math.sin(yaw));
-        int vy = (int)(shootSpeed * Math.cos(yaw));
-        projectile.addVelocity(vx, vy, 0);
+        projectile.getPosition().setAngle(getPosition().getYaw(), getPosition().getPitch(), getPosition().getRoll());
+        projectile.getPosition().accelerateForwards(shootSpeed);
     }
 }

@@ -1,5 +1,9 @@
 package sekelsta.engine;
 
+import sekelsta.math.Matrix4f;
+import sekelsta.math.Vector3f;
+import sekelsta.math.Vector4f;
+
 public class Position {
     //public static final float RESOLUTION = 65536;
     public static final int RESOLUTION = 64;
@@ -178,5 +182,17 @@ public class Position {
         long distY = getY() - y;
         long distZ = getZ() - z;
         return distX * distX + distY * distY + distZ * distZ;
+    }
+
+    // TODO: Stay more consistent about working with floats / ints
+    public void accelerateForwards(int amount) {
+        // Formula obtained by transforming the forward vector (0, 1, 0) by the rotation matrix from yaw, pitch, and roll
+        double dx = -1 * Math.cos(toRadians(pitch)) * Math.sin(toRadians(yaw));
+        double dy = Math.cos(toRadians(pitch)) * Math.cos(toRadians(yaw));
+        double dz = Math.sin(toRadians(pitch));
+        dx *= (float)amount / Position.RESOLUTION;
+        dy *= (float)amount / Position.RESOLUTION;
+        dz *= (float)amount / Position.RESOLUTION;
+        accelerate((int)(dx * Position.RESOLUTION), (int)(dy * Position.RESOLUTION), (int)(dz * Position.RESOLUTION));
     }
 }
