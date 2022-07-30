@@ -23,6 +23,9 @@ public class Input extends InputManager implements Controller {
     @Override
     public void processKey(int key, int scancode, int action, boolean focused) {
         if (action == GLFW.GLFW_PRESS) {
+            if (key == GLFW.GLFW_KEY_F11) {
+                window.toggleFullscreen();
+            }
             if (key == GLFW.GLFW_KEY_X) {
                 player.fire();
             }

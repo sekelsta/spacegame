@@ -22,6 +22,14 @@ public class Window {
     private int width;
     private int height;
     private boolean focused;
+    private boolean fullscreen;
+
+    // Cached values from before entering fullscreen
+    // The GLFW function to update these values takes arrays (or IntBuffers)
+    private int[] windowPosX = new int[1];
+    private int[] windowPosY = new int[1];
+    private int[] windowWidth = new int[1];
+    private int[] windowHeight = new int[1];
 
     static {
         System.out.println("Using LWJGL " + Version.getVersion());
@@ -30,6 +38,9 @@ public class Window {
         if (!GLFW.glfwInit()) {
 			throw new IllegalStateException("Failed to initialize GLFW");
         }
+        System.out.println("Initialized GLFW " + GLFW.glfwGetVersionString());
+
+        GLFW.glfwSetErrorCallback((error, description) -> handleError(error, description));
 
         GLFW.glfwDefaultWindowHints();
         GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
@@ -42,6 +53,7 @@ public class Window {
     public Window(int widthIn, int heightIn, String title) {
         this.width = widthIn;
         this.height = heightIn;
+
         // Set OpenGL version
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -103,6 +115,10 @@ public class Window {
         GLFW.glfwSetErrorCallback(null).free();
     }
 
+    private static void handleError(int error, long description) {
+        throw new RuntimeException(GLFWErrorCallback.getDescription(description));
+    }
+
     public void setResizeListener(IFramebufferSizeListener listener) {
         listener.windowResized(width, height);
         // Handle resizing the window
@@ -157,5 +173,19 @@ public class Window {
 
     private boolean isFocused() {
         return this.focused;
+    }
+
+    public void toggleFullscreen() {
+        if (fullscreen) {
+            GLFW.glfwSetWindowMonitor(window, 0, windowPosX[0], windowPosY[0], windowWidth[0], windowHeight[0], GLFW.GLFW_DONT_CARE);
+        }
+        else {
+            GLFW.glfwGetWindowPos(window, windowPosX, windowPosY);
+            GLFW.glfwGetWindowSize(window, windowWidth, windowHeight);
+            long monitor = GLFW.glfwGetPrimaryMonitor();
+            GLFWVidMode videoMode = GLFW.glfwGetVideoMode(monitor);
+            GLFW.glfwSetWindowMonitor(window, monitor, 0, 0, videoMode.width(), videoMode.height(), GLFW.GLFW_DONT_CARE);
+        }
+        fullscreen = !fullscreen;
     }
 }
