@@ -11,13 +11,19 @@ other_libs = []
 main_class = 'sekelsta.game.Main'
 output_directory = 'bin'
 source_directory = 'src'
+# ':' on Linux, ';' on Windows
+path_separator = ':'
 
+def join_paths(root, *paths):
+    for path in paths:
+        root = os.path.join(root, path)
+    return root
 
 classpath = ''
 for lib in lwjgl_libs:
-    classpath += lwjgl_directory + '/' + lib + '/*:'
+    classpath += join_paths(lwjgl_directory, lib, '*') + path_separator
 for lib in other_libs:
-    classpath += lib + ':'
+    classpath += lib + path_separator
 
 def clean():
     if os.path.isdir(output_directory):
@@ -52,7 +58,8 @@ def build():
     os.system(command)
 
 def run(args):
-    command = 'java -ea -cp ' + classpath +  output_directory + ': ' + main_class + ' ' + args
+    command = 'java -ea -cp ' + classpath \
+        + output_directory + path_separator + ' ' + main_class + ' ' + args
     print(command)
     os.system(command) 
 
