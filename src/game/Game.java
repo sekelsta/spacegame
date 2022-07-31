@@ -1,6 +1,7 @@
 package sekelsta.game;
 
 import java.util.Random;
+import sekelsta.engine.DataFolders;
 import sekelsta.engine.IGame;
 import sekelsta.engine.render.Window;
 import sekelsta.game.render.Renderer;
@@ -16,9 +17,11 @@ public class Game implements IGame {
     private Camera camera;
 
     public Game() {
+        String appName = "MySpaceGame";
+        DataFolders.init(appName);
         this.input = new Input();
         this.world = new World(input);
-        this.window = new Window(600, 400, "Hello world!");
+        this.window = new Window(600, 400, appName);
         this.renderer = new Renderer();
         this.window.setResizeListener(renderer);
         this.camera = new Camera(world.getPlayer().getPosition());
