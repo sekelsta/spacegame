@@ -41,7 +41,7 @@ public class Gameloop {
                         Thread.sleep(waitTime / 1000000);
                     }
                     catch (InterruptedException e) {
-                        System.out.println(e);
+                        Log.warn(e.toString());
                     }
                 }
             }

@@ -18,14 +18,14 @@ public class Game implements IGame {
 
     public Game() {
         String appName = "MySpaceGame";
-        DataFolders.init(appName);
-        this.input = new Input();
-        this.world = new World(input);
-        this.window = new Window(600, 400, appName);
+        DataFolders.init(appName);        
+        this.window = new Window(DataFolders.getUserMachineFolder("initconfig.toml"), appName);
         this.renderer = new Renderer();
         this.window.setResizeListener(renderer);
-        this.camera = new Camera(world.getPlayer().getPosition());
+        this.input = new Input();
         this.window.setInput(input);
+        this.world = new World(input);
+        this.camera = new Camera(world.getPlayer().getPosition());
         this.input.setCamera(camera);
         this.input.setPlayer(this.world.getPlayer());
     }

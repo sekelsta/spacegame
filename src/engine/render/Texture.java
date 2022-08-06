@@ -14,6 +14,8 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 
+import sekelsta.engine.Log;
+
 public class Texture {
     private static final String TEXTURE_LOCATION = "/assets/textures/";
     int handle;
@@ -25,7 +27,7 @@ public class Texture {
             image = ImageIO.read(stream);
         }
         catch (IOException e) {
-            System.out.println(e);
+            Log.error(e.toString());
         }
         if (!isPowerOfTwo(image.getWidth()) || !isPowerOfTwo(image.getHeight())) {
             throw new RuntimeException("Size of texture " + name + " is not a power of two");
