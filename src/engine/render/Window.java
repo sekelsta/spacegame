@@ -2,10 +2,12 @@ package sekelsta.engine.render;
 
 import com.moandjiezana.toml.Toml;
 import com.moandjiezana.toml.TomlWriter;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,6 +17,7 @@ import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
+import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.glfw.GLFWWindowPosCallback;
 import org.lwjgl.opengl.GL;
@@ -155,6 +158,21 @@ public class Window {
 		// creates the GLCapabilities instance and makes the OpenGL
 		// bindings available for use.
         GL.createCapabilities();
+
+        // Set window icon
+        GLFWImage.Buffer icons = GLFWImage.malloc(3);
+        icons.put(0, loadIcon("/assets/icon/icon16.png"));
+        icons.put(1, loadIcon("/assets/icon/icon32.png"));
+        icons.put(2, loadIcon("/assets/icon/icon48.png"));
+        GLFW.glfwSetWindowIcon(window, icons);
+    }
+
+    private GLFWImage loadIcon(String name) {
+        BufferedImage image = ImageUtils.loadResource(name);
+        ByteBuffer pixels = ImageUtils.bufferedImageToByteBuffer(image);
+        GLFWImage icon = GLFWImage.malloc();
+        icon.set(image.getWidth(), image.getHeight(), pixels);
+        return icon;
     }
 
     public void swapBuffers() {
