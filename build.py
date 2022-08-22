@@ -55,7 +55,7 @@ def build():
     if classpath:
         command += '-cp ' + classpath
     print(command)
-    os.system(command)
+    return os.system(command) == 0
 
 def run(args):
     command = 'java -ea -cp ' + classpath \
@@ -65,8 +65,8 @@ def run(args):
 
 if len(sys.argv) <= 1:
     clean()
-    build()
-    run('')
+    if build():
+        run('')
 else:
     for task in sys.argv[1:]:
         if task == 'clean':
