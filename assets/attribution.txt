@@ -1,7 +1,8 @@
-asteroids
+asteroids (rock1, rock2, rock3, rock4)
 https://opengameart.org/content/low-poly-rocks
 para
 CC0
+edited (moved origin to center, triangulated)
 
 lunar rock texture
 https://opengameart.org/content/lunar-rock

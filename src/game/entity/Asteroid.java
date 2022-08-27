@@ -6,23 +6,19 @@ import sekelsta.game.World;
 import sekelsta.math.Vector3f;
 
 public class Asteroid extends Mob {
+    public static final int NUM_MESH_VARIANTS = 4;
+
     int size;
+    int mesh_variant;
 
-    public Asteroid(long x, long y, long z, World world, int s) {
+    public Asteroid(long x, long y, long z, World world, int size) {
         super(Entities.ASTEROID, x, y, z, world);
-        size = s;
-    }
-
-    private int randRange(Random random, int range) {
-        return random.nextInt(2 * range) - range;
+        this.size = size;
+        this.mesh_variant = world.getRandom().nextInt(NUM_MESH_VARIANTS);
     }
 
     public Asteroid(long x, long y, long z, World world) {
-        this(x, y, z, world, 1);
-    }
-
-    public Asteroid(long x, long y, long z, World world, Random random) {
-        this(x, y, z, world, random.nextInt(4));
+        this(x, y, z, world, world.getRandom().nextInt(4));
     }
 
     public int getSize() {
@@ -33,12 +29,21 @@ public class Asteroid extends Mob {
         return 1 << size;
     }
 
+    public int getMeshVariant() {
+        return mesh_variant;
+    }
+
     @Override
     public int getCollisionRadius() {
         return getSizeScale() * super.getCollisionRadius();
     }
 
-    public void setRandomVelocity(Random random) {
+    private int randRange(Random random, int range) {
+        return random.nextInt(2 * range) - range;
+    }
+
+    public void setRandomVelocity() {
+        Random random = world.getRandom();
         int velocityCap = Position.RESOLUTION * 1;
         getPosition().accelerate(randRange(random, velocityCap), randRange(random, velocityCap), randRange(random, velocityCap));
         getPosition().setAngle(random.nextInt((int)Position.ANGLE_RESOLUTION), 
