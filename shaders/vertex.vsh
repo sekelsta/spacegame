@@ -36,7 +36,7 @@ void main()
         skeletal_norm += local_norm * bone_weights[i];
     }
 
-    normal = normal_transform * skeletal_norm;
+    normal = normalize(normal_transform * skeletal_norm);
     texture_coord = in_texture;
     gl_Position = projection * modelview * skeletal_pos;
     frag_pos = vec3(modelview * skeletal_pos);

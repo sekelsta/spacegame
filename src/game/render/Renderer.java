@@ -20,7 +20,6 @@ public class Renderer implements IFramebufferSizeListener {
     private ShaderProgram shader = ShaderProgram.load("/shaders/vertex.vsh", "/shaders/fragment.fsh");
     private Frustum frustum = new Frustum();
     private Matrix4f perspective = new Matrix4f();
-    private Matrix3f normal_transform = new Matrix3f();
     // Rotate 180 deg about the axis to get y-down, x-right
     private Matrix4f orthographic = new Matrix4f().rotate((float)(Math.PI), 1f, 0f, 0f).translate(-1f, -1f, 0f);
     // Rotate from Y up (-Z forward) to Z up (+Y forward)
