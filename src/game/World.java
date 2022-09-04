@@ -6,7 +6,7 @@ import sekelsta.engine.Position;
 import sekelsta.game.entity.*;
 
 public class World {
-    private static final int spawnRadius = 10000;
+    private static final double spawnRadius = 1000;
 
     // TODO: Per-world initial seed
     Random random = new Random();
@@ -29,14 +29,14 @@ public class World {
     public void update() {
         // TODO: asteroid spawn conditions
         if (true) {
-            int spawnX = 0;
-            int spawnY = 0;
-            int spawnZ = 0;
+            double spawnX = 0;
+            double spawnY = 0;
+            double spawnZ = 0;
             boolean farEnough = false;
             while (!farEnough) {
-                spawnX = random.nextInt(2 * spawnRadius) - spawnRadius;
-                spawnY = random.nextInt(2 * spawnRadius) - spawnRadius;
-                spawnZ = random.nextInt(2 * spawnRadius) - spawnRadius;
+                spawnX = (random.nextDouble() - 0.5) * 2 * spawnRadius;
+                spawnY = (random.nextDouble() - 0.5) * 2 * spawnRadius;
+                spawnZ = (random.nextDouble() - 0.5) * 2 * spawnRadius;
 
                 farEnough = this.player.getPosition().distSquared(spawnX, spawnY, spawnZ) > spawnRadius * spawnRadius / 100;
             }
@@ -57,9 +57,9 @@ public class World {
         List<Mob> collidableMobs = mobs.stream().filter(mob -> mob.hasCollisions()).collect(Collectors.toList());
         for (Mob collider : collidableMobs) {
             for (Mob collidee : mobs) {
-                int tolerance = collider.getCollisionRadius() + collidee.getCollisionRadius();
+                double tolerance = collider.getCollisionRadius() + collidee.getCollisionRadius();
                 tolerance *= tolerance;
-                long distSq = collider.getPosition().distSquared(collidee.getPosition());
+                double distSq = collider.getPosition().distSquared(collidee.getPosition());
                 if (distSq < tolerance && collider != collidee) {
                     collider.collide(collidee);
                 }

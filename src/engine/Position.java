@@ -5,19 +5,18 @@ import sekelsta.math.Vector3f;
 import sekelsta.math.Vector4f;
 
 public class Position {
-    //public static final float RESOLUTION = 65536;
-    public static final int RESOLUTION = 64;
+    public static final double RESOLUTION = 65536;
     public static final float ANGLE_RESOLUTION = 65536; // Integer units per full circle
     private static final float FLOAT_PI = (float)Math.PI;
-    private long x, y, z;
-    private long prevX, prevY, prevZ;
+    private double x, y, z;
+    private double prevX, prevY, prevZ;
     private int velocityX, velocityY, velocityZ;
 
     private int yaw, pitch, roll;
     private int prevYaw, prevPitch, prevRoll;
     private int velocityYaw, velocityPitch, velocityRoll;
 
-    public Position(long x, long y, long z) {
+    public Position(double x, double y, double z) {
         teleport(x, y, z);
     }
 
@@ -59,9 +58,9 @@ public class Position {
         prevX = x;
         prevY = y;
         prevZ = z;
-        x += velocityX;
-        y += velocityY;
-        z += velocityZ;
+        x += velocityX / RESOLUTION;
+        y += velocityY / RESOLUTION;
+        z += velocityZ / RESOLUTION;
 
         prevYaw = yaw;
         prevRoll = roll;
@@ -76,7 +75,7 @@ public class Position {
         roll %= ANGLE_RESOLUTION;
     }
 
-    public final void teleport(long x, long y, long z) {
+    public final void teleport(double x, double y, double z) {
         this.x = this.prevX = x;
         this.y = this.prevY = y;
         this.z = this.prevZ = z;
@@ -88,28 +87,28 @@ public class Position {
         this.roll = r;
     }
 
-    public long getX() {
+    public double getX() {
         return x;
     }
 
-    public long getY() {
+    public double getY() {
         return y;
     }
 
-    public long getZ() {
+    public double getZ() {
         return z;
     }
 
     public float getInterpolatedX(float lerp) {
-        return (lerp * x + (1 - lerp) * prevX) / RESOLUTION;
+        return (float)(lerp * x + (1 - lerp) * prevX);
     }
 
     public float getInterpolatedY(float lerp) {
-        return (lerp * y + (1 - lerp) * prevY) / RESOLUTION;
+        return (float)(lerp * y + (1 - lerp) * prevY);
     }
 
     public float getInterpolatedZ(float lerp) {
-        return (lerp * z + (1 - lerp) * prevZ) / RESOLUTION;
+        return (float)(lerp * z + (1 - lerp) * prevZ);
     }
 
     public int getVelocityX() {
@@ -170,17 +169,14 @@ public class Position {
         return lerp * current + (1 - lerp) * prev;
     }
 
-    public long distSquared(Position other) {
-        long x = getX() - other.getX();
-        long y = getY() - other.getY();
-        long z = getZ() - other.getZ();
-        return x * x + y * y + z * z;
+    public double distSquared(Position other) {
+        return distSquared(other.getX(), other.getY(), other.getZ());
     }
 
-    public long distSquared(long x, long y, long z) {
-        long distX = getX() - x;
-        long distY = getY() - y;
-        long distZ = getZ() - z;
+    public double distSquared(double x, double y, double z) {
+        double distX = getX() - x;
+        double distY = getY() - y;
+        double distZ = getZ() - z;
         return distX * distX + distY * distY + distZ * distZ;
     }
 
@@ -190,9 +186,6 @@ public class Position {
         double dx = -1 * Math.cos(toRadians(pitch)) * Math.sin(toRadians(yaw));
         double dy = Math.cos(toRadians(pitch)) * Math.cos(toRadians(yaw));
         double dz = Math.sin(toRadians(pitch));
-        dx *= (float)amount / Position.RESOLUTION;
-        dy *= (float)amount / Position.RESOLUTION;
-        dz *= (float)amount / Position.RESOLUTION;
-        accelerate((int)(dx * Position.RESOLUTION), (int)(dy * Position.RESOLUTION), (int)(dz * Position.RESOLUTION));
+        accelerate((int)(dx * amount), (int)(dy * amount), (int)(dz * amount));
     }
 }

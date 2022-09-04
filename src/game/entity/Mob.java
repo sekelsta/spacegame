@@ -12,11 +12,11 @@ public class Mob extends Entity {
     // We're in space now, so set this high
     protected float drag = 1.0f;
 
-    public Mob(EntityType type, long x, long y, long z, World world) {
+    public Mob(EntityType type, double x, double y, double z, World world) {
         this(type, x, y, z, world, null);
     }
 
-    public Mob(EntityType type, long x, long y, long z, World world, Controller controller) {
+    public Mob(EntityType type, double x, double y, double z, World world, Controller controller) {
         super(type, x, y, z);
         this.controller = controller;
         this.world = world;
@@ -40,29 +40,4 @@ public class Mob extends Entity {
         position.scaleAngularVelocity(drag);
 
     }
-/* TODO: Use this or delete it
-    private void faceTowardsVelocity() {
-        float vx = position.getVelocityX();
-        float vy = position.getVelocityY();
-        double speed = Math.sqrt(vx * vx + vy * vy);
-
-        if (speed > Position.RESOLUTION / 128 && speed > 1) {
-            int aimingYaw = (int)(Position.ANGLE_RESOLUTION * Math.acos(vy / speed) / Math.PI / 2);
-            if (vx > 0) {
-               aimingYaw *= -1;
-            }
-
-            int yawV = position.getYawVelocity();
-            float foretold = 1 + drag + drag * drag;
-            int diff = aimingYaw - position.getYaw() - (int)(yawV * foretold);
-            diff %= Position.ANGLE_RESOLUTION;
-            if (diff > Position.ANGLE_RESOLUTION / 2) {
-                diff -= Position.ANGLE_RESOLUTION;
-            }
-            else if (diff < -Position.ANGLE_RESOLUTION / 2) {
-                diff += Position.ANGLE_RESOLUTION;
-            }
-            position.angularAccelerate(diff / 8, 0, 0);
-        }
-    }*/
 }

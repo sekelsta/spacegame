@@ -11,13 +11,13 @@ public class Asteroid extends Mob {
     int size;
     int mesh_variant;
 
-    public Asteroid(long x, long y, long z, World world, int size) {
+    public Asteroid(double x, double y, double z, World world, int size) {
         super(Entities.ASTEROID, x, y, z, world);
         this.size = size;
         this.mesh_variant = world.getRandom().nextInt(NUM_MESH_VARIANTS);
     }
 
-    public Asteroid(long x, long y, long z, World world) {
+    public Asteroid(double x, double y, double z, World world) {
         this(x, y, z, world, world.getRandom().nextInt(4));
     }
 
@@ -34,7 +34,7 @@ public class Asteroid extends Mob {
     }
 
     @Override
-    public int getCollisionRadius() {
+    public double getCollisionRadius() {
         return getSizeScale() * super.getCollisionRadius();
     }
 
@@ -44,7 +44,7 @@ public class Asteroid extends Mob {
 
     public void setRandomVelocity() {
         Random random = world.getRandom();
-        int velocityCap = Position.RESOLUTION * 1;
+        int velocityCap = (int)Position.RESOLUTION;
         getPosition().accelerate(randRange(random, velocityCap), randRange(random, velocityCap), randRange(random, velocityCap));
         getPosition().setAngle(random.nextInt((int)Position.ANGLE_RESOLUTION), 
             random.nextInt((int)Position.ANGLE_RESOLUTION), random.nextInt((int)Position.ANGLE_RESOLUTION));
@@ -55,7 +55,6 @@ public class Asteroid extends Mob {
     public void destroy() {
         if (size > 0) {
             Vector3f split = Vector3f.randomNonzero(new Vector3f(), new Random());
-            split.scale(Position.RESOLUTION / 2f);
             for (int i = -1; i < 2; i += 2) {
                 Asteroid piece = new Asteroid(getPosition().getX(), getPosition().getY(), getPosition().getZ(), world, size - 1);
                 piece.getPosition().setVelocity(getPosition().getVelocityX(), getPosition().getVelocityY(), getPosition().getVelocityZ());

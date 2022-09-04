@@ -5,7 +5,7 @@ import sekelsta.game.World;
 public class Projectile extends Mob {
     Entity owner;
 
-    public Projectile(Entity owner, long x, long y, long z, World world) {
+    public Projectile(Entity owner, double x, double y, double z, World world) {
         super(Entities.PROJECTILE, x, y, z, world);
         this.owner = owner;
     }

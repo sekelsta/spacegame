@@ -6,7 +6,7 @@ public class Entity {
     public final EntityType type;
     protected final Position position;
 
-    public Entity(EntityType type, long x, long y, long z) {
+    public Entity(EntityType type, double x, double y, double z) {
         assert(type != null);
         this.type = type;
         this.position = new Position(x, y, z);
@@ -16,8 +16,8 @@ public class Entity {
         return position;
     }
 
-    public int getCollisionRadius() {
-        return Position.RESOLUTION;
+    public double getCollisionRadius() {
+        return 1.0;
     }
 
     public boolean hasCollisions() {

@@ -4,7 +4,7 @@ import sekelsta.engine.Position;
 import sekelsta.game.World;
 
 public class Spaceship extends Mob {
-    int shootSpeed = 1 * Position.RESOLUTION;
+    int shootSpeed = (int)Position.RESOLUTION;
     private final int angularAcceleration = (int)(Position.ANGLE_RESOLUTION / 1024);
 
     public Spaceship(int x, int y, int z, World world) {
@@ -16,8 +16,8 @@ public class Spaceship extends Mob {
     }
 
     @Override
-    public int getCollisionRadius() {
-        return 3 * Position.RESOLUTION;
+    public double getCollisionRadius() {
+        return 3.0;
     }
 
     @Override
@@ -26,11 +26,11 @@ public class Spaceship extends Mob {
     }
 
     public void thrust() {
-        getPosition().accelerateForwards(Position.RESOLUTION / 16);
+        getPosition().accelerateForwards((int)Position.RESOLUTION / 16);
     }
 
     public void reverse() {
-        getPosition().accelerateForwards(-1 * Position.RESOLUTION / 16);
+        getPosition().accelerateForwards(-1 * (int)Position.RESOLUTION / 16);
     }
 
     public void pitchUp() {
@@ -64,5 +64,11 @@ public class Spaceship extends Mob {
         projectile.addVelocity(position.getVelocityX(), position.getVelocityY(), position.getVelocityZ());
         projectile.getPosition().setAngle(getPosition().getYaw(), getPosition().getPitch(), getPosition().getRoll());
         projectile.getPosition().accelerateForwards(shootSpeed);
+    }
+
+    @Override
+    public void updateMovement() {
+        super.updateMovement();
+        position.scaleAngularVelocity(0.8f);
     }
 }
