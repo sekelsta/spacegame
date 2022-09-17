@@ -1,5 +1,6 @@
 package sekelsta.engine;
 
+import sekelsta.math.Matrix3f;
 import sekelsta.math.Matrix4f;
 import sekelsta.math.Vector3f;
 import sekelsta.math.Vector4f;
@@ -12,9 +13,10 @@ public class Position {
     private double prevX, prevY, prevZ;
     private int velocityX, velocityY, velocityZ;
 
+    // TODO: Consider storing radians directly instead of converting constantly
     private int yaw, pitch, roll;
     private int prevYaw, prevPitch, prevRoll;
-    private int velocityYaw, velocityPitch, velocityRoll;
+    private int angularVelocityX, angularVelocityY, angularVelocityZ;
 
     public Position(double x, double y, double z) {
         teleport(x, y, z);
@@ -22,6 +24,10 @@ public class Position {
 
     public static double toRadians(int angle) {
         return angle / ANGLE_RESOLUTION * 2 * Math.PI;
+    }
+
+    private static int fromRadians(double angle) {
+        return (int)(angle / (2 * Math.PI) * ANGLE_RESOLUTION);
     }
 
     public void accelerate(int x, int y, int z) {
@@ -42,16 +48,16 @@ public class Position {
         velocityZ *= drag;
     }
 
-    public void angularAccelerate(int y, int p, int r) {
-        velocityYaw += y;
-        velocityPitch += p;
-        velocityRoll += r;
+    public void angularAccelerate(int x, int y, int z) {
+        angularVelocityX += x;
+        angularVelocityY += y;
+        angularVelocityZ += z;
     }
 
     public void scaleAngularVelocity(float drag) {
-        velocityYaw *= drag;
-        velocityPitch *= drag;
-        velocityRoll *= drag;
+        angularVelocityX *= drag;
+        angularVelocityY *= drag;
+        angularVelocityZ *= drag;
     }
 
     public void tick() {
@@ -66,9 +72,15 @@ public class Position {
         prevRoll = roll;
         prevPitch = pitch;
 
-        yaw += velocityYaw;
-        pitch += velocityPitch;
-        roll += velocityRoll;
+        // Combine rotations with matrices
+        // TO_OPTIMIZE: Quaternions might be faster
+        Matrix3f rotation = new Matrix3f();
+        rotation.rotate((float)toRadians(angularVelocityZ), (float)toRadians(angularVelocityX), (float)toRadians(angularVelocityY));
+        rotation.rotate((float)toRadians(yaw), (float)toRadians(pitch), (float)toRadians(roll));
+
+        this.yaw = fromRadians(rotation.getYaw());
+        this.pitch = fromRadians(rotation.getPitch());
+        this.roll = fromRadians(rotation.getRoll());
 
         yaw %= ANGLE_RESOLUTION;
         pitch %= ANGLE_RESOLUTION;
@@ -136,15 +148,15 @@ public class Position {
     }
 
     public int getYawVelocity() {
-        return velocityYaw;
+        return angularVelocityZ;
     }
 
     public int getPitchVelocity() {
-        return velocityPitch;
+        return angularVelocityX;
     }
 
     public int getRollVelocity() {
-        return velocityRoll;
+        return angularVelocityY;
     }
 
     public float getInterpolatedYaw(float lerp) {
@@ -187,5 +199,18 @@ public class Position {
         double dy = Math.cos(toRadians(pitch)) * Math.cos(toRadians(yaw));
         double dz = Math.sin(toRadians(pitch));
         accelerate((int)(dx * amount), (int)(dy * amount), (int)(dz * amount));
+    }
+
+    public void angularAccelerateLocalAxis(int amount, float x, float y, float z) {
+        // TO_OPTIMIZE: For axis-aligned rotations, the full matrix is not really needed
+        Vector3f axis = new Vector3f(x, y, z);
+        axis.rotate((float)toRadians(yaw), (float)toRadians(pitch), (float)toRadians(roll));
+
+        Matrix3f rotation = new Matrix3f();
+        rotation.rotate((float)toRadians(amount), axis.x, axis.y, axis.z);
+
+        this.angularVelocityX += fromRadians(rotation.getPitch());
+        this.angularVelocityY += fromRadians(rotation.getRoll());
+        this.angularVelocityZ += fromRadians(rotation.getYaw());
     }
 }

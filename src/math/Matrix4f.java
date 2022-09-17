@@ -52,6 +52,13 @@ public class Matrix4f {
             copy.m30, copy.m31, copy.m32, copy.m33);
     }
 
+    public Matrix4f(Matrix3f copy) {
+        this(copy.m00, copy.m01, copy.m02, 0,
+            copy.m10, copy.m11, copy.m12, 0,
+            copy.m20, copy.m21, copy.m22, 0,
+            0, 0, 0, 1);
+    }
+
     public Matrix4f setIdentity() {
         m00 = 1;
         m01 = 0;
@@ -212,7 +219,6 @@ public class Matrix4f {
         out.m32 = c32;
 
         return out;
-
     }
 
     // angle is in radians
@@ -448,6 +454,12 @@ public class Matrix4f {
         m33 = 0;
 
         return this;
+    }
+
+    public Matrix3f getRotScale() {
+        return new Matrix3f(m00, m01, m02,
+                            m10, m11, m12,
+                            m20, m21, m22);
     }
 
     public String toString() {

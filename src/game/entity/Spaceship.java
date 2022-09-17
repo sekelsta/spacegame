@@ -34,29 +34,29 @@ public class Spaceship extends Mob {
     }
 
     public void pitchUp() {
-        getPosition().angularAccelerate(0, angularAcceleration, 0);
+        getPosition().angularAccelerateLocalAxis(angularAcceleration, 1, 0, 0);
     }
 
     public void pitchDown() {
-        getPosition().angularAccelerate(0, -1 * angularAcceleration, 0);
+        getPosition().angularAccelerateLocalAxis(-1 * angularAcceleration, 1, 0, 0);
     }
 
     public void yawLeft() {
-        getPosition().angularAccelerate(angularAcceleration, 0, 0);
+        getPosition().angularAccelerateLocalAxis(angularAcceleration, 0, 0, 1);
     }
 
     public void yawRight() {
-        getPosition().angularAccelerate(-1 * angularAcceleration, 0, 0);
+        getPosition().angularAccelerateLocalAxis(-1 * angularAcceleration, 0, 0, 1);
     }
 
     // Counterclockwise as viewed from rear
     public void rollCounterclockwise() {
-        getPosition().angularAccelerate(0, 0, -1 * angularAcceleration);
+        getPosition().angularAccelerateLocalAxis(-1 * angularAcceleration, 0, 1, 0);
     }
 
     // Clockwise as viewed from rear
     public void rollClockwise() {
-        getPosition().angularAccelerate(0, 0, angularAcceleration);
+        getPosition().angularAccelerateLocalAxis(angularAcceleration, 0, 1, 0);
     }
 
     public void fire() {
@@ -69,6 +69,6 @@ public class Spaceship extends Mob {
     @Override
     public void updateMovement() {
         super.updateMovement();
-        position.scaleAngularVelocity(0.8f);
+        position.scaleAngularVelocity(0.9f);
     }
 }

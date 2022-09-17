@@ -101,6 +101,51 @@ public class Vector3f {
         return out;
     }
 
+    public static Vector3f mul(Matrix3f left, Vector3f right, Vector3f out) {
+        float x = right.x * left.m00 + right.y * left.m01 + right.z * left.m02;
+        float y = right.x * left.m10 + right.y * left.m11 + right.z * left.m12;
+        float z = right.x * left.m20 + right.y * left.m21 + right.z * left.m22;
+
+        out.x = x;
+        out.y = y;
+        out.z = z;
+
+        return out;
+    }
+
+    public static Vector3f rotate(float yaw, float pitch, float roll, Vector3f in, Vector3f out) {
+        float cy = (float) Math.cos(yaw);
+        float sy = (float) Math.sin(yaw);
+        float cp = (float) Math.cos(pitch);
+        float sp = (float) Math.sin(pitch);
+        float cr = (float) Math.cos(roll);
+        float sr = (float) Math.sin(roll);
+
+        // 3x3 rotation matrix
+        float r00 = cr * cy - sr * sp * sy;
+        float r10 = cr * sy + sr * sp * cy;
+        float r20 = -1 * sr * cp;
+        float r01 = -1 * cp * sy;
+        float r11 = cp * cy;
+        float r21 = sp;
+        float r02 = sr * cy + cr * sp * sy;
+        float r12 = sr * sy - cr * sp * cy;
+        float r22 = cr * cp;
+
+        float x = in.x * r00 + in.y * r01 + in.z * r02;
+        float y = in.x * r10 + in.y * r11 + in.z * r12;
+        float z = in.x * r20 + in.y * r21 + in.z * r22;
+
+        out.x = x;
+        out.y = y;
+        out.z = z;
+        return out;
+    }
+
+    public Vector3f rotate(float yaw, float pitch, float roll) {
+        return rotate(yaw, pitch, roll, this, this);
+    }
+
     // Return a random vector within the unit sphere, excluding {0, 0, 0}
     public static Vector3f randomNonzero(Vector3f v, Random random) {
         do {
