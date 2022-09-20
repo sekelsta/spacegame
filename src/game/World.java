@@ -27,6 +27,9 @@ public class World {
     }
 
     public void update() {
+        // Spawn
+        mobs.addAll(spawned);
+        spawned.clear();
         // TODO: asteroid spawn conditions
         if (true) {
             double spawnX = 0;
@@ -71,9 +74,6 @@ public class World {
         killed.clear();
         // Despawn
         mobs.removeIf(mob -> mob.getPosition().distSquared(player.getPosition()) > 100 * spawnRadius * spawnRadius);
-        // Spawn
-        mobs.addAll(spawned);
-        spawned.clear();
     }
 
     public List<Mob> getMobs() {
