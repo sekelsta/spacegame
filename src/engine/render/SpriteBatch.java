@@ -43,14 +43,17 @@ public class SpriteBatch extends Mesh {
 
         // First argument depends on the layout value in the vertex shader
         // 0 = vertex
-        GL20.glVertexAttribPointer(0, 3, GL20.GL_FLOAT, false, 8 * Float.BYTES, 0);
+        GL20.glVertexAttribPointer(0, 2, GL20.GL_FLOAT, false, getVertexBufferStride() * Float.BYTES, 0);
         GL20.glEnableVertexAttribArray(0);
-        // 1 = normal
-        GL20.glVertexAttribPointer(1, 3, GL20.GL_FLOAT, true, 8 * Float.BYTES, 3 * Float.BYTES);
+        // 1 = texture
+        GL20.glVertexAttribPointer(1, 2, GL20.GL_FLOAT, false, getVertexBufferStride() * Float.BYTES, 2 * Float.BYTES);
         GL20.glEnableVertexAttribArray(1);
-        // 2 = texture
-        GL20.glVertexAttribPointer(2, 2, GL20.GL_FLOAT, false, 8 * Float.BYTES, 6 * Float.BYTES);
-        GL20.glEnableVertexAttribArray(2);
+    }
+
+    @Override
+    protected int getVertexBufferStride() {
+        // 2D vertex, 2D texture
+        return 2 + 2;
     }
 
     // Params: Screen rect, texture x and y to draw from, and texture size
@@ -68,31 +71,19 @@ public class SpriteBatch extends Mesh {
         float v1 = (float)(texY + height) / (float)texture_height;
 
         // Top-left
-        vertices.put(x).put(y).put(0);
-        vertices.put(0).put(0).put(1);
-        vertices.put(u0).put(v0);
-        // Top-right
-        vertices.put(x + width).put(y).put(0);
-        vertices.put(0).put(0).put(1);
-        vertices.put(u1).put(v0);
-        // Bottom-left
-        vertices.put(x).put(y + height).put(0);
-        vertices.put(0).put(0).put(1);
+        vertices.put(x).put(y);
         vertices.put(u0).put(v1);
-        // Bottom-right
-        vertices.put(x + width).put(y + height).put(0);
-        vertices.put(0).put(0).put(1);
+        // Top-right
+        vertices.put(x + width).put(y);
         vertices.put(u1).put(v1);
+        // Bottom-left
+        vertices.put(x).put(y + height);
+        vertices.put(u0).put(v0);
+        // Bottom-right
+        vertices.put(x + width).put(y + height);
+        vertices.put(u1).put(v0);
 
         numIndices += 6;
-    }
-
-
-
-    @Override
-    protected int getVertexBufferStride() {
-        // 3D vertex, 3D normal, 2D texture
-        return 3 + 3 + 2;
     }
 
     @Override

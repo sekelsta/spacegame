@@ -13,25 +13,25 @@ import sekelsta.game.World;
 import sekelsta.game.render.entity.*;
 import sekelsta.math.Matrix3f;
 import sekelsta.math.Matrix4f;
+import sekelsta.math.Vector2f;
     // TEMP_DEBUG
 import sekelsta.engine.render.text.BitmapFont;
 
 public class Renderer implements IFramebufferSizeListener {
-    private ShaderProgram shader = ShaderProgram.load("/shaders/vertex.vsh", "/shaders/fragment.fsh");
+    private ShaderProgram shader = ShaderProgram.load("/shaders/basic.vsh", "/shaders/basic.fsh");
+    private ShaderProgram shader2D = ShaderProgram.load("/shaders/2d.vsh", "/shaders/2d.fsh");
     private Frustum frustum = new Frustum();
     private Matrix4f perspective = new Matrix4f();
-    // Rotate 180 deg about the axis to get y-down, x-right
-    private Matrix4f orthographic = new Matrix4f().rotate((float)(Math.PI), 1f, 0f, 0f).translate(-1f, -1f, 0f);
     // Rotate from Y up (-Z forward) to Z up (+Y forward)
     private final Matrix4f coordinate_convert = new Matrix4f().rotate((float)(-1 * Math.PI/2), 1f, 0f, 0f);
     private final Matrix3f identity3f = new Matrix3f();
+    private final Vector2f uiDimensions = new Vector2f(1, 1);
 
     private final SpriteBatch spriteBatch = new SpriteBatch();
-    //private final Texture test = new Texture("test_particle.png");
-    //private final Texture test = new Texture("test.png");
-
-    // TEMP_DEBUG
+    // DEBUG
+    private final Texture test = new Texture("placeholder.png");
     private final BitmapFont font = new BitmapFont();
+    // END DEBUG
 
     private MatrixStack matrixStack = new MatrixStack() {
         @Override
@@ -43,6 +43,7 @@ public class Renderer implements IFramebufferSizeListener {
     };
 
     public Renderer() {
+        GL11.glClearColor(0f, 0.2f, 0.6f, 0f);
         shader.use();
         shader.setUniform("texture_sampler", 0);
         shader.setUniform("specular_sampler", 1);
@@ -77,14 +78,14 @@ public class Renderer implements IFramebufferSizeListener {
         }
         matrixStack.pop();
         // Set up for two-dimensional rendering
-        shader.setUniform("projection", orthographic);
+        shader2D.use();
+        shader2D.setUniform("dimensions", uiDimensions);
         GL11.glDisable(GL11.GL_DEPTH_TEST);
         // Render UI and HUD
-        // TODO
-        //test.bind();
-        //test.bindEmission();
-        //sekelsta.game.render.Textures.TRANSPARENT.bindSpecular();
-        //spriteBatch.blit(0, 0, 51, 51, 0, 0, 512, 512);
+        // DEBUG
+        test.bind();
+        spriteBatch.blit(0, 0, 512, 256, 0, 0, 512, 512);
+        // END DEBUG
         spriteBatch.render();
     }
 
@@ -102,9 +103,10 @@ public class Renderer implements IFramebufferSizeListener {
         frustum.setAspectRatio(width, height);
         frustum.calcMatrix(perspective);
         Matrix4f.mul(coordinate_convert, perspective, perspective);
-        
-        orthographic.setIdentity().rotate((float)(Math.PI), 1f, 0f, 0f).translate(-1f, -1f, 0f);
-        orthographic.scale(2f / width, 2f / height, 1f);
+
+        float uiScale = 1.25f;
+        uiDimensions.x = width * uiScale;
+        uiDimensions.y = height * uiScale;
     }
 
     private Matrix3f normalTransform(Matrix4f matrix) {
