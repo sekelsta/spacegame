@@ -1,5 +1,5 @@
 package sekelsta.engine.entity;
 
-public interface ICollidable {
+public interface ICollider {
     void collide(Entity other);
 }

@@ -2,11 +2,11 @@ package sekelsta.game.entity;
 
 import sekelsta.engine.entity.Entity;
 import sekelsta.engine.entity.EntityType;
-import sekelsta.engine.entity.ICollidable;
+import sekelsta.engine.entity.ICollider;
 import sekelsta.engine.entity.Movable;
 import sekelsta.game.World;
 
-public class Projectile extends Movable implements ICollidable {
+public class Projectile extends Movable implements ICollider {
     Entity owner;
     private final World world;
 

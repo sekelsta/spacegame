@@ -57,14 +57,14 @@ public class World {
             mob.update();
         }
 
-        List<Movable> collidableMobs = mobs.stream().filter(mob -> mob instanceof ICollidable).collect(Collectors.toList());
+        List<Movable> collidableMobs = mobs.stream().filter(mob -> mob instanceof ICollider).collect(Collectors.toList());
         for (Movable collider : collidableMobs) {
             for (Movable collidee : mobs) {
                 double tolerance = collider.getCollisionRadius() + collidee.getCollisionRadius();
                 tolerance *= tolerance;
                 double distSq = collider.distSquared(collidee);
                 if (distSq < tolerance && collider != collidee) {
-                    ((ICollidable)collider).collide(collidee);
+                    ((ICollider)collider).collide(collidee);
                 }
             }
         }

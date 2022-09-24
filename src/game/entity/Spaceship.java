@@ -2,11 +2,11 @@ package sekelsta.game.entity;
 
 import sekelsta.engine.entity.Entity;
 import sekelsta.engine.entity.EntityType;
-import sekelsta.engine.entity.ICollidable;
+import sekelsta.engine.entity.ICollider;
 import sekelsta.engine.entity.Movable;
 import sekelsta.game.World;
 
-public class Spaceship extends Movable implements ICollidable {
+public class Spaceship extends Movable implements ICollider {
     int shootSpeed = (int)Movable.RESOLUTION;
     private final int angularAcceleration = (int)(Movable.ANGLE_RESOLUTION / 1024);
 
