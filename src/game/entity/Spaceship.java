@@ -1,18 +1,27 @@
 package sekelsta.game.entity;
 
-import sekelsta.engine.Position;
+import sekelsta.engine.entity.Entity;
+import sekelsta.engine.entity.EntityType;
+import sekelsta.engine.entity.ICollidable;
+import sekelsta.engine.entity.Movable;
 import sekelsta.game.World;
 
-public class Spaceship extends Mob {
-    int shootSpeed = (int)Position.RESOLUTION;
-    private final int angularAcceleration = (int)(Position.ANGLE_RESOLUTION / 1024);
+public class Spaceship extends Movable implements ICollidable {
+    int shootSpeed = (int)Movable.RESOLUTION;
+    private final int angularAcceleration = (int)(Movable.ANGLE_RESOLUTION / 1024);
+
+    protected final Controller controller;
+    private final World world;
 
     public Spaceship(int x, int y, int z, World world) {
-        super(Entities.SPACESHIP, x, y, z, world);
+        this(x, y, z, world, null);
     }
 
     public Spaceship(int x, int y, int z, World world, Controller controller) {
-        super(Entities.SPACESHIP, x, y, z, world, controller);
+        super(x, y, z);
+        this.world = world;
+        this.controller = controller;
+        angularDrag = 0.9f;
     }
 
     @Override
@@ -21,54 +30,62 @@ public class Spaceship extends Mob {
     }
 
     @Override
-    public boolean hasCollisions() {
-        return true;    
+    public EntityType getType() {
+        return Entities.SPACESHIP;
+    }
+
+    @Override
+    public void collide(Entity other) {
+        // TODO: Get injured/die    
+    }
+
+    @Override
+    public void update() {
+        if (controller != null)
+        {
+            controller.update();
+        }
+        super.update();
     }
 
     public void thrust() {
-        getPosition().accelerateForwards((int)Position.RESOLUTION / 16);
+        accelerateForwards((int)Movable.RESOLUTION / 16);
     }
 
     public void reverse() {
-        getPosition().accelerateForwards(-1 * (int)Position.RESOLUTION / 16);
+        accelerateForwards(-1 * (int)Movable.RESOLUTION / 16);
     }
 
     public void pitchUp() {
-        getPosition().angularAccelerateLocalAxis(angularAcceleration, 1, 0, 0);
+        angularAccelerateLocalAxis(angularAcceleration, 1, 0, 0);
     }
 
     public void pitchDown() {
-        getPosition().angularAccelerateLocalAxis(-1 * angularAcceleration, 1, 0, 0);
+        angularAccelerateLocalAxis(-1 * angularAcceleration, 1, 0, 0);
     }
 
     public void yawLeft() {
-        getPosition().angularAccelerateLocalAxis(angularAcceleration, 0, 0, 1);
+        angularAccelerateLocalAxis(angularAcceleration, 0, 0, 1);
     }
 
     public void yawRight() {
-        getPosition().angularAccelerateLocalAxis(-1 * angularAcceleration, 0, 0, 1);
+        angularAccelerateLocalAxis(-1 * angularAcceleration, 0, 0, 1);
     }
 
     // Counterclockwise as viewed from rear
     public void rollCounterclockwise() {
-        getPosition().angularAccelerateLocalAxis(-1 * angularAcceleration, 0, 1, 0);
+        angularAccelerateLocalAxis(-1 * angularAcceleration, 0, 1, 0);
     }
 
     // Clockwise as viewed from rear
     public void rollClockwise() {
-        getPosition().angularAccelerateLocalAxis(angularAcceleration, 0, 1, 0);
+        angularAccelerateLocalAxis(angularAcceleration, 0, 1, 0);
     }
 
     public void fire() {
-        Mob projectile = world.spawn(new Projectile(this, position.getX(), position.getY(), position.getZ(), world));
-        projectile.addVelocity(position.getVelocityX(), position.getVelocityY(), position.getVelocityZ());
-        projectile.getPosition().setAngle(getPosition().getYaw(), getPosition().getPitch(), getPosition().getRoll());
-        projectile.getPosition().accelerateForwards(shootSpeed);
-    }
-
-    @Override
-    public void updateMovement() {
-        super.updateMovement();
-        position.scaleAngularVelocity(0.9f);
+        Movable projectile = world.spawn(new Projectile(this, getX(), getY(), getZ(), world));
+        projectile.accelerate(getVelocityX(), getVelocityY(), getVelocityZ());
+        projectile.setAngle(getYaw(), getPitch(), getRoll());
+        projectile.accelerateForwards(shootSpeed);
     }
 }

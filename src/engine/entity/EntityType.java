@@ -1,10 +1,9 @@
-package sekelsta.game.entity;
+package sekelsta.engine.entity;
 
 import java.util.HashMap;
 import java.util.function.Supplier;
 
-import sekelsta.game.entity.Entity;
-import sekelsta.game.render.entity.EntityRenderer;
+import sekelsta.engine.render.entity.EntityRenderer;
 
 public class EntityType {
     private static final HashMap<String, EntityType> registry = new HashMap<>();

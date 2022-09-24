@@ -1,9 +1,8 @@
-package sekelsta.game.render.entity;
+package sekelsta.engine.render.entity;
 
-import sekelsta.engine.Position;
+import sekelsta.engine.entity.Entity;
 import sekelsta.engine.render.*;
 import sekelsta.engine.render.mesh.*;
-import sekelsta.game.entity.Entity;
 import sekelsta.game.render.Renderer;
 import sekelsta.game.render.Textures;
 
@@ -22,9 +21,9 @@ public abstract class EntityRenderer {
         stack.translate(x, y, z);
         stack.scale(this.scale);
 
-        float yaw = entity.getPosition().getInterpolatedYaw(lerp);
-        float pitch = entity.getPosition().getInterpolatedPitch(lerp);
-        float roll = entity.getPosition().getInterpolatedRoll(lerp);
+        float yaw = entity.getInterpolatedYaw(lerp);
+        float pitch = entity.getInterpolatedPitch(lerp);
+        float roll = entity.getInterpolatedRoll(lerp);
 
         stack.rotate(yaw, pitch, roll);
 

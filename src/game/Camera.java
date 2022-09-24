@@ -1,10 +1,10 @@
 package sekelsta.game;
 
-import sekelsta.engine.Position;
+import sekelsta.engine.entity.Entity;
 import sekelsta.engine.render.MatrixStack;
 
 public class Camera {
-    Position focus;
+    Entity focus;
     float distance = 6f; // 2f for bunny game
     float minDistance = 4f;
     float maxDistance = 200f; // TODO: Warn if greater than frustum.far
@@ -14,7 +14,7 @@ public class Camera {
     float pitch = (float)Math.toRadians(45);
     float yaw = 0f;
 
-    public Camera(Position position) {
+    public Camera(Entity position) {
         focus = position;
     }
 

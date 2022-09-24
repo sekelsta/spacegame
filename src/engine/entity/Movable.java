@@ -1,11 +1,9 @@
-package sekelsta.engine;
+package sekelsta.engine.entity;
 
 import sekelsta.math.Matrix3f;
-import sekelsta.math.Matrix4f;
 import sekelsta.math.Vector3f;
-import sekelsta.math.Vector4f;
 
-public class Position {
+public abstract class Movable implements Entity {
     public static final double RESOLUTION = 65536;
     public static final float ANGLE_RESOLUTION = 65536; // Integer units per full circle
     private static final float FLOAT_PI = (float)Math.PI;
@@ -18,8 +16,20 @@ public class Position {
     private int prevYaw, prevPitch, prevRoll;
     private int angularVelocityX, angularVelocityY, angularVelocityZ;
 
-    public Position(double x, double y, double z) {
+    // 0.99 or 0.98 is like ice
+    // 0.8 is like land
+    // We're in space now, so set this high
+    protected float drag = 1.0f;
+    protected float angularDrag = 1.0f;
+
+    public Movable(double x, double y, double z) {
         teleport(x, y, z);
+    }
+
+    public void update() {
+        tick();
+        scaleVelocity(drag);
+        scaleAngularVelocity(angularDrag);
     }
 
     public static double toRadians(int angle) {
@@ -181,7 +191,7 @@ public class Position {
         return lerp * current + (1 - lerp) * prev;
     }
 
-    public double distSquared(Position other) {
+    public double distSquared(Movable other) {
         return distSquared(other.getX(), other.getY(), other.getZ());
     }
 

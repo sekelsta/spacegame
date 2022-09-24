@@ -3,6 +3,7 @@ package sekelsta.game.render.entity;
 import java.util.Scanner;
 
 import sekelsta.engine.render.Texture;
+import sekelsta.engine.render.entity.EntityRenderer;
 import sekelsta.engine.render.mesh.RigidMesh;
 
 import sekelsta.tools.ObjParser;

@@ -1,18 +1,29 @@
 package sekelsta.game.entity;
 
+import sekelsta.engine.entity.Entity;
+import sekelsta.engine.entity.EntityType;
+import sekelsta.engine.entity.ICollidable;
+import sekelsta.engine.entity.Movable;
 import sekelsta.game.World;
 
-public class Projectile extends Mob {
+public class Projectile extends Movable implements ICollidable {
     Entity owner;
+    private final World world;
 
     public Projectile(Entity owner, double x, double y, double z, World world) {
-        super(Entities.PROJECTILE, x, y, z, world);
+        super(x, y, z);
+        this.world = world;
         this.owner = owner;
     }
 
     @Override
-    public boolean hasCollisions() {
-        return true;
+    public double getCollisionRadius() {
+        return 1.0;
+    }
+
+    @Override
+    public EntityType getType() {
+        return Entities.PROJECTILE;
     }
 
     @Override
@@ -21,8 +32,7 @@ public class Projectile extends Mob {
             return;
         }
 
-        if (other.type == Entities.ASTEROID) {
-            assert(other instanceof Asteroid);
+        if (other instanceof Asteroid) {
             ((Asteroid)other).destroy();
         }
 

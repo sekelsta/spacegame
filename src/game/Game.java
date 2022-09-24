@@ -25,7 +25,7 @@ public class Game implements IGame {
         this.input = new Input();
         this.window.setInput(input);
         this.world = new World(input);
-        this.camera = new Camera(world.getPlayer().getPosition());
+        this.camera = new Camera(world.getPlayer());
         this.input.setCamera(camera);
         this.input.setPlayer(this.world.getPlayer());
     }

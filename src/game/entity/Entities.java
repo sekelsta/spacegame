@@ -1,5 +1,6 @@
 package sekelsta.game.entity;
 
+import sekelsta.engine.entity.EntityType;
 import sekelsta.game.render.entity.*;
 
 public class Entities {

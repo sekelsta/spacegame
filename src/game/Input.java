@@ -2,10 +2,8 @@ package sekelsta.game;
 
 import org.lwjgl.glfw.GLFW;
 import sekelsta.engine.InputManager;
-import sekelsta.engine.Position;
 import sekelsta.engine.render.Window;
 import sekelsta.game.entity.Controller;
-import sekelsta.game.entity.Mob;
 import sekelsta.game.entity.Spaceship;
 
 public class Input extends InputManager implements Controller {
@@ -29,12 +27,6 @@ public class Input extends InputManager implements Controller {
             if (key == GLFW.GLFW_KEY_X) {
                 player.fire();
             }
-            // DEBUG
-            if (key == GLFW.GLFW_KEY_P) {
-                Position p = player.getPosition();
-                p.accelerate(-1 * p.getVelocityX(), -1 * p.getVelocityY(), -1 * p.getVelocityZ());
-            }
-            // END DEBUG
         }
     }
 
@@ -86,7 +78,7 @@ public class Input extends InputManager implements Controller {
         System.out.println("joystick connect/disconnect");
     }
 
-    public void update(Mob mob) {
+    public void update() {
         if (window.isKeyDown(GLFW.GLFW_KEY_SPACE)) {
             player.thrust();
         }

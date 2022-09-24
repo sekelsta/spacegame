@@ -6,10 +6,10 @@ import org.lwjgl.opengl.GL11;
 
 import sekelsta.engine.render.*;
 import sekelsta.engine.Frustum;
+import sekelsta.engine.entity.Movable;
+import sekelsta.engine.entity.Entity;
 import sekelsta.game.Camera;
 import sekelsta.game.World;
-import sekelsta.game.entity.Entity;
-import sekelsta.game.entity.Mob;
 import sekelsta.game.render.entity.*;
 import sekelsta.math.Matrix3f;
 import sekelsta.math.Matrix4f;
@@ -65,15 +65,15 @@ public class Renderer implements IFramebufferSizeListener {
 
         for (Entity entity : world.getEntities()) {
             assert(entity != null);
-            assert(entity.type != null);
-            assert(entity.type.getRenderer() != null);
-            entity.type.getRenderer().render(this, entity, lerp, matrixStack);
+            assert(entity.getType() != null);
+            assert(entity.getType().getRenderer() != null);
+            entity.getType().getRenderer().render(this, entity, lerp, matrixStack);
         }
-        for (Mob entity : world.getMobs()) {
+        for (Movable entity : world.getMobs()) {
             assert(entity != null);
-            assert(entity.type != null);
-            assert(entity.type.getRenderer() != null);
-            entity.type.getRenderer().render(this, entity, lerp, matrixStack);
+            assert(entity.getType() != null);
+            assert(entity.getType().getRenderer() != null);
+            entity.getType().getRenderer().render(this, entity, lerp, matrixStack);
         }
         matrixStack.pop();
         // Set up for two-dimensional rendering
