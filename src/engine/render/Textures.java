@@ -1,4 +1,4 @@
-package sekelsta.game.render;
+package sekelsta.engine.render;
 
 import java.awt.Color;
 

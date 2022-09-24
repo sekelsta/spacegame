@@ -8,7 +8,6 @@ import sekelsta.engine.render.Texture;
 import sekelsta.engine.render.entity.EntityRenderer;
 import sekelsta.engine.render.mesh.RigidMesh;
 import sekelsta.game.entity.Asteroid;
-import sekelsta.game.render.Renderer;
 
 import sekelsta.tools.ObjParser;
 
@@ -27,11 +26,11 @@ public class AsteroidRenderer extends EntityRenderer {
     }
 
     @Override
-    public void render(Renderer renderer, Entity entity, float lerp, MatrixStack stack) {
+    public void render(Entity entity, float lerp, MatrixStack stack) {
         assert(entity instanceof Asteroid);
         Asteroid asteroid = (Asteroid)entity;
         this.mesh = mesh_variants[asteroid.getMeshVariant()];
         this.scale = asteroid.getSizeScale();
-        super.render(renderer, entity, lerp, stack);
+        super.render(entity, lerp, stack);
     }
 }

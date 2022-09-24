@@ -67,13 +67,13 @@ public class Renderer implements IFramebufferSizeListener {
             assert(entity != null);
             assert(entity.getType() != null);
             assert(entity.getType().getRenderer() != null);
-            entity.getType().getRenderer().render(this, entity, lerp, matrixStack);
+            entity.getType().getRenderer().render(entity, lerp, matrixStack);
         }
         for (Movable entity : world.getMobs()) {
             assert(entity != null);
             assert(entity.getType() != null);
             assert(entity.getType().getRenderer() != null);
-            entity.getType().getRenderer().render(this, entity, lerp, matrixStack);
+            entity.getType().getRenderer().render(entity, lerp, matrixStack);
         }
         matrixStack.pop();
         // Set up for two-dimensional rendering

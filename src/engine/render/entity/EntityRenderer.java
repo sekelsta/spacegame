@@ -3,8 +3,6 @@ package sekelsta.engine.render.entity;
 import sekelsta.engine.entity.Entity;
 import sekelsta.engine.render.*;
 import sekelsta.engine.render.mesh.*;
-import sekelsta.game.render.Renderer;
-import sekelsta.game.render.Textures;
 
 public abstract class EntityRenderer {
     protected Mesh mesh;
@@ -13,7 +11,7 @@ public abstract class EntityRenderer {
     protected Texture emission = Textures.BLACK;
     protected float scale = 1.0f;
 
-    public void render(Renderer renderer, Entity entity, float lerp, MatrixStack stack) {
+    public void render(Entity entity, float lerp, MatrixStack stack) {
         float x = entity.getInterpolatedX(lerp);
         float y = entity.getInterpolatedY(lerp);
         float z = entity.getInterpolatedZ(lerp);
