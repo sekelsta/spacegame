@@ -9,6 +9,7 @@ import sekelsta.game.entity.Spaceship;
 public class Input extends InputManager implements Controller {
     Camera camera;
     Spaceship player;
+    World world;
 
     public void setCamera(Camera camera) {
         this.camera = camera;
@@ -16,6 +17,10 @@ public class Input extends InputManager implements Controller {
 
     public void setPlayer(Spaceship player) {
         this.player = player;
+    }
+
+    public void setWorld(World world) {
+        this.world = world;
     }
 
     @Override
@@ -26,6 +31,9 @@ public class Input extends InputManager implements Controller {
             }
             if (key == GLFW.GLFW_KEY_X) {
                 player.fire();
+            }
+            if (key == GLFW.GLFW_KEY_P) {
+                world.togglePaused();
             }
         }
     }

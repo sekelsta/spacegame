@@ -68,17 +68,21 @@ public class Renderer implements IFramebufferSizeListener {
         // Move to camera coords
         camera.transform(matrixStack, lerp);
 
+        float realLerp = lerp;
+        if (world.isPaused()) {
+            realLerp = 0;
+        }
         for (Entity entity : world.getEntities()) {
             assert(entity != null);
             assert(entity.getType() != null);
             assert(entity.getType().getRenderer() != null);
-            entity.getType().getRenderer().render(entity, lerp, matrixStack);
+            entity.getType().getRenderer().render(entity, realLerp, matrixStack);
         }
         for (Movable entity : world.getMobs()) {
             assert(entity != null);
             assert(entity.getType() != null);
             assert(entity.getType().getRenderer() != null);
-            entity.getType().getRenderer().render(entity, lerp, matrixStack);
+            entity.getType().getRenderer().render(entity, realLerp, matrixStack);
         }
         matrixStack.pop();
         // Set up for two-dimensional rendering
@@ -88,7 +92,9 @@ public class Renderer implements IFramebufferSizeListener {
         // Render UI and HUD
         // DEBUG
         spriteBatch.setTexture(test);
-        spriteBatch.blit(0, 0, 512, 256, 0, 0);
+        if (world.isPaused()) {
+            spriteBatch.blit(0, 0, 512, 256, 0, 0);
+        }
         // END DEBUG
         spriteBatch.render();
     }

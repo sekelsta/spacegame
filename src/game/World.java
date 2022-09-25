@@ -8,6 +8,8 @@ import sekelsta.game.entity.*;
 public class World {
     private static final double spawnRadius = 1000;
 
+    private boolean paused;
+
     // TODO: Per-world initial seed
     Random random = new Random();
     Spaceship player;
@@ -26,7 +28,18 @@ public class World {
         this.mobs.add(this.player);
     }
 
+    public void togglePaused() {
+        paused = !paused;
+    }
+
+    public boolean isPaused() {
+        return paused;
+    }
+
     public void update() {
+        if (paused) {
+            return;
+        }
         // Spawn
         mobs.addAll(spawned);
         spawned.clear();
