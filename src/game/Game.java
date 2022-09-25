@@ -1,13 +1,11 @@
 package sekelsta.game;
 
-import java.util.Random;
 import sekelsta.engine.DataFolders;
 import sekelsta.engine.IGame;
 import sekelsta.engine.render.Window;
 import sekelsta.game.render.Renderer;
 
 public class Game implements IGame {
-    public static final Random RANDOM = new Random();
     private boolean running = true;
 
     private World world;
@@ -28,6 +26,7 @@ public class Game implements IGame {
         this.camera = new Camera(world.getPlayer());
         this.input.setCamera(camera);
         this.input.setPlayer(this.world.getPlayer());
+        this.input.setWorld(this.world);
     }
 
     public boolean isRunning() {
