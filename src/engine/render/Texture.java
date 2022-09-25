@@ -13,7 +13,9 @@ import org.lwjgl.system.MemoryUtil;
 
 public class Texture {
     private static final String TEXTURE_LOCATION = "/assets/textures/";
-    int handle;
+    private int handle;
+    private int width;
+    private int height;
 
     public Texture(String name) {
         BufferedImage image = ImageUtils.loadResource(TEXTURE_LOCATION + name);
@@ -42,11 +44,21 @@ public class Texture {
         bind();
         GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
         ByteBuffer pixels = ImageUtils.bufferedImageToByteBuffer(image);
-        GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, image.getWidth(), image.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, pixels);
+        this.width = image.getWidth();
+        this.height = image.getHeight();
+        GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, pixels);
         // TO_OPTIMIZE: set blend mode that doesn't expect mipmaps for these
         if (true || needsMipmaps) {
             GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
         }
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 
     public void bind() {

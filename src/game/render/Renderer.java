@@ -83,8 +83,8 @@ public class Renderer implements IFramebufferSizeListener {
         GL11.glDisable(GL11.GL_DEPTH_TEST);
         // Render UI and HUD
         // DEBUG
-        test.bind();
-        spriteBatch.blit(0, 0, 512, 256, 0, 0, 512, 512);
+        spriteBatch.setTexture(test);
+        spriteBatch.blit(0, 0, 512, 256, 0, 0);
         // END DEBUG
         spriteBatch.render();
     }
@@ -104,6 +104,7 @@ public class Renderer implements IFramebufferSizeListener {
         frustum.calcMatrix(perspective);
         Matrix4f.mul(coordinate_convert, perspective, perspective);
 
+        // This is the size of UI's canvas, so the scale is inversly proportional to actual element size
         float uiScale = 1.25f;
         uiDimensions.x = width * uiScale;
         uiDimensions.y = height * uiScale;

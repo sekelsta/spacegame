@@ -9,5 +9,5 @@ out vec2 texture_coord;
 void main()
 {
     texture_coord = in_texture;
-    gl_Position = vec4(position.x / dimensions.x * 2 - 1, position.y / dimensions.y * 2 - 1, 0.0, 1.0);
+    gl_Position = vec4(position.x / dimensions.x * 2 - 1, position.y / dimensions.y * 2 + 1, 0.0, 1.0);
 }
