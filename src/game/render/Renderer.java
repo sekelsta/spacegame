@@ -50,12 +50,16 @@ public class Renderer implements IFramebufferSizeListener {
         shader.setUniform("emission_sampler", 2);
 
         frustum.setFOV(Math.toRadians(30));
+
+        // Enable alpha blending (over)
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
     }
 
     public void render(float lerp, Camera camera, World world) {
-        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);        
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);    
+        // Set up for three-dimensional rendering    
         shader.use();
-        // Set up for three-dimensional rendering
         shader.setUniform("projection", perspective);
 
         GL11.glEnable(GL11.GL_DEPTH_TEST);
