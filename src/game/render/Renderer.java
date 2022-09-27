@@ -43,7 +43,6 @@ public class Renderer implements IFramebufferSizeListener {
     };
 
     public Renderer() {
-        GL11.glClearColor(0f, 0.2f, 0.6f, 0f);
         shader.use();
         shader.setUniform("texture_sampler", 0);
         shader.setUniform("specular_sampler", 1);
