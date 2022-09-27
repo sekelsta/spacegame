@@ -1,16 +1,13 @@
 package sekelsta.game;
 
-import sekelsta.game.entity.Controller;
+import sekelsta.engine.entity.Movable;
 
-public class RemotePlayer implements Controller {
+public class RemotePlayer extends RemoteController {
     public final long connectionID;
 
-    public RemotePlayer(long connectionID) {
+    public RemotePlayer(Movable entity, long connectionID) {
+        super(entity);
         this.connectionID = connectionID;
     }
-
-    @Override
-    public void update() {
-        // Do nothing
-    }
+        // TODO: prevent teleportation cheats
 }

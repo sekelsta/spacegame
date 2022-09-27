@@ -30,29 +30,6 @@ public class Connection {
     private Map<Integer, DatagramPacket> resendingPackets = new ConcurrentHashMap<>();
     private SortedSet<Integer> receivedPacketIDs = new TreeSet<>();
 
-    protected static class PacketHeader {
-        public final int packetID;
-        private boolean reliable = false;
-        public final Set<Integer> packetIDsToAck = new HashSet<>();
-
-        public PacketHeader(int packetID) {
-            this.packetID = packetID;
-        }
-
-        public int sizeInBytes() {
-            // packetID, reliable, packetIDsToAck.size(), each item in packetIDsToAck
-            return Integer.BYTES + 1 + Integer.BYTES + packetIDsToAck.size() * Integer.BYTES;
-        }
-
-        public void updateReliable(Message message) {
-            this.reliable = this.reliable || message.reliable();
-        }
-
-        public boolean isReliable() {
-            return reliable;
-        }
-    }
-
     private class RetryTask extends TimerTask {
         private int retriesSent;
         private int packetID;
@@ -158,38 +135,41 @@ public class Connection {
     }
 
     // Beware, this may be called from a different thread than everything else
-    public synchronized boolean readPacketHeader(ByteBuffer packetData) {
+    public synchronized MessageContext processPacketHeader(ByteBuffer packetData) {
         prepareHeader();
         if (header.sizeInBytes() + Integer.BYTES > BUFFER_SIZE) {
             preparePacket();
+            prepareHeader();
         }
-        prepareHeader();
-        int seq = packetData.getInt();
-        boolean reliable = packetData.get() != 0;
-        if (reliable) {
-            header.packetIDsToAck.add(seq);
+        PacketHeader inHeader = null;
+        try {
+            inHeader = new PacketHeader(packetData);
         }
-        if (seq < WRAP_POINT && receivedPacketIDs.first() > WRAP_POINT) {
+        catch (MessageParsingException e) {
+            return null;
+        }
+        if (inHeader.isReliable()) {
+            header.packetIDsToAck.add(inHeader.packetID);
+        }
+        if (inHeader.packetID < WRAP_POINT && receivedPacketIDs.first() > WRAP_POINT) {
             // Because we set it to its own tail, we aren't allowed to insert elements below the min value anymore
             SortedSet<Integer> oldSet = receivedPacketIDs;
             receivedPacketIDs = new TreeSet<>();
             receivedPacketIDs.addAll(oldSet);
         }
-        else if ((receivedPacketIDs.size() > 0 && seq < receivedPacketIDs.first()) 
-                || receivedPacketIDs.contains(seq)) {
+        else if ((receivedPacketIDs.size() > 0 && inHeader.packetID < receivedPacketIDs.first()) 
+                || receivedPacketIDs.contains(inHeader.packetID)) {
             // Skip duplicate packet
-            return false;
+            return null;
         }
-        receivedPacketIDs.add(seq);
+        receivedPacketIDs.add(inHeader.packetID);
 
-        int numAcks = packetData.getInt();
         synchronized (resendingPackets) {
-            for (int i = 0; i < numAcks; ++i) {
-                int acked = packetData.getInt();
+            for (int acked : inHeader.packetIDsToAck) {
                 resendingPackets.remove(acked);
             }
         }
-        return true;
+        return inHeader.context;
     }
 
     public synchronized void flush(DatagramSocket socket) throws IOException {
@@ -265,12 +245,7 @@ public class Connection {
 
     private synchronized void preparePacket(int length) {
         ByteBuffer packetBuffer = ByteBuffer.allocate(BUFFER_SIZE);
-        packetBuffer.putInt(header.packetID);
-        packetBuffer.put((byte)(header.isReliable()? 1 : 0));
-        packetBuffer.putInt(header.packetIDsToAck.size());
-        for (int num : header.packetIDsToAck) {
-            packetBuffer.putInt(num);
-        }
+        header.write(packetBuffer);
 
         if (buffer != null && length > 0) {
             packetBuffer.put(buffer.array(), 0, length);

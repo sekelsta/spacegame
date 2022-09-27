@@ -13,6 +13,8 @@ import sekelsta.engine.Log;
 import sekelsta.engine.network.Message;
 
 public class NetworkManager {
+    public static MessageContext context = null;
+
     private NetworkListener listener;
     private MessageRegistry registry = new MessageRegistry();
     protected NetworkDirection acceptDirection = NetworkDirection.CLIENT_TO_SERVER;

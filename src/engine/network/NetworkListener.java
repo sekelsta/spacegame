@@ -53,8 +53,8 @@ public class NetworkListener extends Thread {
         ByteBuffer buffer = ByteBuffer.wrap(data, 0, length);
 
         Connection connection = networkManager.getOrCreateConnection(socketAddress);
-        boolean shouldProcess = connection.readPacketHeader(buffer);
-        if (!shouldProcess) {
+        MessageContext context = connection.processPacketHeader(buffer);
+        if (context == null) {
             return;
         }
         connection.markAlive();
@@ -75,6 +75,7 @@ public class NetworkListener extends Thread {
                 try {
                     message.decode(buffer);
                     message.sender = connection;
+                    message.context = context;
                     messages.add(message);
                 }
                 catch (Exception e) {

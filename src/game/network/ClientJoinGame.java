@@ -42,7 +42,9 @@ public class ClientJoinGame extends Message {
         World world = ((Game)game).getWorld();
 
         // Spawn new player
-        Spaceship newPlayer = new Spaceship(0, 0, 0, new RemotePlayer(sender.getID()));
+        Spaceship newPlayer = new Spaceship(0, 0, 0);
+        RemotePlayer controller = new RemotePlayer(newPlayer, sender.getID());
+        newPlayer.setController(controller);
         newPlayer.skin = skin;
         world.spawn(newPlayer);
         ServerGivePawn message = new ServerGivePawn(newPlayer.getID());

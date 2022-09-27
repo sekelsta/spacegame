@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 
 public abstract class Message {
     public Connection sender;
+    public MessageContext context;
 
     public boolean requiresConfirmedAddress() {
         return true;

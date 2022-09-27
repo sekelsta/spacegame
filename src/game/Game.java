@@ -89,12 +89,15 @@ public class Game implements ILoopable, INetworked {
     }
 
     public void allowConnections(int port) {
+        NetworkManager.context = new GameContext(-1);
         assert(networkManager == null);
         networkManager = new NetworkManager(port);
         networkManager.registerMessageType(ClientJoinGame::new);
+        networkManager.registerMessageType(ServerSetWorldTick::new);
         networkManager.registerMessageType(ServerSpawnEntity::new);
         networkManager.registerMessageType(ServerGivePawn::new);
         networkManager.registerMessageType(ServerRemoveEntity::new);
+        networkManager.registerMessageType(MobUpdate::new);
         networkManager.start();
     }
 
@@ -113,6 +116,12 @@ public class Game implements ILoopable, INetworked {
             world.update();
         }
         if (networkManager != null) {
+            if (world != null) {
+                ((GameContext)NetworkManager.context).tick = world.getCurrentTick();
+                if (world.getLocalPlayer() != null && !world.authoritative) {
+                    networkManager.queueBroadcast(new MobUpdate(world.getLocalPlayer()));
+                }
+            }
             networkManager.update(this);
         }
     }
@@ -161,6 +170,7 @@ public class Game implements ILoopable, INetworked {
     @Override
     public void clientConnectionAccepted(Connection client) {
         Log.info("Accepted connection " + client.getID());
+        networkManager.queueMessage(client, new ServerSetWorldTick());
         // Send info about all existing entities
         for (Movable mob : world.getMobs()) {
             ServerSpawnEntity message = new ServerSpawnEntity(mob);

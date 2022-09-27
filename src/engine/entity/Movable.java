@@ -12,6 +12,7 @@ public abstract class Movable implements Entity {
     private static final float FLOAT_PI = (float)Math.PI;
     private int id = -1;
     protected IEntitySpace world;
+    protected IController controller = null;
     private double x, y, z;
     private double prevX, prevY, prevZ;
     private int velocityX, velocityY, velocityZ;
@@ -76,6 +77,28 @@ public abstract class Movable implements Entity {
         buffer.putFloat(angularDrag);
     }
 
+    public void updateFrom(Movable other) {
+        this.x = other.x;
+        this.y = other.y;
+        this.z = other.z;
+        // Skip prevX, prevY, prevZ
+        this.velocityX = other.velocityX;
+        this.velocityY = other.velocityY;
+        this.velocityZ = other.velocityZ;
+        this.yaw = other.yaw;
+        this.pitch = other.pitch;
+        this.roll = other.roll;
+        // Skip prevYaw, prevPitch, prevRoll
+        this.angularVelocityX = other.angularVelocityX;
+        this.angularVelocityY = other.angularVelocityY;
+        this.angularVelocityZ = other.angularVelocityZ;
+    }
+
+    public void updateFromLate(Movable other, int ticksLate) {
+        // TODO: Better way of handling this???
+        updateFrom(other);
+    }
+
     @Override
     public int getID() {
         return id;
@@ -90,10 +113,30 @@ public abstract class Movable implements Entity {
         this.world = world;
     }
 
+    public final IEntitySpace getWorld() {
+        return world;
+    }
+
+    public void setController(IController controller) {
+        this.controller = controller;
+    }
+
+    public IController getController() {
+        return controller;
+    }
+
     public void update() {
+        if (controller != null)
+        {
+            controller.preUpdate();
+        }
         tick();
         scaleVelocity(drag);
         scaleAngularVelocity(angularDrag);
+        if (controller != null)
+        {
+            controller.postUpdate();
+        }
     }
 
     public boolean mayDespawn() {

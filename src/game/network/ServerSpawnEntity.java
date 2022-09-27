@@ -4,11 +4,10 @@ import java.nio.ByteBuffer;
 
 import sekelsta.engine.entity.Entity;
 import sekelsta.engine.entity.EntityType;
-import sekelsta.engine.network.ByteVector;
-import sekelsta.engine.network.INetworked;
-import sekelsta.engine.network.Message;
-import sekelsta.engine.network.NetworkDirection;
+import sekelsta.engine.entity.Movable;
+import sekelsta.engine.network.*;
 import sekelsta.game.Game;
+import sekelsta.game.RemoteController;
 
 public class ServerSpawnEntity extends Message {
     private Entity entity;
@@ -39,7 +38,10 @@ public class ServerSpawnEntity extends Message {
 
     @Override
     public void handle(INetworked game) {
-        assert(game instanceof Game);
+        if (entity instanceof Movable) {
+            Movable mob = (Movable)entity;
+            mob.setController(new RemoteController(mob));
+        }
         ((Game)game).getWorld().spawn(entity);
     }
 }

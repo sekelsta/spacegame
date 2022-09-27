@@ -2,11 +2,11 @@ package sekelsta.game;
 
 import org.lwjgl.glfw.GLFW;
 import sekelsta.engine.InputManager;
+import sekelsta.engine.entity.IController;
 import sekelsta.engine.render.Window;
-import sekelsta.game.entity.Controller;
 import sekelsta.game.entity.Spaceship;
 
-public class Input extends InputManager implements Controller {
+public class Input extends InputManager implements IController {
     Camera camera;
     Spaceship player;
     World world;
@@ -86,7 +86,8 @@ public class Input extends InputManager implements Controller {
         System.out.println("joystick connect/disconnect");
     }
 
-    public void update() {
+    @Override
+    public void preUpdate() {
         if (window.isKeyDown(GLFW.GLFW_KEY_SPACE)) {
             player.thrust();
         }

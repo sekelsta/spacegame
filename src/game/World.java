@@ -7,6 +7,7 @@ import sekelsta.engine.entity.*;
 import sekelsta.game.entity.*;
 import sekelsta.game.network.ServerSpawnEntity;
 import sekelsta.game.network.ServerRemoveEntity;
+import sekelsta.game.network.MobUpdate;
 import sekelsta.math.Vector3f;
 
 public class World implements IEntitySpace {
@@ -14,6 +15,7 @@ public class World implements IEntitySpace {
     private static final int MOB_CAP = 800;
 
     public final boolean authoritative;
+    private long tick = 0;
     private boolean paused;
 
     private Random random = new Random();
@@ -37,7 +39,7 @@ public class World implements IEntitySpace {
         this.mobs = new ArrayList<>();
     }
 
-    public void spawnLocalPlayer(Controller playerController) {
+    public void spawnLocalPlayer(IController playerController) {
         this.localPlayer = new Spaceship(0, 0, 0, playerController);
         localPlayer.skin = random.nextInt(Spaceship.NUM_SKINS);
         this.spawn(this.localPlayer);
@@ -75,6 +77,10 @@ public class World implements IEntitySpace {
 
         for (Movable mob : mobs) {
             mob.update();
+            if (isNetworkServer()) {
+                MobUpdate message = new MobUpdate(mob);
+                game.getNetworkManager().queueBroadcast(message);
+            }
         }
 
         List<Movable> collidableMobs = mobs.stream().filter(mob -> mob instanceof ICollider).collect(Collectors.toList());
@@ -106,6 +112,7 @@ public class World implements IEntitySpace {
             }
         }
         killed.clear();
+        tick += 1;
     }
 
     public List<Movable> getMobs() {
@@ -183,6 +190,20 @@ public class World implements IEntitySpace {
 
     public Random getRandom() {
         return random;
+    }
+
+    public long getCurrentTick() {
+        return tick;
+    }
+
+    public void setTickIfClient(long tick) {
+        if (authoritative) {
+            return;
+        }
+        if (game.getNetworkManager() == null) {
+            return;
+        }
+        this.tick = tick;
     }
 
     private boolean isNetworkServer() {
