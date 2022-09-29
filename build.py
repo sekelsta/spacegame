@@ -44,6 +44,7 @@ def count():
     print('Total lines of code: ' + str(total_lines))
 
 def build():
+    clean()
     if not os.path.isdir(output_directory):
         os.mkdir(output_directory)
     sources = ' '
@@ -64,17 +65,19 @@ def run(args):
     os.system(command) 
 
 if len(sys.argv) <= 1:
-    clean()
     if build():
         run('')
 else:
-    for task in sys.argv[1:]:
-        if task == 'clean':
-            clean()
-        elif task == 'count':
+    for (i, task) in enumerate(sys.argv[1:]):
+        if task == 'count':
             count();
         elif task == 'build':
-            build()
+            if not build():
+                break
         elif task == 'run':
-            args = ' '.join(sys.argv[2:])
+            args = ' '.join(sys.argv[i+2:])
             run(args)
+            break
+        else:
+            print('Unrecognized task: ' + task)
+            break
