@@ -71,12 +71,6 @@ public class Renderer implements IFramebufferSizeListener {
         if (world.isPaused()) {
             realLerp = 0;
         }
-        for (Entity entity : world.getEntities()) {
-            assert(entity != null);
-            assert(entity.getType() != null);
-            assert(entity.getType().getRenderer() != null);
-            entity.getType().getRenderer().render(entity, realLerp, matrixStack);
-        }
         for (Movable entity : world.getMobs()) {
             assert(entity != null);
             assert(entity.getType() != null);

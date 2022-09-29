@@ -14,8 +14,6 @@ public class World {
     Random random = new Random();
     Spaceship player;
     List<Movable> mobs;
-    // For entities that don't need to update
-    List<Entity> entities;
 
     // Mobs to add/remove, to avoid concurrent modififation while updating
     List<Movable> killed = new ArrayList<>();
@@ -24,7 +22,6 @@ public class World {
     public World(Controller playerController) {
         this.player = new Spaceship(0, 0, 0, this, playerController);
         this.mobs = new ArrayList<>();
-        this.entities = new ArrayList<>(); // TODO: Unused, remove / change w/ mobs
         this.mobs.add(this.player);
     }
 
@@ -91,10 +88,6 @@ public class World {
 
     public List<Movable> getMobs() {
         return mobs;
-    }
-
-    public List<Entity> getEntities() {
-        return entities;
     }
 
     public Spaceship getPlayer() {
