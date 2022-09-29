@@ -153,7 +153,7 @@ public class Vector3f {
             v.y = 2f * random.nextFloat() - 1f;
             v.z = 2f * random.nextFloat() - 1f;
         }
-        while (v.length() > 1f && (v.x != 0f || v.y != 0f || v.z != 0f));
+        while (v.length() > 1f || (v.x == 0f && v.y == 0f && v.z == 0f));
         return v;
     }
 }
