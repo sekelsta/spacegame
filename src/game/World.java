@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import sekelsta.engine.entity.*;
 import sekelsta.game.entity.*;
+import sekelsta.math.Vector3f;
 
 public class World {
     private static final double spawnRadius = 1000;
@@ -11,18 +12,22 @@ public class World {
     private boolean paused;
 
     // TODO: Per-world initial seed
-    Random random = new Random();
-    Spaceship player;
-    List<Movable> mobs;
+    private Random random = new Random();
+    private List<Movable> mobs;
 
     // Mobs to add/remove, to avoid concurrent modififation while updating
-    List<Movable> killed = new ArrayList<>();
-    List<Movable> spawned = new ArrayList<>();
+    private List<Movable> killed = new ArrayList<>();
+    private List<Movable> spawned = new ArrayList<>();
 
-    public World(Controller playerController) {
-        this.player = new Spaceship(0, 0, 0, this, playerController);
+    private Spaceship localPlayer;
+
+    public World() {
         this.mobs = new ArrayList<>();
-        this.mobs.add(this.player);
+    }
+
+    public void spawnLocalPlayer(Controller playerController) {
+        this.localPlayer = new Spaceship(0, 0, 0, this, playerController);
+        this.spawn(this.localPlayer);
     }
 
     public void togglePaused() {
@@ -42,23 +47,9 @@ public class World {
         spawned.clear();
         // TODO: asteroid spawn conditions
         if (true) {
-            double spawnX = 0;
-            double spawnY = 0;
-            double spawnZ = 0;
-            boolean farEnough = false;
-            while (!farEnough) {
-                spawnX = (random.nextDouble() - 0.5) * 2 * spawnRadius;
-                spawnY = (random.nextDouble() - 0.5) * 2 * spawnRadius;
-                spawnZ = (random.nextDouble() - 0.5) * 2 * spawnRadius;
-
-                farEnough = this.player.distSquared(spawnX, spawnY, spawnZ) > spawnRadius * spawnRadius / 100;
-            }
-
-            spawnX += this.player.getX();
-            spawnY += this.player.getY();
-            spawnZ += this.player.getZ();
-
-            Asteroid asteroid = new Asteroid(spawnX, spawnY, spawnZ, this);
+            Vector3f spawn = Vector3f.randomNonzero(new Vector3f(), random);
+            spawn.scale((float)spawnRadius);
+            Asteroid asteroid = new Asteroid(spawn.x, spawn.y, spawn.z, this);
             asteroid.setRandomVelocity();
             this.spawn(asteroid);
         }
@@ -83,18 +74,19 @@ public class World {
         mobs.removeAll(killed);
         killed.clear();
         // Despawn
-        mobs.removeIf(mob -> mob.distSquared(player) > 100 * spawnRadius * spawnRadius);
+        mobs.removeIf(mob -> mob.distSquared(0, 0, 0) > 100 * spawnRadius * spawnRadius);
     }
 
     public List<Movable> getMobs() {
         return mobs;
     }
 
-    public Spaceship getPlayer() {
-        return player;
+    public Spaceship getLocalPlayer() {
+        return localPlayer;
     }
 
     public Movable spawn(Movable mob) {
+        assert(mob != null);
         this.spawned.add(mob);
         return mob;
     }

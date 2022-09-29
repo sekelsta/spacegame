@@ -1,10 +1,82 @@
 package sekelsta.game;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import sekelsta.engine.Gameloop;
+import sekelsta.engine.Log;
 
 public class Main {
+    private static int DEFAULT_FRAME_CAP = 120;
+    private static int DEFAULT_PORT = 7654;
+
     public static void main(String[] args) {
-        Game game = new Game();
-        new Gameloop(game, 120).run();
+        int port = DEFAULT_PORT;
+        if (args.length == 0 || args[0].equals("singleplayer")) {
+            runSingleplayer();
+        }
+        else if (args[0].equals("integrated")) {
+            if (args.length > 1) {
+                port = Integer.parseInt(args[1]);
+            }
+            runIntegrated(port);
+        }
+        else if (args[0].equals("server")) {
+            if (args.length > 1) {
+                port = Integer.parseInt(args[1]);
+            }
+            runServer(port);
+        }
+        else if (args[0].equals("client")) {
+            if (args.length < 2) {
+                System.out.println("IP address of host required");
+                System.exit(1);
+            }
+            String address = args[1];
+            if (args.length > 2) {
+                port = Integer.parseInt(args[2]);
+            }
+            runClient(address, port);
+        }
+        else {
+            System.out.println("Unknown arguments, use server [port] or client [ipaddress] [port]\n" 
+                             + "Port is optional and defaults to " + DEFAULT_PORT);
+            System.exit(1);
+        }
+    }
+
+    public static void runSingleplayer() {
+        Game game = new Game(true);
+        new Gameloop(game, DEFAULT_FRAME_CAP).run();
+    }
+
+    public static void runIntegrated(int port) {
+        Log.info("Integrated client-server listening on port " + port);
+        Game game = new Game(true);
+        game.allowConnections(port);
+        new Gameloop(game, DEFAULT_FRAME_CAP).run();
+    }
+
+    public static void runClient(String address, int port) {
+        Log.info("Connecting client to " + address + " port " + port);
+
+        InetAddress netAddress = null;
+        try {
+            netAddress = InetAddress.getByName(address);
+        }
+        catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
+
+        Game game = new Game(true);
+        game.joinServer(netAddress, port);
+        new Gameloop(game, DEFAULT_FRAME_CAP).run();
+    }
+
+    public static void runServer(int port) {
+        Log.info("Starting server for port " + port);
+        Game game = new Game(false);
+        game.allowConnections(port);
+        new Gameloop(game, 1).run();
     }
 }
