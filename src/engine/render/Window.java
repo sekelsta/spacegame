@@ -36,6 +36,7 @@ public class Window {
     private boolean focused;
     private boolean fullscreen;
     private String initialConfigPath;
+    private static Thread mainThread;
 
     // Cached values from before entering fullscreen
     // The GLFW function to update these values takes arrays (or IntBuffers)
@@ -51,6 +52,7 @@ public class Window {
         if (!GLFW.glfwInit()) {
 			throw new IllegalStateException("Failed to initialize GLFW");
         }
+        mainThread = Thread.currentThread();
         Log.info("Initialized GLFW " + GLFW.glfwGetVersionString());
 
         GLFW.glfwSetErrorCallback((error, description) -> handleError(error, description));
@@ -185,6 +187,10 @@ public class Window {
     }
 
     public void close() {
+        if (Thread.currentThread() != mainThread) {
+            throw new RuntimeException("Window was closed from the wrong thread");
+        }
+
         boolean maximized = isMaximized();
 
 		// Free the window callbacks and destroy the window
