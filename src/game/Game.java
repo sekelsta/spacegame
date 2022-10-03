@@ -1,9 +1,10 @@
 package sekelsta.game;
 
-import java.net.InetAddress;
+import java.net.InetSocketAddress;
 
 import sekelsta.engine.DataFolders;
 import sekelsta.engine.IGame;
+import sekelsta.engine.network.NetworkManager;
 import sekelsta.engine.render.Window;
 import sekelsta.game.render.Renderer;
 
@@ -15,6 +16,7 @@ public class Game implements IGame {
     private Renderer renderer;
     private Input input;
     private Camera camera;
+    private NetworkManager networkManager;
 
     public Game(boolean graphical) {
         String appName = "MySpaceGame";
@@ -38,19 +40,29 @@ public class Game implements IGame {
         return running && (window == null || !window.shouldClose());
     }
 
-    public void allowConnections(int port) {
-        throw new RuntimeException("TODO: allowConnections() not implemented");
+    public NetworkManager getNetworkManager() {
+        return networkManager;
     }
 
-    public void joinServer(InetAddress address, int port) {
-        throw new RuntimeException("TODO: joinServer() not implemented");
+    public void allowConnections(int port) {
+        assert(networkManager == null);
+        networkManager = new NetworkManager(port);
+        // TODO: Register messages
+        networkManager.start();
+    }
+
+    public void joinServer(InetSocketAddress socketAddress) {
+        allowConnections(0);
+        networkManager.joinServer(socketAddress);
     }
 
     public void update() {
-        // TODO: handle networking
         world.update();
         if (window != null) {
             window.updateInput();
+        }
+        if (networkManager != null) {
+            networkManager.update(this);
         }
     }
 
@@ -64,9 +76,16 @@ public class Game implements IGame {
     }
 
     public void close() {
+        if (!running) {
+            // Already closed
+            return;
+        }
         running = false;
         if (window != null) {
             window.close();
+        }
+        if (networkManager != null) {
+            networkManager.close();
         }
     }
 }

@@ -1,6 +1,7 @@
 package sekelsta.game;
 
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 
 import sekelsta.engine.Gameloop;
@@ -69,7 +70,7 @@ public class Main {
         }
 
         Game game = new Game(true);
-        game.joinServer(netAddress, port);
+        game.joinServer(new InetSocketAddress(netAddress, port));
         new Gameloop(game, DEFAULT_FRAME_CAP).run();
     }
 
