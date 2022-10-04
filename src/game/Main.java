@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 
+import sekelsta.engine.DataFolders;
 import sekelsta.engine.Gameloop;
 import sekelsta.engine.Log;
 
@@ -12,6 +13,8 @@ public class Main {
     private static int DEFAULT_PORT = 7654;
 
     public static void main(String[] args) {
+        DataFolders.init(Game.GAME_ID);
+        Log.info("Starting " + Game.GAME_ID + " " + Game.VERSION + " with args: " + String.join(" ", args));
         int port = DEFAULT_PORT;
         if (args.length == 0 || args[0].equals("singleplayer")) {
             runSingleplayer();

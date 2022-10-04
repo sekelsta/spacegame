@@ -4,11 +4,15 @@ import java.net.InetSocketAddress;
 
 import sekelsta.engine.DataFolders;
 import sekelsta.engine.IGame;
+import sekelsta.engine.SoftwareVersion;
 import sekelsta.engine.network.NetworkManager;
 import sekelsta.engine.render.Window;
 import sekelsta.game.render.Renderer;
 
 public class Game implements IGame {
+    public static final SoftwareVersion VERSION = new SoftwareVersion(0, 0, 0);
+    public static final String GAME_ID = "MySpaceGame";
+
     private boolean running = true;
 
     private World world;
@@ -19,11 +23,9 @@ public class Game implements IGame {
     private NetworkManager networkManager;
 
     public Game(boolean graphical) {
-        String appName = "MySpaceGame";
-        DataFolders.init(appName);
         this.world = new World();
         if (graphical) {
-            this.window = new Window(DataFolders.getUserMachineFolder("initconfig.toml"), appName);
+            this.window = new Window(DataFolders.getUserMachineFolder("initconfig.toml"), GAME_ID);
             this.renderer = new Renderer();
             this.window.setResizeListener(renderer);
             this.input = new Input();
