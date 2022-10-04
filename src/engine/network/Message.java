@@ -8,6 +8,8 @@ import sekelsta.engine.IGame;
 public abstract class Message {
     public InetSocketAddress sender;
 
+    public abstract NetworkDirection getDirection();
+
     public abstract void encode(ByteBuffer buffer);
 
     public abstract void decode(ByteBuffer buffer);

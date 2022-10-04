@@ -5,6 +5,10 @@ public class Log {
         System.out.println(m);
     }
 
+    public static void debug(String m) {
+        System.out.println(m);
+    }
+
     public static void info(String m) {
         System.out.println(m);
     }

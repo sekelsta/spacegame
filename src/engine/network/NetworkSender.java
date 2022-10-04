@@ -26,7 +26,13 @@ public class NetworkSender {
     }
 
     public void addBroadcastRecipient(InetSocketAddress socketAddress) {
-        broadcastRecipients.add(socketAddress);
+        if (!isBroadcastRecipient(socketAddress)) {
+            broadcastRecipients.add(socketAddress);
+        }
+    }
+
+    public boolean isBroadcastRecipient(InetSocketAddress socketAddress) {
+        return broadcastRecipients.contains(socketAddress);
     }
 
     public void queueBroadcast(Message message) {
@@ -70,5 +76,4 @@ public class NetworkSender {
             throw new RuntimeException(e);
         }
     }
-
 }

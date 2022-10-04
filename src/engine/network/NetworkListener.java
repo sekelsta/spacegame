@@ -58,7 +58,7 @@ public class NetworkListener extends Thread {
                 message = registry.createMessage(messageType);
             }
             catch (Exception e) {
-                Log.info("Exception while handling packet metadata (sent from " + socketAddress + "):\n    " + e);
+                Log.debug("Exception while handling packet metadata (sent from " + socketAddress + "):\n    " + e);
                 break;
             }
 
@@ -69,7 +69,7 @@ public class NetworkListener extends Thread {
                     messages.add(message);
                 }
                 catch (Exception e) {
-                    Log.info("Exception while reading packet (sent from " + socketAddress + "):\n    " + e);
+                    Log.debug("Exception while reading packet (sent from " + socketAddress + "):\n    " + e);
                     break;
                 }
             }
