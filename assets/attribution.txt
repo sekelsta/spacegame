@@ -16,11 +16,6 @@ https://opengameart.org/content/tileable-rock-texture-3
 nublet
 CC0
 
-spaceship
-https://opengameart.org/content/low-poly-space-ship-180-triangles
-Gundy
-CC-BY-SA 4.0
-
 misc textures
 https://opengameart.org/content/100-seamless-textures
 Mitch Featherston

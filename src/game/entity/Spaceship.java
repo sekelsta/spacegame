@@ -7,11 +7,13 @@ import sekelsta.engine.entity.Movable;
 import sekelsta.game.World;
 
 public class Spaceship extends Movable implements ICollider {
+    public static final int NUM_SKINS = 3;
     int shootSpeed = (int)Movable.RESOLUTION;
     private final int angularAcceleration = (int)(Movable.ANGLE_RESOLUTION / 1024);
 
     protected final Controller controller;
     private final World world;
+    public int skin;
 
     public Spaceship(int x, int y, int z, World world) {
         this(x, y, z, world, null);

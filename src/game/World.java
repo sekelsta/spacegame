@@ -27,6 +27,7 @@ public class World {
 
     public void spawnLocalPlayer(Controller playerController) {
         this.localPlayer = new Spaceship(0, 0, 0, this, playerController);
+        localPlayer.skin = random.nextInt(Spaceship.NUM_SKINS);
         this.spawn(this.localPlayer);
     }
 
