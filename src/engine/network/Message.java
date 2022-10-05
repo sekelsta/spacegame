@@ -10,13 +10,13 @@ public abstract class Message {
 
     public abstract NetworkDirection getDirection();
 
-    public abstract void encode(ByteBuffer buffer);
+    public abstract void encode(ByteVector buffer);
 
     public abstract void decode(ByteBuffer buffer);
 
     public abstract void handle(IGame game);
 
-    protected static void writeString(ByteBuffer buffer, String s) {
+    protected static void writeString(ByteVector buffer, String s) {
         buffer.putInt(s.length());
         for (char c : s.toCharArray()) {
             buffer.putChar(c);

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,8 +14,8 @@ public class NetworkSender {
     private DatagramSocket socket;
     private MessageRegistry registry;
 
-    private Map<InetSocketAddress, ByteBuffer> queuedIndividualMessages = new HashMap<>();
-    private ByteBuffer broadcastBuffer = ByteBuffer.allocate(BUFFER_SIZE);
+    private Map<InetSocketAddress, ByteVector> queuedIndividualMessages = new HashMap<>();
+    private ByteVector broadcastBuffer = new ByteVector(BUFFER_SIZE);
 
     private ArrayList<InetSocketAddress> broadcastRecipients = new ArrayList<>();
 
@@ -41,19 +40,20 @@ public class NetworkSender {
 
     public void queueMessage(InetSocketAddress receiver, Message message) {
         if (!queuedIndividualMessages.containsKey(receiver)) {
-            queuedIndividualMessages.put(receiver, ByteBuffer.allocate(BUFFER_SIZE));
+            queuedIndividualMessages.put(receiver, new ByteVector(BUFFER_SIZE));
         }
         queueMessage(queuedIndividualMessages.get(receiver), message);
     }
 
-    private void queueMessage(ByteBuffer outBuffer, Message message) {
+    private void queueMessage(ByteVector outBuffer, Message message) {
         int type = registry.getMessageType(message);
-        // TODO: gracefully handle the buffer filling up
         outBuffer.putInt(type);
         message.encode(outBuffer);
     }
 
     public void flush() {
+        // TO_OPTIMIZE: Break up large packets so that IP fragmentation doesn't have to do it for us
+        // TO_OPTIMIZE: If small enough, the packet for everyone can be merged into the packets for specific clients
         if (broadcastBuffer.position() != 0) {
             for (InetSocketAddress connection : broadcastRecipients) {
                 sendToConnection(connection, broadcastBuffer);
@@ -61,13 +61,17 @@ public class NetworkSender {
             broadcastBuffer.clear();
         }
 
-        for (Map.Entry<InetSocketAddress, ByteBuffer> entry : queuedIndividualMessages.entrySet()) {
+        for (Map.Entry<InetSocketAddress, ByteVector> entry : queuedIndividualMessages.entrySet()) {
             sendToConnection(entry.getKey(), entry.getValue());
         }
         queuedIndividualMessages.clear();
     }
 
-    private void sendToConnection(InetSocketAddress connection, ByteBuffer buffer) {
+    private void sendToConnection(InetSocketAddress connection, ByteVector buffer) {
+        if (buffer.array().length >= 64 * 1024) {
+            // TODO: Prevent this from ever, even theoretically, happening
+            throw new RuntimeException("Trying to send a packet that is too large for UDP.");
+        }
         DatagramPacket dataPacket = new DatagramPacket(buffer.array(), buffer.position(), connection.getAddress(), connection.getPort());
         try {
             socket.send(dataPacket);

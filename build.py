@@ -9,6 +9,7 @@ lwjgl_directory = '../lwjgl-3.2.3'
 #other_libs = ['../lwjgl-2.9.3/jar/lwjgl_util.jar']
 other_libs = ['libs/*']
 main_class = 'sekelsta.game.Main'
+test_class = 'sekelsta.test.Main'
 output_directory = 'bin'
 source_directory = 'src'
 # ':' on Linux, ';' on Windows
@@ -58,15 +59,15 @@ def build():
     print(command)
     return os.system(command) == 0
 
-def run(args):
+def run(main_class, args):
     command = 'java -ea -cp ' + classpath \
         + output_directory + path_separator + ' ' + main_class + ' ' + args
     print(command)
-    os.system(command) 
+    os.system(command)
 
 if len(sys.argv) <= 1:
     if build():
-        run('')
+        run(main_class, '')
 else:
     for (i, task) in enumerate(sys.argv[1:]):
         if task == 'count':
@@ -76,7 +77,11 @@ else:
                 break
         elif task == 'run':
             args = ' '.join(sys.argv[i+2:])
-            run(args)
+            run(main_class, args)
+            break
+        elif task == 'test':
+            args = ' '.join(sys.argv[i+2:])
+            run(test_class, args)
             break
         else:
             print('Unrecognized task: ' + task)
