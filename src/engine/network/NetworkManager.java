@@ -11,9 +11,10 @@ import sekelsta.engine.network.Message;
 
 public class NetworkManager {
     private NetworkListener listener;
-    private NetworkSender sender;
+    protected NetworkSender sender;
+    protected int port;
     private MessageRegistry registry = new MessageRegistry();
-    private NetworkDirection acceptDirection = NetworkDirection.CLIENT_TO_SERVER;
+    protected NetworkDirection acceptDirection = NetworkDirection.CLIENT_TO_SERVER;
 
     public NetworkManager(int port) {
         DatagramSocket socket = null;
@@ -25,6 +26,7 @@ public class NetworkManager {
         }
         this.listener = new NetworkListener(registry, socket);
         this.sender = new NetworkSender(registry, socket);
+        this.port = socket.getLocalPort();
     }
 
     public void registerMessageType(Supplier<Message> messageSupplier) {
@@ -40,12 +42,15 @@ public class NetworkManager {
         sender.flush();
         while (listener.hasMessage()) {
             Message message = listener.popMessage();
-            if (message.getDirection() == acceptDirection || message.getDirection() == NetworkDirection.BIDIRECTIONAL) {
-                message.handle(game);
-            }
-            else {
+            if (message.getDirection() != acceptDirection && message.getDirection() != NetworkDirection.BIDIRECTIONAL) {
                 Log.debug("Received message of invalid type: " + message);
+                continue;
             }
+            if (message.requiresConnection() && !isBroadcastRecipient(message.sender)) {
+                Log.debug("Received message from invalid sender: " + message);
+                continue;
+            }
+            message.handle(game);
         }
     }
 

@@ -1,4 +1,4 @@
-package sekelsta.test;
+package sekelsta.test.engine;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
