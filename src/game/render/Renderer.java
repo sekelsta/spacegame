@@ -53,10 +53,13 @@ public class Renderer implements IFramebufferSizeListener {
         // Enable alpha blending (over)
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
+        GL11.glEnable(GL11.GL_CULL_FACE);
     }
 
     public void render(float lerp, Camera camera, World world) {
-        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);    
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+
         // Set up for three-dimensional rendering    
         shader.use();
         shader.setUniform("projection", perspective);
@@ -78,6 +81,7 @@ public class Renderer implements IFramebufferSizeListener {
             entity.getType().getRenderer().render(entity, realLerp, matrixStack);
         }
         matrixStack.pop();
+
         // Set up for two-dimensional rendering
         shader2D.use();
         shader2D.setUniform("dimensions", uiDimensions);
