@@ -11,7 +11,7 @@ import sekelsta.game.entity.Spaceship;
 
 import sekelsta.tools.ObjParser;
 
-public class SpaceshipRenderer extends EntityRenderer {
+public final class SpaceshipRenderer extends EntityRenderer<Spaceship> {
     private Texture[] skins = new Texture[Spaceship.NUM_SKINS];
 
     public SpaceshipRenderer() {
@@ -22,10 +22,8 @@ public class SpaceshipRenderer extends EntityRenderer {
     }
 
     @Override
-    public void render(Entity entity, float lerp, MatrixStack stack) {
-        assert(entity instanceof Spaceship);
-        Spaceship spaceship = (Spaceship)entity;
-        this.texture = skins[spaceship.skin];
+    public void render(Spaceship entity, float lerp, MatrixStack stack) {
+        this.texture = skins[entity.skin];
         super.render(entity, lerp, stack);
     }
 }

@@ -8,6 +8,7 @@ import sekelsta.engine.render.*;
 import sekelsta.engine.Frustum;
 import sekelsta.engine.entity.Movable;
 import sekelsta.engine.entity.Entity;
+import sekelsta.engine.render.entity.EntityRenderer;
 import sekelsta.game.Camera;
 import sekelsta.game.World;
 import sekelsta.game.render.entity.*;
@@ -75,10 +76,7 @@ public class Renderer implements IFramebufferSizeListener {
             realLerp = 0;
         }
         for (Movable entity : world.getMobs()) {
-            assert(entity != null);
-            assert(entity.getType() != null);
-            assert(entity.getType().getRenderer() != null);
-            entity.getType().getRenderer().render(entity, realLerp, matrixStack);
+            renderEntity(entity, realLerp, matrixStack);
         }
         matrixStack.pop();
 
@@ -94,6 +92,16 @@ public class Renderer implements IFramebufferSizeListener {
         }
         // END DEBUG
         spriteBatch.render();
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T extends Entity> void renderEntity(T entity, float lerp, MatrixStack matrixStack) {
+        assert(entity != null);
+        assert(entity.getType() != null);
+        assert(entity.getType().getRenderer() != null);
+        // Unchecked cast
+        EntityRenderer<? super T> renderer = (EntityRenderer<? super T>)(entity.getType().getRenderer());
+        renderer.render(entity, lerp, matrixStack);
     }
 
     public void setJointTransforms(Matrix4f[] joints) {

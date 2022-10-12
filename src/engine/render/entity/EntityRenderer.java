@@ -4,14 +4,14 @@ import sekelsta.engine.entity.Entity;
 import sekelsta.engine.render.*;
 import sekelsta.engine.render.mesh.*;
 
-public abstract class EntityRenderer {
+public abstract class EntityRenderer<T extends Entity> {
     protected Mesh mesh;
     protected Texture texture;
     protected Texture specular = Textures.WHITE;
     protected Texture emission = Textures.BLACK;
     protected float scale = 1.0f;
 
-    public void render(Entity entity, float lerp, MatrixStack stack) {
+    public void render(T entity, float lerp, MatrixStack stack) {
         float x = entity.getInterpolatedX(lerp);
         float y = entity.getInterpolatedY(lerp);
         float z = entity.getInterpolatedZ(lerp);

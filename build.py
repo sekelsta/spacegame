@@ -10,6 +10,7 @@ lwjgl_directory = '../lwjgl-3.2.3'
 other_libs = ['libs/*']
 main_class = 'sekelsta.game.Main'
 test_class = 'sekelsta.test.Main'
+misc_compiler_args = '-Xlint:unchecked'
 output_directory = 'bin'
 source_directory = 'src'
 # ':' on Linux, ';' on Windows
@@ -45,6 +46,7 @@ def count():
     print('Total lines of code: ' + str(total_lines))
 
 def build():
+    global misc_compiler_args
     clean()
     if not os.path.isdir(output_directory):
         os.mkdir(output_directory)
@@ -53,7 +55,7 @@ def build():
         for f in files:
             if f.endswith('.java'):
                 sources += os.path.join(root, f) + ' '
-    command = 'javac -d ' + output_directory + sources
+    command = 'javac ' + misc_compiler_args + ' -d ' + output_directory + sources
     if classpath:
         command += '-cp ' + classpath
     print(command)
