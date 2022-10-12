@@ -30,6 +30,7 @@ public class Renderer implements IFramebufferSizeListener {
 
     private final SpriteBatch spriteBatch = new SpriteBatch();
     // DEBUG
+    private final Texture connectingPlaceholder = new Texture("Connecting.png");
     private final Texture test = new Texture("placeholder.png");
     private final BitmapFont font = new BitmapFont();
     // END DEBUG
@@ -61,6 +62,13 @@ public class Renderer implements IFramebufferSizeListener {
     public void render(float lerp, Camera camera, World world) {
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
+        if (camera != null) {
+            renderWorld(lerp, camera, world);
+        }
+        renderOverlay(world);
+    }
+
+    private void renderWorld(float lerp, Camera camera, World world) {
         // Set up for three-dimensional rendering    
         shader.use();
         shader.setUniform("projection", perspective);
@@ -79,19 +87,25 @@ public class Renderer implements IFramebufferSizeListener {
             renderEntity(entity, realLerp, matrixStack);
         }
         matrixStack.pop();
+    }
 
+    private void renderOverlay(World world) {
         // Set up for two-dimensional rendering
         shader2D.use();
         shader2D.setUniform("dimensions", uiDimensions);
         GL11.glDisable(GL11.GL_DEPTH_TEST);
         // Render UI and HUD
-        // DEBUG
-        spriteBatch.setTexture(test);
-        if (world.isPaused()) {
-            spriteBatch.blit(0, 0, 512, 256, 0, 0);
+        // TODO: Clean up
+        if (world.getLocalPlayer() == null) {
+            spriteBatch.setTexture(connectingPlaceholder);
+            spriteBatch.blit((int)((uiDimensions.x - 512) / 2), (int)((uiDimensions.y - 256) / 2), 512, 256, 0, 0);
+            spriteBatch.render();
         }
-        // END DEBUG
-        spriteBatch.render();
+        else if (world.isPaused()) {
+            spriteBatch.setTexture(test);
+            spriteBatch.blit(0, 0, 512, 256, 0, 0);
+            spriteBatch.render();
+        }
     }
 
     @SuppressWarnings("unchecked")

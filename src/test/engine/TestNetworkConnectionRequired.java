@@ -21,25 +21,18 @@ class TestNetworkConnectionRequired {
         }
     }
 
-    private ExtendedNetworkManager sender;
-    private ExtendedNetworkManager receiver;
-    private NetworkedGame senderGame;
-    private NetworkedGame receiverGame;
+    private ExtendedNetworkManager sender = new ExtendedNetworkManager(4321);
+    private ExtendedNetworkManager receiver = new ExtendedNetworkManager(1234);
+    private NetworkedGame senderGame = new NetworkedGame(sender);
+    private NetworkedGame receiverGame = new NetworkedGame(receiver);
 
     public TestNetworkConnectionRequired() {
-        sender = new ExtendedNetworkManager(4321);
         sender.registerMessageType(InitialByteMessage::new);
-        receiver = new ExtendedNetworkManager(1234);
+
         receiver.registerMessageType(InitialByteMessage::new);
 
         sender.shortcutConnect(receiver.getAddress());
         // Purposely not calling receiver.shortcutConnect(sender.getAddress());
-
-        senderGame = new NetworkedGame();
-        senderGame.networkManager = sender;
-
-        receiverGame = new NetworkedGame();
-        receiverGame.networkManager = receiver;
 
         sender.start();
         receiver.start();

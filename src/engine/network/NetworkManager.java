@@ -3,6 +3,8 @@ package sekelsta.engine.network;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import sekelsta.engine.IGame;
@@ -16,6 +18,8 @@ public class NetworkManager {
     private MessageRegistry registry = new MessageRegistry();
     protected NetworkDirection acceptDirection = NetworkDirection.CLIENT_TO_SERVER;
 
+    private Map<InetSocketAddress, Long> pendingConnections = new HashMap<>();
+
     public NetworkManager(int port) {
         DatagramSocket socket = null;
         try {
@@ -27,6 +31,11 @@ public class NetworkManager {
         this.listener = new NetworkListener(registry, socket);
         this.sender = new NetworkSender(registry, socket);
         this.port = socket.getLocalPort();
+
+        registerMessageType(ClientHello::new);
+        registerMessageType(ServerRejectIncompatibleVersion::new);
+        registerMessageType(ServerHello::new);
+        registerMessageType(ClientConnect::new);
     }
 
     public void registerMessageType(Supplier<Message> messageSupplier) {
@@ -56,18 +65,39 @@ public class NetworkManager {
 
     public void close() {
         listener.setDone();
+        try {
+            listener.join();
+        }
+        catch (InterruptedException e) {}
     }
 
-    public void joinServer(InetSocketAddress serverAddress) {
+    public void joinServer(IGame game, InetSocketAddress serverAddress) {
         acceptDirection = NetworkDirection.SERVER_TO_CLIENT;
         sender.addBroadcastRecipient(serverAddress);
-        // TODO: Need to actually send a message to the server, either here or in Game
+        ClientHello clientHello = new ClientHello(game.getGameID(), game.getVersion());
+        queueBroadcast(clientHello);
     }
 
-    public void acceptClient(InetSocketAddress clientAddress) {
-        assert(acceptDirection == NetworkDirection.CLIENT_TO_SERVER);
-        sender.addBroadcastRecipient(clientAddress);
+    public boolean isPendingConnection(InetSocketAddress socketAddress) {
+        return pendingConnections.containsKey(socketAddress);
+    }
 
+    public void addPendingClient(InetSocketAddress clientAddress, long nonce) {
+        assert(acceptDirection == NetworkDirection.CLIENT_TO_SERVER);
+        pendingConnections.put(clientAddress, nonce);
+    }
+
+    public long getExpectedNonce(InetSocketAddress clientAddress) {
+        return pendingConnections.get(clientAddress);
+    }
+
+    public boolean confirmPendingClient(InetSocketAddress clientAddress, long nonce) {
+        if (isPendingConnection(clientAddress) && pendingConnections.get(clientAddress) == nonce) {
+            sender.addBroadcastRecipient(clientAddress);
+            pendingConnections.remove(clientAddress);
+            return true;
+        }
+        return false;
     }
 
     public void queueBroadcast(Message message) {
@@ -82,5 +112,9 @@ public class NetworkManager {
 
     public boolean isBroadcastRecipient(InetSocketAddress socketAddress) {
         return sender.isBroadcastRecipient(socketAddress);
+    }
+
+    public void removeBroadcastRecipient(InetSocketAddress socketAddress) {
+        sender.removeBroadcastRecipient(socketAddress);
     }
 }

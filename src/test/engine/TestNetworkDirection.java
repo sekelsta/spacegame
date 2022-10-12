@@ -34,28 +34,21 @@ class TestNetworkDirection {
         }
     }
 
-    private ExtendedNetworkManager server;
-    private ExtendedNetworkManager client;
-    private NetworkedGame serverGame;
-    private NetworkedGame clientGame;
+    private ExtendedNetworkManager server = new ExtendedNetworkManager(4321);
+    private ExtendedNetworkManager client = new ExtendedNetworkManager(0);
+    private NetworkedGame serverGame = new NetworkedGame(server);
+    private NetworkedGame clientGame = new NetworkedGame(client);
 
     public TestNetworkDirection() {
-        server = new ExtendedNetworkManager(4321);
         server.registerMessageType(ClientByteMessage::new);
         server.registerMessageType(ServerByteMessage::new);
-        client = new ExtendedNetworkManager(0);
+
         client.registerMessageType(ClientByteMessage::new);
         client.registerMessageType(ServerByteMessage::new);
         client.becomeClient();
 
         client.shortcutConnect(server.getAddress());
         server.shortcutConnect(client.getAddress());
-
-        serverGame = new NetworkedGame();
-        serverGame.networkManager = server;
-
-        clientGame = new NetworkedGame();
-        clientGame.networkManager = client;
 
         client.start();
         server.start();

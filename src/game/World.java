@@ -8,10 +8,11 @@ import sekelsta.math.Vector3f;
 
 public class World {
     private static final double spawnRadius = 1000;
+    private static final int MOB_CAP = 800;
 
+    private boolean authoritative;
     private boolean paused;
 
-    // TODO: Per-world initial seed
     private Random random = new Random();
     private List<Movable> mobs;
 
@@ -21,7 +22,11 @@ public class World {
 
     private Spaceship localPlayer;
 
-    public World() {
+    private Game game;
+
+    public World(Game game, boolean authoritative) {
+        this.game = game;
+        this.authoritative = authoritative;
         this.mobs = new ArrayList<>();
     }
 
@@ -46,8 +51,7 @@ public class World {
         // Spawn
         mobs.addAll(spawned);
         spawned.clear();
-        // TODO: asteroid spawn conditions
-        if (true) {
+        if (authoritative && mobs.size() < MOB_CAP) {
             Vector3f spawn = Vector3f.randomNonzero(new Vector3f(), random);
             spawn.scale((float)spawnRadius);
             Asteroid asteroid = new Asteroid(spawn.x, spawn.y, spawn.z, this);

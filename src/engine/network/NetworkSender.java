@@ -15,7 +15,6 @@ public class NetworkSender {
     private MessageRegistry registry;
 
     private Map<InetSocketAddress, ByteVector> queuedIndividualMessages = new HashMap<>();
-    private ByteVector broadcastBuffer = new ByteVector(BUFFER_SIZE);
 
     private ArrayList<InetSocketAddress> broadcastRecipients = new ArrayList<>();
 
@@ -30,49 +29,57 @@ public class NetworkSender {
         }
     }
 
+    public void removeBroadcastRecipient(InetSocketAddress socketAddress) {
+        broadcastRecipients.remove(socketAddress);
+    }
+
     public boolean isBroadcastRecipient(InetSocketAddress socketAddress) {
         return broadcastRecipients.contains(socketAddress);
     }
 
     public void queueBroadcast(Message message) {
-        queueMessage(broadcastBuffer, message);
-    }
-
-    public void queueMessage(InetSocketAddress receiver, Message message) {
-        if (!queuedIndividualMessages.containsKey(receiver)) {
-            queuedIndividualMessages.put(receiver, new ByteVector(BUFFER_SIZE));
+        // TO_OPTIMIZE: In case encoding the message is slow, it only really needs to be done once here
+        for (InetSocketAddress recipient : broadcastRecipients) {
+            queueMessage(recipient, message);
         }
-        queueMessage(queuedIndividualMessages.get(receiver), message);
     }
 
-    private void queueMessage(ByteVector outBuffer, Message message) {
+    public void queueMessage(InetSocketAddress recipient, Message message) {
+        if (!queuedIndividualMessages.containsKey(recipient)) {
+            queuedIndividualMessages.put(recipient, new ByteVector(BUFFER_SIZE));
+        }
+        ByteVector buffer = queuedIndividualMessages.get(recipient);
+        int start = buffer.position();
         int type = registry.getMessageType(message);
-        outBuffer.putInt(type);
-        message.encode(outBuffer);
+        buffer.putInt(type);
+        message.encode(buffer);
+        // If this message takes us past the max size, send all previously queued messages for this recipient
+        if (buffer.position() > BUFFER_SIZE) {
+            sendToAddress(recipient, buffer, start);
+            buffer.limit(buffer.position());
+            buffer.position(start);
+            buffer.compact();
+        }
+        if (buffer.position() > BUFFER_SIZE) {
+            // TODO: Handle case where a single message is beyond the max size
+            throw new RuntimeException("Not yet implemented");
+        }
     }
 
     public void flush() {
-        // TO_OPTIMIZE: Break up large packets so that IP fragmentation doesn't have to do it for us
-        // TO_OPTIMIZE: If small enough, the packet for everyone can be merged into the packets for specific clients
-        if (broadcastBuffer.position() != 0) {
-            for (InetSocketAddress connection : broadcastRecipients) {
-                sendToConnection(connection, broadcastBuffer);
-            }
-            broadcastBuffer.clear();
-        }
-
         for (Map.Entry<InetSocketAddress, ByteVector> entry : queuedIndividualMessages.entrySet()) {
-            sendToConnection(entry.getKey(), entry.getValue());
+            sendToAddress(entry.getKey(), entry.getValue());
         }
         queuedIndividualMessages.clear();
     }
 
-    private void sendToConnection(InetSocketAddress connection, ByteVector buffer) {
-        if (buffer.array().length >= 64 * 1024) {
-            // TODO: Prevent this from ever, even theoretically, happening
-            throw new RuntimeException("Trying to send a packet that is too large for UDP.");
-        }
-        DatagramPacket dataPacket = new DatagramPacket(buffer.array(), buffer.position(), connection.getAddress(), connection.getPort());
+    private void sendToAddress(InetSocketAddress recipient, ByteVector buffer) {
+        sendToAddress(recipient, buffer, buffer.position());
+    }
+
+    private void sendToAddress(InetSocketAddress recipient, ByteVector buffer, int length) {
+        assert(length <= BUFFER_SIZE);
+        DatagramPacket dataPacket = new DatagramPacket(buffer.array(), length, recipient.getAddress(), recipient.getPort());
         try {
             socket.send(dataPacket);
         }

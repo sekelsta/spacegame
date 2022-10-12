@@ -5,14 +5,36 @@ import java.util.ArrayList;
 import java.net.InetSocketAddress;
 
 import sekelsta.engine.IGame;
+import sekelsta.engine.SoftwareVersion;
 import sekelsta.engine.network.Message;
 import sekelsta.engine.network.NetworkManager;
 
 public class NetworkedGame implements IGame {
-    public NetworkManager networkManager;
-
     // Note this only includes messages that add themselves to this list
     public ArrayList<Message> handledTestMessages = new ArrayList<>();
+
+    public String gameID;
+    public SoftwareVersion version;
+
+    private NetworkManager networkManager;
+
+    private int connectionRejectedCount;
+    private int helloFromServerCount;
+    private int clientConnectionAcceptedCount;
+
+    public NetworkedGame(NetworkManager networkManager) {
+        this.networkManager = networkManager;
+    }
+
+    @Override
+    public SoftwareVersion getVersion() {
+        return version;
+    }
+
+    @Override
+    public String getGameID() {
+        return gameID;
+    }
 
     @Override
     public boolean isRunning() {
@@ -26,7 +48,6 @@ public class NetworkedGame implements IGame {
 
     @Override
     public void update() {
-        handledTestMessages.clear();
         if (networkManager != null) {
             networkManager.update(this);
         }
@@ -40,5 +61,32 @@ public class NetworkedGame implements IGame {
     @Override
     public void close() {
         throw new RuntimeException("Not implemented");
+    }
+
+    @Override
+    public void connectionRejected(String reason) {
+        connectionRejectedCount += 1;
+    }
+
+    public int getConnectionRejectedCount() {
+        return connectionRejectedCount;
+    }
+
+    @Override
+    public void receivedHelloFromServer(SoftwareVersion version) {
+        helloFromServerCount += 1;
+    }
+
+    public int getHelloFromServerCount() {
+        return helloFromServerCount;
+    }
+
+    @Override
+    public void clientConnectionAccepted(InetSocketAddress clientAddress) {
+        clientConnectionAcceptedCount += 1;
+    }
+
+    public int getClientConnectionAcceptedCount() {
+        return clientConnectionAcceptedCount;
     }
 }

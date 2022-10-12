@@ -23,13 +23,18 @@ public class Game implements IGame {
     private NetworkManager networkManager;
 
     public Game(boolean graphical) {
-        this.world = new World();
         if (graphical) {
             this.window = new Window(DataFolders.getUserMachineFolder("initconfig.toml"), GAME_ID);
             this.renderer = new Renderer();
             this.window.setResizeListener(renderer);
             this.input = new Input();
             this.window.setInput(input);
+        }
+        this.world = new World(this, true);
+    }
+
+    public void enterWorld() {
+        if (isGraphical()) {
             this.world.spawnLocalPlayer(input);
             this.camera = new Camera(world.getLocalPlayer());
             this.input.setCamera(camera);
@@ -38,10 +43,26 @@ public class Game implements IGame {
         }
     }
 
+    private boolean isGraphical() {
+        return window != null;
+    }
+
+    @Override
+    public SoftwareVersion getVersion() {
+        return VERSION;
+    }
+
+    @Override
+    public String getGameID() {
+        return GAME_ID;
+    }
+
+    @Override
     public boolean isRunning() {
         return running && (window == null || !window.shouldClose());
     }
 
+    @Override
     public NetworkManager getNetworkManager() {
         return networkManager;
     }
@@ -55,11 +76,15 @@ public class Game implements IGame {
 
     public void joinServer(InetSocketAddress socketAddress) {
         allowConnections(0);
-        networkManager.joinServer(socketAddress);
+        networkManager.joinServer(this, socketAddress);
+        this.world = new World(this, false);
     }
 
+    @Override
     public void update() {
-        world.update();
+        if (world != null) {
+            world.update();
+        }
         if (window != null) {
             window.updateInput();
         }
@@ -68,6 +93,7 @@ public class Game implements IGame {
         }
     }
 
+    @Override
     public void render(float interpolation) {
         if (window == null) {
             return;
@@ -77,6 +103,7 @@ public class Game implements IGame {
         window.swapBuffers();
     }
 
+    @Override
     public void close() {
         if (!running) {
             // Already closed
@@ -89,5 +116,24 @@ public class Game implements IGame {
         if (networkManager != null) {
             networkManager.close();
         }
+    }
+
+    @Override
+    public void connectionRejected(String reason) {
+        // TODO
+    }
+
+    @Override
+    public void receivedHelloFromServer(SoftwareVersion version) {
+        // TODO
+    }
+
+    @Override
+    public void clientConnectionAccepted(InetSocketAddress clientAddress) {
+        // TODO
+    }
+
+    public World getWorld() {
+        return world;
     }
 }
