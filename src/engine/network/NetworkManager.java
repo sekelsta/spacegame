@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import sekelsta.engine.IGame;
@@ -13,24 +15,23 @@ import sekelsta.engine.network.Message;
 
 public class NetworkManager {
     private NetworkListener listener;
-    protected NetworkSender sender;
-    protected int port;
     private MessageRegistry registry = new MessageRegistry();
     protected NetworkDirection acceptDirection = NetworkDirection.CLIENT_TO_SERVER;
 
-    private Map<InetSocketAddress, Long> pendingConnections = new HashMap<>();
+    protected DatagramSocket socket = null;
+
+    private Set<Connection> queuedMessages = new HashSet<>();
+    private Set<Connection> broadcastRecipients = new HashSet<>();
+    private Map<Connection, Long> pendingConnections = new HashMap<>();
 
     public NetworkManager(int port) {
-        DatagramSocket socket = null;
         try {
             socket = new DatagramSocket(port);
         }
         catch (IOException e) {
             throw new RuntimeException(e);
         }
-        this.listener = new NetworkListener(registry, socket);
-        this.sender = new NetworkSender(registry, socket);
-        this.port = socket.getLocalPort();
+        this.listener = new NetworkListener(this, registry, socket);
 
         registerMessageType(ClientHello::new);
         registerMessageType(ServerRejectIncompatibleVersion::new);
@@ -48,14 +49,15 @@ public class NetworkManager {
     }
 
     public void update(IGame game) {
-        sender.flush();
+        flush();
         while (listener.hasMessage()) {
             Message message = listener.popMessage();
             if (message.getDirection() != acceptDirection && message.getDirection() != NetworkDirection.BIDIRECTIONAL) {
                 Log.debug("Received message of invalid type: " + message);
                 continue;
             }
-            if (message.requiresConnection() && !isBroadcastRecipient(message.sender)) {
+            if (message.requiresConfirmedAddress() && !broadcastRecipients.contains(message.sender)) {
+                assert(!isBroadcastRecipient(message.sender.getSocketAddress()));
                 Log.debug("Received message from invalid sender: " + message);
                 continue;
             }
@@ -64,6 +66,7 @@ public class NetworkManager {
     }
 
     public void close() {
+        Connection.closeAll();
         listener.setDone();
         try {
             listener.join();
@@ -73,48 +76,112 @@ public class NetworkManager {
 
     public void joinServer(IGame game, InetSocketAddress serverAddress) {
         acceptDirection = NetworkDirection.SERVER_TO_CLIENT;
-        sender.addBroadcastRecipient(serverAddress);
+        addBroadcastRecipient(serverAddress);
         ClientHello clientHello = new ClientHello(game.getGameID(), game.getVersion());
         queueBroadcast(clientHello);
     }
 
-    public boolean isPendingConnection(InetSocketAddress socketAddress) {
-        return pendingConnections.containsKey(socketAddress);
+    public boolean isPendingConnection(Connection client) {
+        return pendingConnections.containsKey(client);
     }
 
-    public void addPendingClient(InetSocketAddress clientAddress, long nonce) {
+    public void addPendingClient(Connection client, long nonce) {
         assert(acceptDirection == NetworkDirection.CLIENT_TO_SERVER);
-        pendingConnections.put(clientAddress, nonce);
+        assert(!hasConnection(client.getSocketAddress()));
+        pendingConnections.put(client, nonce);
     }
 
-    public long getExpectedNonce(InetSocketAddress clientAddress) {
-        return pendingConnections.get(clientAddress);
+    public long getExpectedNonce(Connection client) {
+        return pendingConnections.get(client);
     }
 
-    public boolean confirmPendingClient(InetSocketAddress clientAddress, long nonce) {
-        if (isPendingConnection(clientAddress) && pendingConnections.get(clientAddress) == nonce) {
-            sender.addBroadcastRecipient(clientAddress);
-            pendingConnections.remove(clientAddress);
-            return true;
+    public boolean confirmPendingClient(Connection client, long nonce) {
+        if (!pendingConnections.containsKey(client)) {
+            return false;
         }
-        return false;
+        if (nonce != pendingConnections.get(client)) {
+            return false;
+        }
+        pendingConnections.remove(client);
+        broadcastRecipients.add(client);
+        return true;
     }
 
     public void queueBroadcast(Message message) {
         assert(message.getDirection() != acceptDirection);
-        sender.queueBroadcast(message);
+        // TO_OPTIMIZE: In case encoding the message is slow, it only really needs to be done once here
+        for (Connection recipient : broadcastRecipients) {
+            queueMessage(recipient, message);
+        }
     }
 
-    public void queueMessage(InetSocketAddress receiver, Message message) {
+    public void queueMessage(Connection recipient, Message message) {
         assert(message.getDirection() != acceptDirection);
-        sender.queueMessage(receiver, message);
+        queuedMessages.add(recipient);
+        recipient.queueMessage(registry, message);
+    }
+
+    public void addBroadcastRecipient(InetSocketAddress socketAddress) {
+        if (!isBroadcastRecipient(socketAddress)) {
+            broadcastRecipients.add(new Connection(socketAddress));
+        }
+    }
+
+    public boolean isBroadcastRecipient(Connection connection) {
+        return broadcastRecipients.contains(connection);
     }
 
     public boolean isBroadcastRecipient(InetSocketAddress socketAddress) {
-        return sender.isBroadcastRecipient(socketAddress);
+        for (Connection connection : broadcastRecipients) {
+            if (connection.getSocketAddress().equals(socketAddress)) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    public void removeBroadcastRecipient(InetSocketAddress socketAddress) {
-        sender.removeBroadcastRecipient(socketAddress);
+    public void removeBroadcastRecipient(Connection connection) {
+        broadcastRecipients.remove(connection);
+    }
+
+    private void flush() {
+        try {
+            for (Connection connection : queuedMessages) {
+                connection.flush(socket);
+            }
+            for (Connection connection : broadcastRecipients) {
+                connection.flush(socket);
+            }
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        queuedMessages.clear();
+    }
+
+    public Connection getOrCreateConnection(InetSocketAddress address) {
+        Connection connection = getConnection(address);
+        if (connection == null) {
+            return new Connection(address);
+        }
+        return connection;
+    }
+
+    private Connection getConnection(InetSocketAddress address) {
+        for (Connection connection : broadcastRecipients) {
+            if (connection.getSocketAddress().equals(address)) {
+                return connection;
+            }
+        }
+        for (Map.Entry<Connection, Long> entry : pendingConnections.entrySet()) {
+            if (entry.getKey().getSocketAddress().equals(address)) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
+
+    private boolean hasConnection(InetSocketAddress address) {
+        return getConnection(address) != null;
     }
 }

@@ -5,6 +5,7 @@ import java.net.InetSocketAddress;
 import sekelsta.engine.DataFolders;
 import sekelsta.engine.IGame;
 import sekelsta.engine.SoftwareVersion;
+import sekelsta.engine.network.Connection;
 import sekelsta.engine.network.NetworkManager;
 import sekelsta.engine.render.Window;
 import sekelsta.game.render.Renderer;
@@ -129,7 +130,7 @@ public class Game implements IGame {
     }
 
     @Override
-    public void clientConnectionAccepted(InetSocketAddress clientAddress) {
+    public void clientConnectionAccepted(Connection client) {
         // TODO
     }
 

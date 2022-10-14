@@ -8,7 +8,11 @@ import java.util.function.Supplier;
 
 public class MessageRegistry {
 
-    public static class MessageTypeNotRegisteredException extends Exception {}
+    public static class MessageTypeNotRegisteredException extends Exception {
+        public MessageTypeNotRegisteredException(int type) {
+            super("Message type not registered: " + type);
+        }
+    }
 
     private List<Supplier<Message>> messageSuppliers = new ArrayList<>();
     private Map<Class<? extends Message>, Integer> messageClasses = new HashMap<>();
@@ -32,7 +36,7 @@ public class MessageRegistry {
             return messageSuppliers.get(type).get();
         }
         catch (IndexOutOfBoundsException e) {
-            throw new MessageTypeNotRegisteredException();
+            throw new MessageTypeNotRegisteredException(type);
         }
     }
 

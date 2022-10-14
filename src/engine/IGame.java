@@ -1,7 +1,6 @@
 package sekelsta.engine;
 
-import java.net.InetSocketAddress;
-
+import sekelsta.engine.network.Connection;
 import sekelsta.engine.network.NetworkManager;
 
 public interface IGame {
@@ -16,5 +15,5 @@ public interface IGame {
 
     void connectionRejected(String reason);
     void receivedHelloFromServer(SoftwareVersion version);
-    void clientConnectionAccepted(InetSocketAddress clientAddress);
+    void clientConnectionAccepted(Connection client);
 }

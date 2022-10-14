@@ -6,13 +6,17 @@ import java.nio.ByteBuffer;
 import sekelsta.engine.IGame;
 
 public abstract class Message {
-    public InetSocketAddress sender;
+    public Connection sender;
 
-    public boolean requiresConnection() {
+    public boolean requiresConfirmedAddress() {
         return true;
     }
 
     public abstract NetworkDirection getDirection();
+
+    public boolean reliable() {
+        return true;
+    }
 
     public abstract void encode(ByteVector buffer);
 
@@ -20,6 +24,7 @@ public abstract class Message {
 
     public abstract void handle(IGame game);
 
+    // The logic in readString and writeString works for collections in general, but String does not implement that
     protected static void writeString(ByteVector buffer, String s) {
         buffer.putInt(s.length());
         for (char c : s.toCharArray()) {

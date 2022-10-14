@@ -2,10 +2,9 @@ package sekelsta.test.engine;
 
 import java.util.ArrayList;
 
-import java.net.InetSocketAddress;
-
 import sekelsta.engine.IGame;
 import sekelsta.engine.SoftwareVersion;
+import sekelsta.engine.network.Connection;
 import sekelsta.engine.network.Message;
 import sekelsta.engine.network.NetworkManager;
 
@@ -82,7 +81,7 @@ public class NetworkedGame implements IGame {
     }
 
     @Override
-    public void clientConnectionAccepted(InetSocketAddress clientAddress) {
+    public void clientConnectionAccepted(Connection client) {
         clientConnectionAcceptedCount += 1;
     }
 

@@ -29,7 +29,7 @@ class ExtendedNetworkManager extends NetworkManager {
     }
 
     void shortcutConnect(InetSocketAddress address) {
-        sender.addBroadcastRecipient(address);
+        addBroadcastRecipient(address);
     }
 
     InetSocketAddress getAddress() {
@@ -41,7 +41,7 @@ class ExtendedNetworkManager extends NetworkManager {
             throw new RuntimeException(e);
         }
 
-        return new InetSocketAddress(netAddress, port);
+        return new InetSocketAddress(netAddress, socket.getLocalPort());
     }
 
     void becomeClient() {

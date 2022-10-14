@@ -20,6 +20,11 @@ public class ServerRejectIncompatibleVersion extends Message {
     }
 
     @Override
+    public boolean reliable() {
+        return false;
+    }
+
+    @Override
     public void encode(ByteVector buffer) {
         version.encode(buffer);
     }

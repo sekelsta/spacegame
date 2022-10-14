@@ -9,8 +9,8 @@ import java.util.Random;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import sekelsta.engine.network.Connection;
 import sekelsta.engine.network.Message;
-import sekelsta.engine.network.NetworkSender;
 
 class TestMessageSize {
     private ExtendedNetworkManager network = new ExtendedNetworkManager(0);
@@ -38,22 +38,24 @@ class TestMessageSize {
 
     @Test
     void sendManyLargeMessages() {
-        final int NUM_MESSAGES = 3;
-        final int SIZE = NetworkSender.BUFFER_SIZE / NUM_MESSAGES;
+        final byte NUM_MESSAGES = 3;
+        final int SIZE = Connection.BUFFER_SIZE / NUM_MESSAGES;
         byte[][] messageContents = new byte[NUM_MESSAGES][SIZE];
         Random random = new Random();
-        for (int i = 0; i < NUM_MESSAGES; ++i) {
+        for (byte i = 0; i < NUM_MESSAGES; ++i) {
             random.nextBytes(messageContents[i]);
+            messageContents[i][0] = i;
             ByteMessage message = new ByteMessage(messageContents[i]);
             network.queueBroadcast(message);
         }
         networkedGame.update();
         networkedGame.update();
         assertEquals(NUM_MESSAGES, networkedGame.handledTestMessages.size());
-        // Yes, we do expect them to arrive in-order
+        // Packets may not arrive in-order, so use the first byte as the index
         for (int i = 0; i < NUM_MESSAGES; ++i) {
             Message message = networkedGame.handledTestMessages.get(i);
-            assertTrue(Arrays.equals(messageContents[i], ((ByteMessage)message).bytes));
+            byte[] bytes = ((ByteMessage)message).bytes;
+            assertTrue(Arrays.equals(messageContents[bytes[0]], ((ByteMessage)message).bytes));
         }
     }
 }

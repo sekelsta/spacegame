@@ -13,20 +13,22 @@ import sekelsta.engine.Log;
 import sekelsta.engine.network.Message;
 
 public class NetworkListener extends Thread {
+    private NetworkManager networkManager;
     private MessageRegistry registry;
     private DatagramSocket socket;
     private boolean running = true;
 
     private List<Message> messages = Collections.synchronizedList(new LinkedList<Message>());
 
-    public NetworkListener(MessageRegistry registry, DatagramSocket socket) {
+    public NetworkListener(NetworkManager networkManager, MessageRegistry registry, DatagramSocket socket) {
+        this.networkManager = networkManager;
         this.registry = registry;
         this.socket = socket;
     }
 
     @Override
     public void run() {
-        byte[] buffer = new byte[NetworkSender.BUFFER_SIZE];
+        byte[] buffer = new byte[Connection.BUFFER_SIZE];
         while(running) {
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
             try {
@@ -49,6 +51,12 @@ public class NetworkListener extends Thread {
 
     private void handlePacket(InetSocketAddress socketAddress, byte[] data, int length) {
         ByteBuffer buffer = ByteBuffer.wrap(data, 0, length);
+
+        Connection connection = networkManager.getOrCreateConnection(socketAddress);
+        boolean shouldProcess = connection.readPacketHeader(buffer);
+        if (!shouldProcess) {
+            return;
+        }
         // Extract potentially multiple messages from the same packet
         while (buffer.hasRemaining()) {
             int messageType = -1;
@@ -65,7 +73,7 @@ public class NetworkListener extends Thread {
             if (message != null) {
                 try {
                     message.decode(buffer);
-                    message.sender = socketAddress;
+                    message.sender = connection;
                     messages.add(message);
                 }
                 catch (Exception e) {
@@ -74,11 +82,6 @@ public class NetworkListener extends Thread {
                 }
             }
         }
-    }
-
-    private void debugHandlePacket(InetSocketAddress socketAddress, byte[] data, int length) {
-        String received = new String(data, 0, length);
-        System.out.println("Recieved: " + received + "\n from socket address: " + socketAddress);
     }
     
     public void setDone() {

@@ -16,7 +16,7 @@ class TestNetworkConnectionRequired {
         }
 
         @Override
-        public boolean requiresConnection() {
+        public boolean requiresConfirmedAddress() {
             return false;
         }
     }

@@ -23,7 +23,7 @@ public class ClientHello extends Message {
     }
 
     @Override
-    public boolean requiresConnection() {
+    public boolean requiresConfirmedAddress() {
         return false;
     }
 

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import sekelsta.engine.SoftwareVersion;
+import sekelsta.engine.network.Connection;
 
 class TestHandshake {
     private ExtendedNetworkManager server = new ExtendedNetworkManager(4321);
@@ -48,10 +49,12 @@ class TestHandshake {
         assertEquals(1, clientGame.getHelloFromServerCount());
         assertEquals(1, serverGame.getClientConnectionAcceptedCount());
 
-        assertTrue(!server.isPendingConnection(client.getAddress()));
-        assertTrue(!client.isPendingConnection(server.getAddress()));
-        assertTrue(server.isBroadcastRecipient(client.getAddress()));
-        assertTrue(client.isBroadcastRecipient(server.getAddress()));
+        Connection clientConnection = server.getOrCreateConnection(client.getAddress());
+        Connection serverConnection = client.getOrCreateConnection(server.getAddress());
+        assertTrue(!server.isPendingConnection(clientConnection));
+        assertTrue(!client.isPendingConnection(serverConnection));
+        assertTrue(server.isBroadcastRecipient(clientConnection));
+        assertTrue(client.isBroadcastRecipient(serverConnection));
     }
 
     @Test
@@ -69,9 +72,11 @@ class TestHandshake {
         assertEquals(0, clientGame.getHelloFromServerCount());
         assertEquals(0, serverGame.getClientConnectionAcceptedCount());
 
-        assertTrue(!server.isPendingConnection(client.getAddress()));
-        assertTrue(!client.isPendingConnection(server.getAddress()));
-        assertTrue(!server.isBroadcastRecipient(client.getAddress()));
-        assertTrue(!client.isBroadcastRecipient(server.getAddress()));
+        Connection clientConnection = server.getOrCreateConnection(client.getAddress());
+        Connection serverConnection = client.getOrCreateConnection(server.getAddress());
+        assertTrue(!server.isPendingConnection(clientConnection));
+        assertTrue(!client.isPendingConnection(serverConnection));
+        assertTrue(!server.isBroadcastRecipient(clientConnection));
+        assertTrue(!client.isBroadcastRecipient(serverConnection));
     }
 }
