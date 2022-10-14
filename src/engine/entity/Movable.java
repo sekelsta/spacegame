@@ -52,10 +52,10 @@ public abstract class Movable implements Entity {
         velocityZ = z;
     }
 
-    public void scaleVelocity(float drag) {
-        velocityX *= drag;
-        velocityY *= drag;
-        velocityZ *= drag;
+    public void scaleVelocity(float s) {
+        velocityX *= s;
+        velocityY *= s;
+        velocityZ *= s;
     }
 
     public void angularAccelerate(int x, int y, int z) {
@@ -64,10 +64,10 @@ public abstract class Movable implements Entity {
         angularVelocityZ += z;
     }
 
-    public void scaleAngularVelocity(float drag) {
-        angularVelocityX *= drag;
-        angularVelocityY *= drag;
-        angularVelocityZ *= drag;
+    public void scaleAngularVelocity(float s) {
+        angularVelocityX *= s;
+        angularVelocityY *= s;
+        angularVelocityZ *= s;
     }
 
     public void tick() {
