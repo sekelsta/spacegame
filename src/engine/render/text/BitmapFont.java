@@ -6,6 +6,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import sekelsta.engine.render.Texture;
 
@@ -21,12 +22,11 @@ public class BitmapFont {
         Font font = new Font(Font.MONOSPACED, Font.PLAIN, 16);
         boolean antialias = true;
         FontMetrics metrics = getMetrics(font, antialias);
-        // Set up glyph info
+        // Arrange the glyphs into a texture atlas
         glyphs = new Glyph[CHAR_MAX - STARTING_CHAR];
-        int x = 0;
+        ArrayList<Integer> lengths = new ArrayList<>();
+        lengths.add(0);
         int charHeight = metrics.getHeight();
-        // TO_OPTIMIZE: try breaking this into multiple lines and see if it helps with performance
-        // (plain monospaced 16p font is getting me a 1910 x 19 pixel texture)
         for (int i = STARTING_CHAR; i < CHAR_MAX; ++i) {
             if (!Character.isValidCodePoint(i)) {
                 continue;
@@ -35,14 +35,29 @@ public class BitmapFont {
                 continue;
             }
             int charWidth = metrics.charWidth((char)i);
-            if (charWidth != 0) {
-                glyphs[i - STARTING_CHAR] = new Glyph(x, 0, charWidth, charHeight);
-                x += charWidth;
+            if (charWidth == 0) {
+                continue;
             }
+            int sideLength = charHeight * lengths.size();
+            int line = 0;
+            while (lengths.get(line) + charWidth > sideLength) {
+                line += 1;
+                if (line >= lengths.size()) {
+                    lengths.add(0);
+                    sideLength += charHeight;
+                }
+            }
+            glyphs[i - STARTING_CHAR] = new Glyph(lengths.get(line), line * charHeight, charWidth, charHeight);
+            lengths.set(line, lengths.get(line) + charWidth);
         }
 
+        int imageWidth = 0;
+        for (int x : lengths) {
+            imageWidth = Math.max(x, imageWidth);
+        }
+        int imageHeight = lengths.size() * charHeight;
         // TO_OPTIMIZE: investigate whether ARGB is needed since we're just drawing alpha and white
-        BufferedImage image = new BufferedImage(x, charHeight, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = image.createGraphics();
         if (antialias) {
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -57,7 +72,7 @@ public class BitmapFont {
             if (glyphs[index] == null) {
                 continue;
             }
-            g.drawString(String.valueOf((char)(i)), glyphs[index].x, metrics.getAscent());
+            g.drawString(String.valueOf((char)(i)), glyphs[index].x, glyphs[index].y + metrics.getAscent());
         }
         g.dispose();
 
