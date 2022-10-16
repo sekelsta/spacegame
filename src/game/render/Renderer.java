@@ -1,5 +1,6 @@
 package sekelsta.game.render;
 
+import java.awt.Font;
 import java.io.IOException;
 
 import org.lwjgl.opengl.GL11;
@@ -31,8 +32,7 @@ public class Renderer implements IFramebufferSizeListener {
     private final SpriteBatch spriteBatch = new SpriteBatch();
     // DEBUG
     private final Texture connectingPlaceholder = new Texture("Connecting.png");
-    private final Texture test = new Texture("placeholder.png");
-    private final BitmapFont font = new BitmapFont();
+    private final BitmapFont font = new BitmapFont(new Font(Font.MONOSPACED, Font.PLAIN, 72), true);
     // END DEBUG
 
     private MatrixStack matrixStack = new MatrixStack() {
@@ -95,17 +95,17 @@ public class Renderer implements IFramebufferSizeListener {
         shader2D.setUniform("dimensions", uiDimensions);
         GL11.glDisable(GL11.GL_DEPTH_TEST);
         // Render UI and HUD
-        // TODO: Clean up
         if (world.getLocalPlayer() == null) {
+            font.blit("Connecting...", 0, 0);
             spriteBatch.setTexture(connectingPlaceholder);
             spriteBatch.blit((int)((uiDimensions.x - 512) / 2), (int)((uiDimensions.y - 256) / 2), 512, 256, 0, 0);
             spriteBatch.render();
         }
         else if (world.isPaused()) {
-            spriteBatch.setTexture(test);
-            spriteBatch.blit(0, 0, 512, 256, 0, 0);
-            spriteBatch.render();
+            font.blit("Paused", 0, 0);
         }
+
+        font.render();
     }
 
     @SuppressWarnings("unchecked")

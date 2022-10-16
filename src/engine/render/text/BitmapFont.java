@@ -8,6 +8,7 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import sekelsta.engine.render.SpriteBatch;
 import sekelsta.engine.render.Texture;
 
 public class BitmapFont {
@@ -16,11 +17,9 @@ public class BitmapFont {
     private static final int CHAR_MAX = 256;
 
     private Glyph[] glyphs;
-    private Texture texture;
+    private SpriteBatch spriteBatch = new SpriteBatch();
 
-    public BitmapFont() {
-        Font font = new Font(Font.MONOSPACED, Font.PLAIN, 16);
-        boolean antialias = true;
+    public BitmapFont(Font font, boolean antialias) {
         FontMetrics metrics = getMetrics(font, antialias);
         // Arrange the glyphs into a texture atlas
         glyphs = new Glyph[CHAR_MAX - STARTING_CHAR];
@@ -76,7 +75,25 @@ public class BitmapFont {
         }
         g.dispose();
 
-        this.texture = new Texture(image, false);
+        spriteBatch.setTexture(new Texture(image, false));
+    }
+
+    public void blit(char c, int x, int y) {
+        Glyph g = glyphs[c - STARTING_CHAR];
+        spriteBatch.blit(x, y, g.width, g.height, g.x, g.y);
+    }
+
+    // TODO: Handle newlines and such
+    public void blit(String s, int x, int y) {
+        int w = 0;
+        for (char c : s.toCharArray()) {
+            blit(c, x + w, y);
+            w += glyphs[c - STARTING_CHAR].width;
+        }
+    }
+
+    public void render() {
+        spriteBatch.render();
     }
 
     private FontMetrics getMetrics(Font font, boolean antialias) {
