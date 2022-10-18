@@ -95,6 +95,19 @@ public abstract class Movable implements Entity {
         yaw %= ANGLE_RESOLUTION;
         pitch %= ANGLE_RESOLUTION;
         roll %= ANGLE_RESOLUTION;
+
+        // If yaw and roll just changed by 180 degrees, adjust prevYaw, prevPitch, and prevRoll to match
+        float ninetyDegrees = ANGLE_RESOLUTION / 4;
+        if (getPositiveAngleBetween(yaw, prevYaw) > ninetyDegrees 
+                && getPositiveAngleBetween(roll, prevRoll) > ninetyDegrees) {
+            prevYaw += (int)ANGLE_RESOLUTION / 2;
+            prevRoll += (int)ANGLE_RESOLUTION / 2;
+            prevPitch = (int)ANGLE_RESOLUTION / 2 - prevPitch;
+
+            prevYaw %= ANGLE_RESOLUTION;
+            prevPitch %= ANGLE_RESOLUTION;
+            prevRoll %= ANGLE_RESOLUTION;
+        }
     }
 
     public final void teleport(double x, double y, double z) {
@@ -189,6 +202,11 @@ public abstract class Movable implements Entity {
             current += ANGLE_RESOLUTION;
         }
         return lerp * current + (1 - lerp) * prev;
+    }
+
+    private int getPositiveAngleBetween(int theta, int phi) {
+        int diff = Math.abs(theta - phi) % (int)ANGLE_RESOLUTION;
+        return (int)Math.min(diff, ANGLE_RESOLUTION - diff);
     }
 
     public double distSquared(Movable other) {
