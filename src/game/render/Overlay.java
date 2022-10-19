@@ -17,6 +17,7 @@ public class Overlay {
     private static final double scale = 1.0;
     private final BitmapFont font = new BitmapFont(new Font(Font.SANS_SERIF, Font.PLAIN, 48), true);
     private final BitmapFont titleFont = new BitmapFont(new Font(Font.SANS_SERIF, Font.PLAIN, 72), true);
+    private final SpriteBatch spriteBatch = new SpriteBatch();
 
     private Deque<Screen> screenStack = new ArrayDeque<>();
     private double xPointer, yPointer;
@@ -157,5 +158,6 @@ public class Overlay {
     public void close() {
         font.clean();
         titleFont.clean();
+        spriteBatch.clean();
     }
 }

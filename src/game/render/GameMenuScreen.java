@@ -26,6 +26,7 @@ public class GameMenuScreen extends Screen {
     private void setup() {
         BitmapFont font = overlay.getButtonFont();
         addSelectableItem(new TextButton(font, "Resume", () -> game.escape()));
+        addSelectableItem(new TextButton(font, "Options", () -> overlay.pushScreen(new OptionsScreen(font, game))));
         if (game.isNetworked()) {
             items.add(new TextElement(font, "Host LAN game", GuiElement.GRAY));
         }

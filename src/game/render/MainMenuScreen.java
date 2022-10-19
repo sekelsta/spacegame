@@ -14,6 +14,7 @@ public class MainMenuScreen extends Screen {
         addSelectableItem(new TextButton(font, "Join server", 
             () -> overlay.pushScreen(new JoinScreen(overlay, game)))
         );
-        addSelectableItem(new TextButton(font, "Exit", () -> game.stop()));     
+        addSelectableItem(new TextButton(font, "Options", () -> overlay.pushScreen(new OptionsScreen(font, game))));
+        addSelectableItem(new TextButton(font, "Exit", () -> game.stop()));
     }
 }
