@@ -164,5 +164,6 @@ public class Renderer implements IFramebufferSizeListener {
     public void clean() {
         spriteBatch.clean();
         shader.delete();
+        shader2D.delete();
     }
 }

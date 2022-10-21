@@ -22,6 +22,8 @@ public class BitmapFont {
     public BitmapFont(Font font, boolean antialias) {
         FontMetrics metrics = getMetrics(font, antialias);
         // Arrange the glyphs into a texture atlas
+        // TO_OPTIMIZE: FontMetrics.charWidth() does not technically return the width of the char, but rather the
+        // advance. So the texture atlas could be made smaller by packing to the actual width.
         glyphs = new Glyph[CHAR_MAX - STARTING_CHAR];
         ArrayList<Integer> lengths = new ArrayList<>();
         lengths.add(0);
@@ -78,22 +80,42 @@ public class BitmapFont {
         spriteBatch.setTexture(new Texture(image, false));
     }
 
-    public void blit(char c, int x, int y) {
-        Glyph g = glyphs[c - STARTING_CHAR];
-        spriteBatch.blit(x, y, g.width, g.height, g.x, g.y);
+    public int getWidth(String text) {
+        int width = 0;
+        for (char c : text.toCharArray()) {
+            width += glyphs[c - STARTING_CHAR].width;
+        }
+        return width;
+    }
+
+    public int getHeight() {
+        return glyphs[0].height;
+    }
+
+    public void blit(char c, int x, int y, float r, float g, float b) {
+        Glyph glyph = glyphs[c - STARTING_CHAR];
+        spriteBatch.blit(x, y, glyph.width, glyph.height, glyph.x, glyph.y, r, g, b);
+    }
+
+    public void blit(String s, int x, int y) {
+        blit(s, x, y, 1f, 1f, 1f);
     }
 
     // TODO: Handle newlines and such
-    public void blit(String s, int x, int y) {
+    public void blit(String s, int x, int y, float r, float g, float b) {
         int w = 0;
         for (char c : s.toCharArray()) {
-            blit(c, x + w, y);
+            blit(c, x + w, y, r, g, b);
             w += glyphs[c - STARTING_CHAR].width;
         }
     }
 
     public void render() {
         spriteBatch.render();
+    }
+
+    public void clean() {
+        spriteBatch.clean();
     }
 
     private FontMetrics getMetrics(Font font, boolean antialias) {

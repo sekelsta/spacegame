@@ -50,12 +50,15 @@ public class SpriteBatch extends Mesh {
         // 1 = texture
         GL20.glVertexAttribPointer(1, 2, GL20.GL_FLOAT, false, getVertexBufferStride() * Float.BYTES, 2 * Float.BYTES);
         GL20.glEnableVertexAttribArray(1);
+        // 2 = color
+        GL20.glVertexAttribPointer(2, 3, GL20.GL_FLOAT, false, getVertexBufferStride() * Float.BYTES, 4 * Float.BYTES);
+        GL20.glEnableVertexAttribArray(2);
     }
 
     @Override
     protected int getVertexBufferStride() {
-        // 2D vertex, 2D texture
-        return 2 + 2;
+        // 2D vertex, 2D texture, RGB color
+        return 2 + 2 + 3;
     }
 
     // Call this before the first blit, then after each render.
@@ -67,9 +70,13 @@ public class SpriteBatch extends Mesh {
         this.texture = texture;
     }
 
-    // Params: Screen rect, texture x and y to draw from, and texture size
-    // Will render if the buffer is full, so be sure the texture is bound before calling
     public void blit(int x, int y, int width, int height, int texX, int texY) {
+        blit(x, y, width, height, texX, texY, 1f, 1f, 1f);
+    }
+
+    // Params: Screen rect, texture x and y to draw from, texture size, and color to draw
+    // Will render if the buffer is full, so be sure the texture is bound before calling
+    public void blit(int x, int y, int width, int height, int texX, int texY, float red, float green, float blue) {
         assert(texture != null);
 
         // Check if we can't fit another four vertices
@@ -86,15 +93,19 @@ public class SpriteBatch extends Mesh {
         // Top-left
         vertices.put(x).put(-y);
         vertices.put(u0).put(v0);
+        vertices.put(red).put(green).put(blue);
         // Top-right
         vertices.put(x + width).put(-y);
         vertices.put(u1).put(v0);
+        vertices.put(red).put(green).put(blue);
         // Bottom-left
         vertices.put(x).put(-y - height);
         vertices.put(u0).put(v1);
+        vertices.put(red).put(green).put(blue);
         // Bottom-right
         vertices.put(x + width).put(-y - height);
         vertices.put(u1).put(v1);
+        vertices.put(red).put(green).put(blue);
 
         numIndices += 6;
     }
