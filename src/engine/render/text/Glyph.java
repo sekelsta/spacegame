@@ -12,4 +12,8 @@ public class Glyph {
         this.width = width;
         this.height = height;
     }
+
+    public String toString() {
+        return "Glyph x=" + x + ", y=" + y + ", width=" + width + ", height=" + height;
+    }
 }

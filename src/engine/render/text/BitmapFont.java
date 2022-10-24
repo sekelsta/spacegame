@@ -70,10 +70,24 @@ public class BitmapFont {
         // Draw each glyph onto the texture
         for (int i = STARTING_CHAR; i < CHAR_MAX; ++i) {
             int index = i - STARTING_CHAR;
-            if (glyphs[index] == null) {
+            Glyph glyph = glyphs[index];
+            if (glyph == null) {
                 continue;
             }
-            g.drawString(String.valueOf((char)(i)), glyphs[index].x, glyphs[index].y + metrics.getAscent());
+
+            // Draw the glyph onto a separate texture, then copy it over. If we draw directly on the atlas texture,
+            // Java may do weird things with the spacing that make glyphs overlap in a bad way
+            BufferedImage charImage = new BufferedImage(glyph.width, glyph.height, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D cg = charImage.createGraphics();
+            if (antialias) {
+                cg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            }
+            cg.setFont(font);
+            cg.setColor(Color.WHITE);
+            cg.drawString(String.valueOf((char)(i)), 0, metrics.getAscent());
+            cg.dispose();
+
+            g.drawImage(charImage, null, glyph.x, glyph.y);
         }
         g.dispose();
 
