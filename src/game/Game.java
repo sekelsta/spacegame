@@ -4,11 +4,16 @@ import java.net.InetSocketAddress;
 
 import sekelsta.engine.DataFolders;
 import sekelsta.engine.ILoopable;
+import sekelsta.engine.Log;
 import sekelsta.engine.SoftwareVersion;
+import sekelsta.engine.entity.Movable;
 import sekelsta.engine.network.Connection;
 import sekelsta.engine.network.INetworked;
 import sekelsta.engine.network.NetworkManager;
 import sekelsta.engine.render.Window;
+import sekelsta.game.entity.Entities;
+import sekelsta.game.entity.Spaceship;
+import sekelsta.game.network.*;
 import sekelsta.game.render.Renderer;
 
 public class Game implements ILoopable, INetworked {
@@ -33,6 +38,7 @@ public class Game implements ILoopable, INetworked {
             this.window.setInput(input);
         }
         this.world = new World(this, true);
+        Entities.init();
     }
 
     public void enterWorld() {
@@ -43,6 +49,19 @@ public class Game implements ILoopable, INetworked {
             this.input.setPlayer(this.world.getLocalPlayer());
             this.input.setWorld(this.world);
         }
+    }
+
+    public void takePawn(Spaceship pawn) {
+        assert(world.localPlayer == null);
+        world.localPlayer = pawn;
+        pawn.setController(input);
+        if (isGraphical()) {
+            this.camera = new Camera(world.getLocalPlayer());
+            this.input.setCamera(camera);
+            this.input.setPlayer(this.world.getLocalPlayer());
+            this.input.setWorld(this.world);
+        }
+
     }
 
     private boolean isGraphical() {
@@ -72,7 +91,10 @@ public class Game implements ILoopable, INetworked {
     public void allowConnections(int port) {
         assert(networkManager == null);
         networkManager = new NetworkManager(port);
-        // TODO: Register messages
+        networkManager.registerMessageType(ClientJoinGame::new);
+        networkManager.registerMessageType(ServerSpawnEntity::new);
+        networkManager.registerMessageType(ServerGivePawn::new);
+        networkManager.registerMessageType(ServerRemoveEntity::new);
         networkManager.start();
     }
 
@@ -122,28 +144,37 @@ public class Game implements ILoopable, INetworked {
 
     @Override
     public void connectionRejected(String reason) {
+        // TODO: Make sure this can only be called while we are trying to join a server, not while connected
         networkManager.close();
         networkManager = null;
+        Log.info("Connection rejected by server due to " + reason);
     }
 
     @Override
     public void receivedHelloFromServer(SoftwareVersion version) {
-        // TODO
+        Log.info("Server running version " + version + " says \"hello\".");
+        int skin = world.getRandom().nextInt(Spaceship.NUM_SKINS);
+        ClientJoinGame joinGameMessage = new ClientJoinGame(skin);
+        networkManager.queueBroadcast(joinGameMessage);
     }
 
     @Override
     public void clientConnectionAccepted(Connection client) {
-        // TODO
+        // Send info about all existing entities
+        for (Movable mob : world.getMobs()) {
+            ServerSpawnEntity message = new ServerSpawnEntity(mob);
+            networkManager.queueMessage(client, message);
+        }
     }
 
     @Override
     public void connectionTimedOut(long connectionID) {
-        // TODO
+        Log.debug("Connection timed out: " + connectionID);
     }
 
     @Override
     public void handleDisconnect(long connectionID) {
-        // TODO
+        Log.debug("connection " + connectionID + " disconnected");
     }
 
     public World getWorld() {

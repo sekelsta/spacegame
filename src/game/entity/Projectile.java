@@ -1,19 +1,29 @@
 package sekelsta.game.entity;
 
-import sekelsta.engine.entity.Entity;
-import sekelsta.engine.entity.EntityType;
-import sekelsta.engine.entity.ICollider;
-import sekelsta.engine.entity.Movable;
+import java.nio.ByteBuffer;
+
+import sekelsta.engine.entity.*;
+import sekelsta.engine.network.ByteVector;
 import sekelsta.game.World;
 
 public class Projectile extends Movable implements ICollider {
     Entity owner;
-    private final World world;
 
-    public Projectile(Entity owner, double x, double y, double z, World world) {
+    public Projectile(Entity owner, double x, double y, double z) {
         super(x, y, z);
-        this.world = world;
         this.owner = owner;
+    }
+
+    public Projectile(ByteBuffer buffer) {
+        super(buffer);
+        // TODO
+        this.owner = null;
+    }
+
+    @Override
+    public void encode(ByteVector buffer) {
+        super.encode(buffer);
+        // TODO
     }
 
     @Override

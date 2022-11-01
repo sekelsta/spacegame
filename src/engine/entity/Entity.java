@@ -1,6 +1,12 @@
 package sekelsta.engine.entity;
 
+import sekelsta.engine.network.ByteVector;
+
 public interface Entity {
+    public void encode(ByteVector buffer);
+    public EntityType getType();
+    public int getID();
+
     public float getInterpolatedX(float lerp);
     public float getInterpolatedY(float lerp);
     public float getInterpolatedZ(float lerp);
@@ -10,6 +16,4 @@ public interface Entity {
     public float getInterpolatedRoll(float lerp);
 
     public double getCollisionRadius();
-
-    public EntityType getType();
 }

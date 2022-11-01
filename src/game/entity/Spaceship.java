@@ -1,9 +1,9 @@
 package sekelsta.game.entity;
 
-import sekelsta.engine.entity.Entity;
-import sekelsta.engine.entity.EntityType;
-import sekelsta.engine.entity.ICollider;
-import sekelsta.engine.entity.Movable;
+import java.nio.ByteBuffer;
+
+import sekelsta.engine.entity.*;
+import sekelsta.engine.network.ByteVector;
 import sekelsta.game.World;
 
 public class Spaceship extends Movable implements ICollider {
@@ -11,19 +11,39 @@ public class Spaceship extends Movable implements ICollider {
     int shootSpeed = (int)Movable.RESOLUTION;
     private final int angularAcceleration = (int)(Movable.ANGLE_RESOLUTION / 1024);
 
-    protected final Controller controller;
-    private final World world;
+    protected Controller controller;
     public int skin;
 
-    public Spaceship(int x, int y, int z, World world) {
-        this(x, y, z, world, null);
+    public Spaceship(int x, int y, int z) {
+        this(x, y, z, null);
     }
 
-    public Spaceship(int x, int y, int z, World world, Controller controller) {
+    public Spaceship(int x, int y, int z, Controller controller) {
         super(x, y, z);
-        this.world = world;
         this.controller = controller;
         angularDrag = 0.9f;
+    }
+
+    public Spaceship(ByteBuffer buffer) {
+        super(buffer);
+        // TODO
+        this.controller = null;
+        skin = buffer.getInt();
+    }
+
+    public void setController(Controller controller) {
+        this.controller = controller;
+    }
+
+    public Controller getController() {
+        return controller;
+    }
+
+    @Override
+    public void encode(ByteVector buffer) {
+        super.encode(buffer);
+        // TODO
+        buffer.putInt(skin);
     }
 
     @Override
@@ -85,7 +105,7 @@ public class Spaceship extends Movable implements ICollider {
     }
 
     public void fire() {
-        Movable projectile = world.spawn(new Projectile(this, getX(), getY(), getZ(), world));
+        Movable projectile = world.spawn(new Projectile(this, getX(), getY(), getZ()));
         projectile.accelerate(getVelocityX(), getVelocityY(), getVelocityZ());
         projectile.setAngle(getYaw(), getPitch(), getRoll());
         projectile.accelerateForwards(shootSpeed);

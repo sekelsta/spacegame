@@ -1,5 +1,8 @@
 package sekelsta.engine.entity;
 
+import java.nio.ByteBuffer;
+
+import sekelsta.engine.network.ByteVector;
 import sekelsta.math.Matrix3f;
 import sekelsta.math.Vector3f;
 
@@ -7,6 +10,8 @@ public abstract class Movable implements Entity {
     public static final double RESOLUTION = 65536;
     public static final float ANGLE_RESOLUTION = 65536; // Integer units per full circle
     private static final float FLOAT_PI = (float)Math.PI;
+    private int id = -1;
+    protected IEntitySpace world;
     private double x, y, z;
     private double prevX, prevY, prevZ;
     private int velocityX, velocityY, velocityZ;
@@ -24,6 +29,65 @@ public abstract class Movable implements Entity {
 
     public Movable(double x, double y, double z) {
         teleport(x, y, z);
+    }
+
+    public Movable(ByteBuffer buffer) {
+        id = buffer.getInt();
+        x = buffer.getDouble();
+        y = buffer.getDouble();
+        z = buffer.getDouble();
+        prevX = x;
+        prevY = y;
+        prevZ = z;
+        velocityX = buffer.getInt();
+        velocityY = buffer.getInt();
+        velocityZ = buffer.getInt();
+        yaw = buffer.getInt();
+        pitch = buffer.getInt();
+        roll = buffer.getInt();
+        prevYaw = yaw;
+        prevPitch = pitch;
+        prevRoll = roll;
+        angularVelocityX = buffer.getInt();
+        angularVelocityY = buffer.getInt();
+        angularVelocityZ = buffer.getInt();
+        drag = buffer.getFloat();
+        angularDrag = buffer.getFloat();
+    }
+
+    @Override
+    public void encode(ByteVector buffer) {
+        buffer.putInt(id);
+        buffer.putDouble(x);
+        buffer.putDouble(y);
+        buffer.putDouble(z);
+        // Skip prevX, prevY, prevZ
+        buffer.putInt(velocityX);
+        buffer.putInt(velocityY);
+        buffer.putInt(velocityZ);
+        buffer.putInt(yaw);
+        buffer.putInt(pitch);
+        buffer.putInt(roll);
+        // Skip prevYaw, prevPitch, prevRoll
+        buffer.putInt(angularVelocityX);
+        buffer.putInt(angularVelocityY);
+        buffer.putInt(angularVelocityZ);
+        buffer.putFloat(drag);
+        buffer.putFloat(angularDrag);
+    }
+
+    @Override
+    public int getID() {
+        return id;
+    }
+
+    // TODO: Make a better interface
+    public void setID(int id) {
+        this.id = id;
+    }
+
+    public final void enterWorld(IEntitySpace world) {
+        this.world = world;
     }
 
     public void update() {

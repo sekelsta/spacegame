@@ -1,16 +1,19 @@
 package sekelsta.game;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import sekelsta.engine.entity.*;
 import sekelsta.game.entity.*;
+import sekelsta.game.network.ServerSpawnEntity;
+import sekelsta.game.network.ServerRemoveEntity;
 import sekelsta.math.Vector3f;
 
-public class World {
+public class World implements IEntitySpace {
     private static final double spawnRadius = 1000;
     private static final int MOB_CAP = 800;
 
-    private boolean authoritative;
+    public final boolean authoritative;
     private boolean paused;
 
     private Random random = new Random();
@@ -20,9 +23,13 @@ public class World {
     private List<Movable> killed = new ArrayList<>();
     private List<Movable> spawned = new ArrayList<>();
 
-    private Spaceship localPlayer;
+    public Spaceship localPlayer;
+
+    private int nextID = 0;
 
     private Game game;
+
+    private Map<Integer, List<Consumer<Movable>>> onSpawnFunctions = new HashMap<>();
 
     public World(Game game, boolean authoritative) {
         this.game = game;
@@ -31,7 +38,7 @@ public class World {
     }
 
     public void spawnLocalPlayer(Controller playerController) {
-        this.localPlayer = new Spaceship(0, 0, 0, this, playerController);
+        this.localPlayer = new Spaceship(0, 0, 0, playerController);
         localPlayer.skin = random.nextInt(Spaceship.NUM_SKINS);
         this.spawn(this.localPlayer);
     }
@@ -50,13 +57,20 @@ public class World {
         }
         // Spawn
         mobs.addAll(spawned);
+        if (isNetworkServer()) {
+            for (Movable mob : spawned) {
+                ServerSpawnEntity spawnMessage = new ServerSpawnEntity(mob);
+                game.getNetworkManager().queueBroadcast(spawnMessage);
+            }
+        }
         spawned.clear();
+
         if (authoritative && mobs.size() < MOB_CAP) {
             Vector3f spawn = Vector3f.randomNonzero(new Vector3f(), random);
             spawn.scale((float)spawnRadius);
-            Asteroid asteroid = new Asteroid(spawn.x, spawn.y, spawn.z, this);
-            asteroid.setRandomVelocity();
+            Asteroid asteroid = new Asteroid(spawn.x, spawn.y, spawn.z, random);
             this.spawn(asteroid);
+            asteroid.setRandomVelocity();
         }
 
         for (Movable mob : mobs) {
@@ -75,11 +89,23 @@ public class World {
             }
         }
 
+        // Despawn
+        for (Movable mob : mobs) {
+            if (mob.distSquared(0, 0, 0) > 100 * spawnRadius * spawnRadius) {
+                // TODO: What if it's a player?
+                kill(mob);
+            }
+        }
+
         // Done iterating, safe to remove
         mobs.removeAll(killed);
+        if (isNetworkServer()) {
+            for (Movable mob : killed) {
+                ServerRemoveEntity message = new ServerRemoveEntity(mob.getID());
+                game.getNetworkManager().queueBroadcast(message);
+            }
+        }
         killed.clear();
-        // Despawn
-        mobs.removeIf(mob -> mob.distSquared(0, 0, 0) > 100 * spawnRadius * spawnRadius);
     }
 
     public List<Movable> getMobs() {
@@ -90,9 +116,30 @@ public class World {
         return localPlayer;
     }
 
-    public Movable spawn(Movable mob) {
-        assert(mob != null);
+    public <T extends Entity> T spawn(T entity) {
+        if (entity instanceof Movable) {
+            Movable mob = (Movable)entity;
+            spawnMovable(mob);
+            return entity;
+        }
+        throw new RuntimeException("TODO: not yet implemented");
+    }
+
+    private Movable spawnMovable(Movable mob) {
         this.spawned.add(mob);
+        mob.enterWorld(this);
+        if (authoritative) {
+            mob.setID(nextID);
+            nextID += 1;
+        }
+
+        if (onSpawnFunctions.containsKey(mob.getID())) {
+            for (Consumer<Movable> function : onSpawnFunctions.get(mob.getID())) {
+                function.accept(mob);
+            }
+            onSpawnFunctions.remove(mob.getID());
+        }
+
         return mob;
     }
 
@@ -101,7 +148,38 @@ public class World {
         return mob;
     }
 
+    public void runWhenMovableSpawns(Consumer<Movable> function, int id) {
+        for (Movable mob : mobs) {
+            if (mob.getID() == id) {
+                function.accept(mob);
+                return;
+            }
+        }
+
+        if (onSpawnFunctions.containsKey(id)) {
+            onSpawnFunctions.get(id).add(function);
+        }
+        else {
+            List<Consumer<Movable>> f = new ArrayList<>();
+            f.add(function);
+            onSpawnFunctions.put(id, f);
+        }
+    }
+
+    public Movable getMovableByID(int id) {
+        for (Movable mob : mobs) {
+            if (mob.getID() == id) {
+                return mob;
+            }
+        }
+        return null;
+    }
+
     public Random getRandom() {
         return random;
+    }
+
+    private boolean isNetworkServer() {
+        return authoritative && game.getNetworkManager() != null;
     }
 }
