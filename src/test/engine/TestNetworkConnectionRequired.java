@@ -6,6 +6,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import sekelsta.engine.Log;
+import sekelsta.engine.network.Connection;
 
 class TestNetworkConnectionRequired {
     private static class InitialByteMessage extends ByteMessage {
@@ -42,6 +43,7 @@ class TestNetworkConnectionRequired {
     void tearDown() {
         sender.close();
         receiver.close();
+        Connection.closeAll();
     }
 
     @Test

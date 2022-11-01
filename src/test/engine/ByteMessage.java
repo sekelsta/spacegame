@@ -2,8 +2,8 @@ package sekelsta.test.engine;
 
 import java.nio.ByteBuffer;
 
-import sekelsta.engine.IGame;
 import sekelsta.engine.network.ByteVector;
+import sekelsta.engine.network.INetworked;
 import sekelsta.engine.network.Message;
 import sekelsta.engine.network.NetworkDirection;
 
@@ -35,7 +35,7 @@ class ByteMessage extends Message {
     }
 
     @Override
-    public void handle(IGame game) {
+    public void handle(INetworked game) {
         if (game instanceof NetworkedGame) {
             ((NetworkedGame)game).handledTestMessages.add(this);
         }

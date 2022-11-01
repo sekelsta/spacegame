@@ -3,14 +3,15 @@ package sekelsta.game;
 import java.net.InetSocketAddress;
 
 import sekelsta.engine.DataFolders;
-import sekelsta.engine.IGame;
+import sekelsta.engine.ILoopable;
 import sekelsta.engine.SoftwareVersion;
 import sekelsta.engine.network.Connection;
+import sekelsta.engine.network.INetworked;
 import sekelsta.engine.network.NetworkManager;
 import sekelsta.engine.render.Window;
 import sekelsta.game.render.Renderer;
 
-public class Game implements IGame {
+public class Game implements ILoopable, INetworked {
     public static final SoftwareVersion VERSION = new SoftwareVersion(0, 0, 0);
     public static final String GAME_ID = "MySpaceGame";
 
@@ -83,11 +84,11 @@ public class Game implements IGame {
 
     @Override
     public void update() {
-        if (world != null) {
-            world.update();
-        }
         if (window != null) {
             window.updateInput();
+        }
+        if (world != null) {
+            world.update();
         }
         if (networkManager != null) {
             networkManager.update(this);
@@ -121,7 +122,8 @@ public class Game implements IGame {
 
     @Override
     public void connectionRejected(String reason) {
-        // TODO
+        networkManager.close();
+        networkManager = null;
     }
 
     @Override
@@ -131,6 +133,16 @@ public class Game implements IGame {
 
     @Override
     public void clientConnectionAccepted(Connection client) {
+        // TODO
+    }
+
+    @Override
+    public void connectionTimedOut(long connectionID) {
+        // TODO
+    }
+
+    @Override
+    public void handleDisconnect(long connectionID) {
         // TODO
     }
 

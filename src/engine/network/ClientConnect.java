@@ -2,8 +2,6 @@ package sekelsta.engine.network;
 
 import java.nio.ByteBuffer;
 
-import sekelsta.engine.IGame;
-
 public class ClientConnect extends Message {
     private long nonce;
 
@@ -34,7 +32,7 @@ public class ClientConnect extends Message {
     }
 
     @Override
-    public void handle(IGame game) {
+    public void handle(INetworked game) {
         boolean success = game.getNetworkManager().confirmPendingClient(sender, nonce);
         if (success) {
             game.clientConnectionAccepted(sender);

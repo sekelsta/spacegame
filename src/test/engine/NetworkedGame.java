@@ -2,13 +2,13 @@ package sekelsta.test.engine;
 
 import java.util.ArrayList;
 
-import sekelsta.engine.IGame;
 import sekelsta.engine.SoftwareVersion;
 import sekelsta.engine.network.Connection;
+import sekelsta.engine.network.INetworked;
 import sekelsta.engine.network.Message;
 import sekelsta.engine.network.NetworkManager;
 
-public class NetworkedGame implements IGame {
+public class NetworkedGame implements INetworked {
     // Note this only includes messages that add themselves to this list
     public ArrayList<Message> handledTestMessages = new ArrayList<>();
 
@@ -36,30 +36,14 @@ public class NetworkedGame implements IGame {
     }
 
     @Override
-    public boolean isRunning() {
-        throw new RuntimeException("Not implemented");
-    }
-
-    @Override
     public NetworkManager getNetworkManager() {
         return networkManager;
     }
 
-    @Override
     public void update() {
         if (networkManager != null) {
             networkManager.update(this);
         }
-    }
-
-    @Override
-    public void render(float interpolation) {
-        throw new RuntimeException("Not implemented");
-    }
-
-    @Override
-    public void close() {
-        throw new RuntimeException("Not implemented");
     }
 
     @Override
@@ -87,5 +71,15 @@ public class NetworkedGame implements IGame {
 
     public int getClientConnectionAcceptedCount() {
         return clientConnectionAcceptedCount;
+    }
+
+    @Override
+    public void handleDisconnect(long connectionID) {
+        throw new RuntimeException("Not implemented");
+    }
+
+    @Override
+    public void connectionTimedOut(long connectionID) {
+        throw new RuntimeException("Not implemented");
     }
 }

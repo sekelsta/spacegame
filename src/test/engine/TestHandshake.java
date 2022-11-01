@@ -31,6 +31,7 @@ class TestHandshake {
     void tearDown() {
         client.close();
         server.close();
+        Connection.closeAll();
     }
 
     @Test

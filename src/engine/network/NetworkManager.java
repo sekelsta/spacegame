@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import sekelsta.engine.IGame;
 import sekelsta.engine.Log;
 import sekelsta.engine.network.Message;
 
@@ -21,7 +20,7 @@ public class NetworkManager {
     protected DatagramSocket socket = null;
 
     private Set<Connection> queuedMessages = new HashSet<>();
-    private Set<Connection> broadcastRecipients = new HashSet<>();
+    protected Set<Connection> broadcastRecipients = new HashSet<>();
     private Map<Connection, Long> pendingConnections = new HashMap<>();
 
     public NetworkManager(int port) {
@@ -37,6 +36,7 @@ public class NetworkManager {
         registerMessageType(ServerRejectIncompatibleVersion::new);
         registerMessageType(ServerHello::new);
         registerMessageType(ClientConnect::new);
+        registerMessageType(DisconnectMessage::new);
     }
 
     public void registerMessageType(Supplier<Message> messageSupplier) {
@@ -48,7 +48,7 @@ public class NetworkManager {
         listener.start();
     }
 
-    public void update(IGame game) {
+    public void update(INetworked game) {
         flush();
         while (listener.hasMessage()) {
             Message message = listener.popMessage();
@@ -63,9 +63,26 @@ public class NetworkManager {
             }
             message.handle(game);
         }
+
+        long currentTime = System.nanoTime();
+        for (Connection connection : broadcastRecipients) {
+            if (connection.shouldTimeOut(currentTime)) {
+                broadcastRecipients.remove(connection);
+                connection.close();
+                game.connectionTimedOut(connection.getID());
+            }
+        }
+        for (Connection connection : pendingConnections.keySet()) {
+            if (connection.shouldTimeOut(currentTime)) {
+                pendingConnections.remove(connection);
+                connection.close();
+            }
+        }
     }
 
     public void close() {
+        queueBroadcast(new DisconnectMessage());
+        flush();
         Connection.closeAll();
         listener.setDone();
         try {
@@ -74,7 +91,7 @@ public class NetworkManager {
         catch (InterruptedException e) {}
     }
 
-    public void joinServer(IGame game, InetSocketAddress serverAddress) {
+    public void joinServer(INetworked game, InetSocketAddress serverAddress) {
         acceptDirection = NetworkDirection.SERVER_TO_CLIENT;
         addBroadcastRecipient(serverAddress);
         ClientHello clientHello = new ClientHello(game.getGameID(), game.getVersion());
@@ -117,13 +134,14 @@ public class NetworkManager {
 
     public void queueMessage(Connection recipient, Message message) {
         assert(message.getDirection() != acceptDirection);
+        assert(broadcastRecipients.contains(recipient) || !message.reliable());
         queuedMessages.add(recipient);
         recipient.queueMessage(registry, message);
     }
 
     public void addBroadcastRecipient(InetSocketAddress socketAddress) {
         if (!isBroadcastRecipient(socketAddress)) {
-            broadcastRecipients.add(new Connection(socketAddress));
+            broadcastRecipients.add(getOrCreateConnection(socketAddress));
         }
     }
 

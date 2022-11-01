@@ -24,6 +24,7 @@ class TestMessageSize {
     @AfterEach
     void tearDown() {
         network.close();
+        Connection.closeAll();
     }
 
     @Test

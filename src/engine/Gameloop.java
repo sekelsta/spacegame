@@ -4,12 +4,12 @@ public class Gameloop {
     public static final int TICKS_PER_SECOND = 24;
     static final int MAX_FRAME_SKIP = 5;
 
-    private IGame game;
+    private ILoopable game;
     // If making this modifiable in the future, remember it could be changed from within run()
     private final int fps_cap;
 
     // Use an FPS cap of 0 or lower to mean unlimited
-    public Gameloop(IGame game, int fps_cap) {
+    public Gameloop(ILoopable game, int fps_cap) {
         this.game = game;
         this.fps_cap = fps_cap;
     }

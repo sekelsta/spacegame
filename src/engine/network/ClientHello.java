@@ -3,7 +3,6 @@ package sekelsta.engine.network;
 import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 
-import sekelsta.engine.IGame;
 import sekelsta.engine.Log;
 import sekelsta.engine.SoftwareVersion;
 
@@ -47,7 +46,7 @@ public class ClientHello extends Message {
     }
 
     @Override
-    public void handle(IGame game) {
+    public void handle(INetworked game) {
         if (game.getNetworkManager().isBroadcastRecipient(sender)) {
             return;
         }

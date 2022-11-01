@@ -4,7 +4,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 
-import sekelsta.engine.IGame;
+import sekelsta.engine.network.INetworked;
 import sekelsta.engine.network.NetworkDirection;
 import sekelsta.engine.network.NetworkManager;
 
@@ -17,7 +17,7 @@ class ExtendedNetworkManager extends NetworkManager {
     }
 
     @Override
-    public void update(IGame game) {
+    public void update(INetworked game) {
         super.update(game);
         // Take a break, make sure the sockets get a chance to update and the listener thread gets a chance to run
         try {

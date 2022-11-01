@@ -2,7 +2,6 @@ package sekelsta.engine.network;
 
 import java.nio.ByteBuffer;
 
-import sekelsta.engine.IGame;
 import sekelsta.engine.SoftwareVersion;
 
 public class ServerRejectIncompatibleVersion extends Message {
@@ -35,7 +34,7 @@ public class ServerRejectIncompatibleVersion extends Message {
     }
 
     @Override
-    public void handle(IGame game) {
+    public void handle(INetworked game) {
         game.getNetworkManager().removeBroadcastRecipient(sender);
         game.connectionRejected("incompatible game version (server version: " + version + ")");
     }

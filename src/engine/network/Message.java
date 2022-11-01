@@ -3,8 +3,6 @@ package sekelsta.engine.network;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
-import sekelsta.engine.IGame;
-
 public abstract class Message {
     public Connection sender;
 
@@ -22,7 +20,7 @@ public abstract class Message {
 
     public abstract void decode(ByteBuffer buffer);
 
-    public abstract void handle(IGame game);
+    public abstract void handle(INetworked game);
 
     // The logic in readString and writeString works for collections in general, but String does not implement that
     protected static void writeString(ByteVector buffer, String s) {

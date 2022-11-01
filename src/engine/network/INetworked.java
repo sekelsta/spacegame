@@ -1,19 +1,15 @@
-package sekelsta.engine;
+package sekelsta.engine.network;
 
-import sekelsta.engine.network.Connection;
-import sekelsta.engine.network.NetworkManager;
+import sekelsta.engine.SoftwareVersion;
 
-public interface IGame {
+public interface INetworked {
     SoftwareVersion getVersion();
     String getGameID();
-    boolean isRunning();
     NetworkManager getNetworkManager();
-
-    void update();
-    void render(float interpolation);
-    void close();
 
     void connectionRejected(String reason);
     void receivedHelloFromServer(SoftwareVersion version);
     void clientConnectionAccepted(Connection client);
+    void connectionTimedOut(long connectionID);
+    void handleDisconnect(long connectionID);
 }

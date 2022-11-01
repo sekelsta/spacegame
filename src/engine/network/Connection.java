@@ -13,19 +13,24 @@ import sekelsta.engine.Log;
 
 public class Connection {
     public static final int BUFFER_SIZE = 1024;
+    // We initialize with a fake -1 id
+    private static final int WRAP_POINT = -2;
+    private static final long TIMEOUT_NANOS = 16000000000L;
     private static final int[] retryWaitsMillis = new int[] {250, 500, 1000, 2000, 3000, 4000, 4000};
     private static Timer retryTimer;
 
     private InetSocketAddress socketAddress;
-    private int sequenceNumber = 0;
+    private final long connectionID;
+    protected int sequenceNumber = 0;
+    private long aliveTime = System.nanoTime();
 
-    private PacketHeader header;
+    protected PacketHeader header;
     private ByteVector buffer;
     private Map<DatagramPacket, PacketHeader> readyPackets = new HashMap<>();
     private Map<Integer, DatagramPacket> resendingPackets = new ConcurrentHashMap<>();
     private SortedSet<Integer> receivedPacketIDs = new TreeSet<>();
 
-    private static class PacketHeader {
+    protected static class PacketHeader {
         public final int packetID;
         private boolean reliable = false;
         public final Set<Integer> packetIDsToAck = new HashSet<>();
@@ -65,32 +70,36 @@ public class Connection {
 
         @Override
         public void run() {
-            DatagramPacket packet = resendingPackets.get(packetID);
-            if (packet == null) {
-                return;
-            }
-            if (socket.isClosed()) {
-                return;
-            }
+            synchronized (resendingPackets) {
+                DatagramPacket packet = resendingPackets.get(packetID);
+                if (packet == null) {
+                    return;
+                }
+                if (socket.isClosed()) {
+                    return;
+                }
 
-            try {
-                socket.send(packet);
-                retriesSent += 1;
-                if (retriesSent < retryWaitsMillis.length) {
-                    retryTimer.schedule(new RetryTask(retriesSent, packetID, socket), retryWaitsMillis[retriesSent]);
+                try {
+                    socket.send(packet);
+                    retriesSent += 1;
+                    if (retriesSent < retryWaitsMillis.length) {
+                        retryTimer.schedule(new RetryTask(retriesSent, packetID, socket), retryWaitsMillis[retriesSent]);
+                    }
+                    else {
+                        Log.debug("No ACK received for packet ID " + packetID + " after " + retriesSent + " retries");
+                        resendingPackets.remove(packetID);
+                    }
                 }
-                else {
-                    Log.debug("No ACK received for packet ID " + packetID + " after " + retriesSent + " retries");
+                catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
-            }
-            catch (IOException e) {
-                throw new RuntimeException(e);
             }
         }
     }
 
     public Connection(InetSocketAddress address) {
         this.socketAddress = address;
+        this.connectionID = address.hashCode();
         if (retryTimer == null) {
             retryTimer = new Timer("network_retry_thread", true);
         }
@@ -100,6 +109,10 @@ public class Connection {
 
     public InetSocketAddress getSocketAddress() {
         return socketAddress;
+    }
+
+    public long getID() {
+        return connectionID;
     }
 
     // Deliberately package-private
@@ -137,7 +150,7 @@ public class Connection {
         return buffer.position() + header.sizeInBytes() > BUFFER_SIZE;
     }
 
-    private synchronized void prepareHeader() {
+    protected synchronized void prepareHeader() {
         if (header == null) {
             header = new PacketHeader(sequenceNumber);
             sequenceNumber += 1;
@@ -156,21 +169,30 @@ public class Connection {
         if (reliable) {
             header.packetIDsToAck.add(seq);
         }
-        if ((receivedPacketIDs.size() > 0 && seq < receivedPacketIDs.first()) 
+        if (seq < WRAP_POINT && receivedPacketIDs.first() > WRAP_POINT) {
+            // Because we set it to its own tail, we aren't allowed to insert elements below the min value anymore
+            SortedSet<Integer> oldSet = receivedPacketIDs;
+            receivedPacketIDs = new TreeSet<>();
+            receivedPacketIDs.addAll(oldSet);
+        }
+        else if ((receivedPacketIDs.size() > 0 && seq < receivedPacketIDs.first()) 
                 || receivedPacketIDs.contains(seq)) {
+            // Skip duplicate packet
             return false;
         }
         receivedPacketIDs.add(seq);
 
         int numAcks = packetData.getInt();
-        for (int i = 0; i < numAcks; ++i) {
-            int acked = packetData.getInt();
-            resendingPackets.remove(acked);
+        synchronized (resendingPackets) {
+            for (int i = 0; i < numAcks; ++i) {
+                int acked = packetData.getInt();
+                resendingPackets.remove(acked);
+            }
         }
         return true;
     }
 
-    public void flush(DatagramSocket socket) throws IOException {
+    public synchronized void flush(DatagramSocket socket) throws IOException {
         preparePacket();
 
         for (Map.Entry<DatagramPacket, PacketHeader> entry : readyPackets.entrySet()) {
@@ -178,7 +200,9 @@ public class Connection {
             socket.send(packet);
             PacketHeader h = entry.getValue();
             if (h.isReliable()) {
-                resendingPackets.put(h.packetID, packet);
+                synchronized (resendingPackets) {
+                    resendingPackets.put(h.packetID, packet);
+                }
                 retryTimer.schedule(new RetryTask(h.packetID, socket), retryWaitsMillis[0]);
             }
         }
@@ -191,11 +215,35 @@ public class Connection {
         // 27000 = 75 packets per tick * 24 ticks per second * 15 seconds
         final int MAX_PACKET_DISTANCE = 27000;
         int minElement = receivedPacketIDs.last() - MAX_PACKET_DISTANCE;
+        if (receivedPacketIDs.first() < WRAP_POINT && receivedPacketIDs.last() > WRAP_POINT) {
+            minElement = receivedPacketIDs.headSet(WRAP_POINT).last() - MAX_PACKET_DISTANCE;
+            if (minElement < WRAP_POINT) {
+                receivedPacketIDs.removeAll(receivedPacketIDs.tailSet(WRAP_POINT));
+            }
+            else {
+                receivedPacketIDs.removeAll(receivedPacketIDs.tailSet(WRAP_POINT).headSet(minElement));
+                return;
+            }
+        }
         receivedPacketIDs = receivedPacketIDs.tailSet(minElement);
         minElement = Math.max(minElement, receivedPacketIDs.first());
         while (receivedPacketIDs.size() > 1 && receivedPacketIDs.contains(minElement + 1)) {
             receivedPacketIDs.remove(minElement);
             minElement += 1;
+        }
+    }
+
+    public void markAlive() {
+        this.aliveTime = System.nanoTime();
+    }
+
+    public boolean shouldTimeOut(long currentTime) {
+        return currentTime - aliveTime > TIMEOUT_NANOS;
+    }
+
+    public void close() {
+        synchronized (resendingPackets) {
+            resendingPackets.clear();
         }
     }
 

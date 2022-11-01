@@ -57,6 +57,7 @@ public class NetworkListener extends Thread {
         if (!shouldProcess) {
             return;
         }
+        connection.markAlive();
         // Extract potentially multiple messages from the same packet
         while (buffer.hasRemaining()) {
             int messageType = -1;

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import sekelsta.engine.network.Connection;
 import sekelsta.engine.network.NetworkDirection;
 
 class TestNetworkDirection {
@@ -58,6 +59,7 @@ class TestNetworkDirection {
     void tearDown() {
         client.close();
         server.close();
+        Connection.closeAll();
     }
 
     @Test
