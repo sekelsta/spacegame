@@ -16,6 +16,7 @@ public class Texture {
     private int handle;
     private int width;
     private int height;
+    private ByteBuffer pixels;
 
     public Texture(String name) {
         BufferedImage image = ImageUtils.loadResource(TEXTURE_LOCATION + name);
@@ -43,14 +44,8 @@ public class Texture {
         handle = GL11.glGenTextures();
         bind();
         GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
-        ByteBuffer pixels = ImageUtils.bufferedImageToByteBuffer(image);
-        this.width = image.getWidth();
-        this.height = image.getHeight();
-        GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, pixels);
-        // TO_OPTIMIZE: set blend mode that doesn't expect mipmaps for these
-        if (true || needsMipmaps) {
-            GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
-        }
+        this.pixels = ImageUtils.bufferedImageToByteBuffer(image);
+        internalUpdate(image, needsMipmaps);
     }
 
     public int getWidth() {
@@ -79,5 +74,21 @@ public class Texture {
 
     private boolean isPowerOfTwo(int n) {
         return n > 0 && ((n & n - 1) == 0);
+    }
+
+    public void update(BufferedImage image, boolean needsMipmaps) {
+        ImageUtils.updateImageBuffer(pixels, image);
+        this.bind();
+        internalUpdate(image, needsMipmaps);
+    }
+
+    private void internalUpdate(BufferedImage image, boolean needsMipmaps) {
+        this.width = image.getWidth();
+        this.height = image.getHeight();
+        GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, pixels);
+        // TO_OPTIMIZE: set blend mode that doesn't expect mipmaps for these
+        if (true || needsMipmaps) {
+            GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
+        }
     }
 }
