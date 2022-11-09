@@ -428,6 +428,7 @@ public class Matrix4f {
 
     // Sets this matrix to a frustum matrix centered at the origin, in a negative-Z-forward
     // right handed coordinate system
+    // To factor out a constant of 2, "width" and "height" are actually measured from the center to the edge
     public Matrix4f frustumNegZ(float near, float far, float width, float height) {
         setIdentity();
         
@@ -443,6 +444,7 @@ public class Matrix4f {
 
     // Sets this matrix to a frustum matrix centered at the origin, in a Y-forward
     // right handed coordinate system
+    // To factor out a constant of 2, "width" and "height" are actually measured from the center to the edge
     public Matrix4f frustumY(float near, float far, float width, float height) {
         setIdentity();
 
