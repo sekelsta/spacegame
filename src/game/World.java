@@ -155,6 +155,12 @@ public class World implements IEntitySpace {
                 return;
             }
         }
+        for (Movable mob : spawned) {
+            if (mob.getID() == id) {
+                function.accept(mob);
+                return;
+            }
+        }
 
         if (onSpawnFunctions.containsKey(id)) {
             onSpawnFunctions.get(id).add(function);

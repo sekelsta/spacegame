@@ -100,8 +100,8 @@ public class Game implements ILoopable, INetworked {
 
     public void joinServer(InetSocketAddress socketAddress) {
         allowConnections(0);
-        networkManager.joinServer(this, socketAddress);
         this.world = new World(this, false);
+        networkManager.joinServer(this, socketAddress);
     }
 
     @Override
@@ -160,6 +160,7 @@ public class Game implements ILoopable, INetworked {
 
     @Override
     public void clientConnectionAccepted(Connection client) {
+        Log.info("Accepted connection " + client.getID());
         // Send info about all existing entities
         for (Movable mob : world.getMobs()) {
             ServerSpawnEntity message = new ServerSpawnEntity(mob);
