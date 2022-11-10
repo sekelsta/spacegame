@@ -40,6 +40,11 @@ public class Spaceship extends Movable implements ICollider {
     }
 
     @Override
+    public boolean mayDespawn() {
+        return false;
+    }
+
+    @Override
     public void encode(ByteVector buffer) {
         super.encode(buffer);
         // TODO

@@ -91,8 +91,8 @@ public class World implements IEntitySpace {
 
         // Despawn
         for (Movable mob : mobs) {
-            if (mob.distSquared(0, 0, 0) > 100 * spawnRadius * spawnRadius) {
-                // TODO: What if it's a player?
+            if (mob.distSquared(0, 0, 0) > 100 * spawnRadius * spawnRadius
+                    && mob.mayDespawn()) {
                 kill(mob);
             }
         }

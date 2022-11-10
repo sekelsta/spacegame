@@ -96,6 +96,10 @@ public abstract class Movable implements Entity {
         scaleAngularVelocity(angularDrag);
     }
 
+    public boolean mayDespawn() {
+        return true;
+    }
+
     public static double toRadians(int angle) {
         return angle / ANGLE_RESOLUTION * 2 * Math.PI;
     }
