@@ -6,6 +6,7 @@ import sekelsta.engine.DataFolders;
 import sekelsta.engine.ILoopable;
 import sekelsta.engine.Log;
 import sekelsta.engine.SoftwareVersion;
+import sekelsta.engine.entity.IController;
 import sekelsta.engine.entity.Movable;
 import sekelsta.engine.network.Connection;
 import sekelsta.engine.network.INetworked;
@@ -181,11 +182,23 @@ public class Game implements ILoopable, INetworked {
     @Override
     public void connectionTimedOut(long connectionID) {
         Log.debug("Connection timed out: " + connectionID);
+        removePawn(connectionID);
     }
 
     @Override
     public void handleDisconnect(long connectionID) {
         Log.debug("connection " + connectionID + " disconnected");
+        removePawn(connectionID);
+    }
+
+    private void removePawn(long connectionID) {
+        // Note: If the pawn hasn't spawned yet, or is in the list awaiting spawning, this won't remove it
+        for (Movable mob : world.getMobs()) {
+            IController c = mob.getController();
+            if (c instanceof RemotePlayer && connectionID == ((RemotePlayer)c).connectionID) {
+                world.kill(mob);
+            }
+        }
     }
 
     public World getWorld() {
