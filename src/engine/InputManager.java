@@ -32,4 +32,7 @@ public class InputManager {
 
     public void joystickConnectionChanged(int joystickID, int event) {
     }
+
+    public void processGamepadButton(int button, int action) {
+    }
 }

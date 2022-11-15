@@ -40,6 +40,7 @@ public class Game implements ILoopable, INetworked {
             this.window.setInput(input);
             this.overlay = new Overlay(this);
             this.input.setOverlay(this.overlay);
+            this.input.updateConnectedGamepads();
         }
         this.world = null;
         Entities.init();
@@ -124,6 +125,9 @@ public class Game implements ILoopable, INetworked {
     public void update() {
         if (window != null) {
             window.updateInput();
+        }
+        if (input != null) {
+            input.update();
         }
         if (world != null) {
             world.update();

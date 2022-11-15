@@ -1,7 +1,9 @@
 package sekelsta.game;
 
+import java.util.ArrayList;
 import org.lwjgl.glfw.GLFW;
 import sekelsta.engine.InputManager;
+import sekelsta.engine.Gamepad;
 import sekelsta.engine.Log;
 import sekelsta.engine.entity.IController;
 import sekelsta.engine.render.Window;
@@ -13,6 +15,8 @@ public class Input extends InputManager implements IController {
     Camera camera;
     Spaceship player;
     private Game game;
+
+    private ArrayList<Gamepad> gamepads = new ArrayList<>();
 
     public Input(Game game) {
         this.game = game;
@@ -28,6 +32,21 @@ public class Input extends InputManager implements IController {
 
     public void setPlayer(Spaceship player) {
         this.player = player;
+    }
+
+    public void updateConnectedGamepads() {
+        for (int joystickID = GLFW.GLFW_JOYSTICK_1; joystickID < GLFW.GLFW_JOYSTICK_LAST; ++joystickID) {
+            boolean present = GLFW.glfwJoystickPresent(joystickID);
+            boolean known = false;
+            for (Gamepad gamepad : gamepads) {
+                if (gamepad.joystickID == joystickID) {
+                    known = true;
+                }
+            }
+            if (present && !known) {
+                joystickConnectionChanged(joystickID, GLFW.GLFW_CONNECTED);
+            }
+        }
     }
 
     @Override
@@ -107,7 +126,58 @@ public class Input extends InputManager implements IController {
 
     @Override
     public void joystickConnectionChanged(int joystickID, int event) {
-        System.out.println("joystick connect/disconnect");
+        if (event == GLFW.GLFW_CONNECTED) {
+            if (GLFW.glfwJoystickIsGamepad(joystickID)) {
+                gamepads.add(new Gamepad(joystickID, this));
+            }
+            else {
+                String GUID = GLFW.glfwGetJoystickGUID(joystickID);
+                String name = GLFW.glfwGetJoystickName(joystickID);
+                Log.warn(name + " is not a compatible joystick, gamepad, or controller.\n" + 
+                    "    Reason: No gamepad mapping for GUID " + GUID);
+            }
+        }
+        else if (event == GLFW.GLFW_DISCONNECTED) {
+            gamepads.removeIf(g -> g.joystickID == joystickID);
+        }
+    }
+
+    @Override
+    public void processGamepadButton(int button, int action) {
+        if (action == GLFW.GLFW_PRESS) {
+            if (button == GLFW.GLFW_GAMEPAD_BUTTON_B) {
+                game.escape();
+            }
+            else if (button == GLFW.GLFW_GAMEPAD_BUTTON_A) {
+                overlay.trigger();
+                if (player != null) {
+                    player.fire();
+                }
+            }
+            else if (button == GLFW.GLFW_GAMEPAD_BUTTON_DPAD_DOWN) {
+                overlay.down();
+            }
+            else if (button == GLFW.GLFW_GAMEPAD_BUTTON_DPAD_UP) {
+                overlay.up();
+            }
+        }
+    }
+
+    public void update() {
+        for (Gamepad gamepad : gamepads) {
+            gamepad.update();
+
+            // Special case to handle axis
+            float y = gamepad.axis(GLFW.GLFW_GAMEPAD_AXIS_LEFT_Y);
+            float prevY = gamepad.prevAxis(GLFW.GLFW_GAMEPAD_AXIS_LEFT_Y);
+            final float PRESS_THRESHOLD = 0.4f;
+            if (y > PRESS_THRESHOLD && prevY <= PRESS_THRESHOLD) {
+                overlay.down();
+            }
+            else if (y < -PRESS_THRESHOLD && prevY >= -PRESS_THRESHOLD) {
+                overlay.up();
+            }
+        }
     }
 
     @Override
