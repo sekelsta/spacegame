@@ -41,6 +41,9 @@ public class Input extends InputManager implements IController {
                     player.fire();
                 }
             }
+            if (key == GLFW.GLFW_KEY_ESCAPE) {
+                game.escape();
+            }
             if (key == GLFW.GLFW_KEY_ENTER) {
                 overlay.trigger();
             }

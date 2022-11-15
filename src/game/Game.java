@@ -223,4 +223,32 @@ public class Game implements ILoopable, INetworked {
     public World getWorld() {
         return world;
     }
+
+    public void escape() {
+        if (world == null) {
+            return;
+        }
+        if (overlay.hasScreen()) {
+            overlay.popScreen();
+            if (!overlay.hasScreen()) {
+                unpause();
+            }
+        }
+        else {
+            overlay.pushScreen(new GameMenuScreen(overlay, this));
+            pause();
+        }
+    }
+
+    private void pause() {
+        if (world != null && !world.isPaused()) {
+            world.togglePaused();
+        }
+    }
+
+    private void unpause() {
+        if (world != null && world.isPaused()) {
+            world.togglePaused();
+        }
+    }
 }
