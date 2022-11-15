@@ -13,7 +13,7 @@ public class InputManager {
     protected double prevCursorX;
     protected double prevCursorY;
 
-    public void processKey(int key, int scancode, int action, boolean focused) {
+    public void processKey(int key, int scancode, int action, int mods) {
     }
 
     public void inputCharacter(char character) {

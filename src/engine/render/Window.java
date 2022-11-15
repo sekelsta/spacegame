@@ -251,7 +251,7 @@ public class Window {
         input.window = this;
 
         GLFW.glfwSetKeyCallback(window, 
-            (window, key, scancode, action, mods) -> input.processKey(key, scancode, action, isFocused())
+            (window, key, scancode, action, mods) -> input.processKey(key, scancode, action, mods)
         );
 
         GLFW.glfwSetCharCallback(window,

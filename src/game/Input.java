@@ -24,7 +24,7 @@ public class Input extends InputManager implements IController {
     }
 
     @Override
-    public void processKey(int key, int scancode, int action, boolean focused) {
+    public void processKey(int key, int scancode, int action, int mods) {
         if (action == GLFW.GLFW_PRESS) {
             if (key == GLFW.GLFW_KEY_F11) {
                 window.toggleFullscreen();
