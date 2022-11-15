@@ -5,6 +5,10 @@ import sekelsta.engine.render.gui.TextButton;
 public class Screen {
     protected TextButtonList buttons = new TextButtonList();
 
+    public boolean pausesGame() {
+        return false;
+    }
+
     public void positionPointer(double xPos, double yPos) {
         buttons.positionPointer(xPos, yPos);
     }

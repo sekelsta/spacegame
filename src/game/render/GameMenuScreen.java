@@ -10,4 +10,9 @@ public class GameMenuScreen extends Screen {
         buttons.add(new TextButton(font, "Resume", () -> game.escape()));
         buttons.add(new TextButton(font, "Quit", () -> game.exitWorld())); 
     }
+
+    @Override
+    public boolean pausesGame() {
+        return true;
+    }
 }

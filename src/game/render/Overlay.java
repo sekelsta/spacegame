@@ -47,11 +47,33 @@ public class Overlay {
         return scale;
     }
 
+    public boolean isPaused() {
+        for (Screen screen : screenStack) {
+            if (screen.pausesGame()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void positionPointer(double xPos, double yPos) {
         xPointer = xPos * scale;
         yPointer = yPos * scale;
         if (hasScreen()) {
             screenStack.peek().positionPointer(xPointer, yPointer);
+        }
+    }
+
+    public void escape(Game game) {
+        if (screenStack.peek() instanceof MainMenuScreen) {
+            return;
+        }
+
+        if (hasScreen()) {
+            popScreen();
+        }
+        else {
+            pushScreen(new GameMenuScreen(this, game));
         }
     }
 
