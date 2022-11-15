@@ -5,8 +5,7 @@ import shutil
 import sys
 
 lwjgl_libs = ['lwjgl', 'lwjgl-glfw', 'lwjgl-opengl']
-lwjgl_directory = '../lwjgl-3.2.3'
-#other_libs = ['../lwjgl-2.9.3/jar/lwjgl_util.jar']
+lwjgl_directory = '../lwjgl3'
 other_libs = ['libs/*']
 main_class = 'sekelsta.game.Main'
 test_class = 'sekelsta.test.Main'
