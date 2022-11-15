@@ -16,8 +16,6 @@ import sekelsta.game.render.entity.*;
 import sekelsta.math.Matrix3f;
 import sekelsta.math.Matrix4f;
 import sekelsta.math.Vector2f;
-    // TEMP_DEBUG
-import sekelsta.engine.render.text.BitmapFont;
 
 public class Renderer implements IFramebufferSizeListener {
     private ShaderProgram shader = ShaderProgram.load("/shaders/basic.vsh", "/shaders/basic.fsh");
@@ -28,12 +26,6 @@ public class Renderer implements IFramebufferSizeListener {
     private final Matrix4f coordinate_convert = new Matrix4f().rotate((float)(-1 * Math.PI/2), 1f, 0f, 0f);
     private final Matrix3f identity3f = new Matrix3f();
     private final Vector2f uiDimensions = new Vector2f(1, 1);
-
-    private final SpriteBatch spriteBatch = new SpriteBatch();
-    // DEBUG
-    private final Texture connectingPlaceholder = new Texture("Connecting.png");
-    private final BitmapFont font = new BitmapFont(new Font(Font.MONOSPACED, Font.PLAIN, 72), true);
-    // END DEBUG
 
     private MatrixStack matrixStack = new MatrixStack() {
         @Override
@@ -59,13 +51,13 @@ public class Renderer implements IFramebufferSizeListener {
         GL11.glEnable(GL11.GL_CULL_FACE);
     }
 
-    public void render(float lerp, Camera camera, World world) {
+    public void render(float lerp, Camera camera, World world, Overlay overlay) {
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
         if (camera != null) {
             renderWorld(lerp, camera, world);
         }
-        renderOverlay(world);
+        renderOverlay(overlay);
     }
 
     private void renderWorld(float lerp, Camera camera, World world) {
@@ -89,23 +81,12 @@ public class Renderer implements IFramebufferSizeListener {
         matrixStack.pop();
     }
 
-    private void renderOverlay(World world) {
+    private void renderOverlay(Overlay overlay) {
         // Set up for two-dimensional rendering
         shader2D.use();
         shader2D.setUniform("dimensions", uiDimensions);
         GL11.glDisable(GL11.GL_DEPTH_TEST);
-        // Render UI and HUD
-        if (world.getLocalPlayer() == null) {
-            font.blit("Connecting...", 0, 0);
-            spriteBatch.setTexture(connectingPlaceholder);
-            spriteBatch.blit((int)((uiDimensions.x - 512) / 2), (int)((uiDimensions.y - 256) / 2), 512, 256, 0, 0);
-            spriteBatch.render();
-        }
-        else if (world.isPaused()) {
-            font.blit("Paused", 0, 0);
-        }
-
-        font.render();
+        overlay.render(uiDimensions);
     }
 
     @SuppressWarnings("unchecked")
@@ -134,7 +115,8 @@ public class Renderer implements IFramebufferSizeListener {
         Matrix4f.mul(coordinate_convert, perspective, perspective);
 
         // This is the size of UI's canvas, so the scale is inversly proportional to actual element size
-        float uiScale = 1.25f;
+        // TODO: Make this scale adjustable
+        float uiScale = (float)Overlay.getScale();
         uiDimensions.x = width * uiScale;
         uiDimensions.y = height * uiScale;
     }
@@ -162,7 +144,6 @@ public class Renderer implements IFramebufferSizeListener {
     }
 
     public void clean() {
-        spriteBatch.clean();
         shader.delete();
         shader2D.delete();
     }

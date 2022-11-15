@@ -51,7 +51,6 @@ public class Main {
 
     public static void runSingleplayer() {
         Game game = new Game(true);
-        game.enterWorld();
         new Gameloop(game, DEFAULT_FRAME_CAP).run();
     }
 

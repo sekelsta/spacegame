@@ -2,14 +2,25 @@ package sekelsta.game;
 
 import org.lwjgl.glfw.GLFW;
 import sekelsta.engine.InputManager;
+import sekelsta.engine.Log;
 import sekelsta.engine.entity.IController;
 import sekelsta.engine.render.Window;
 import sekelsta.game.entity.Spaceship;
+import sekelsta.game.render.Overlay;
 
 public class Input extends InputManager implements IController {
+    Overlay overlay;
     Camera camera;
     Spaceship player;
-    World world;
+    private Game game;
+
+    public Input(Game game) {
+        this.game = game;
+    }
+
+    public void setOverlay(Overlay overlay) {
+        this.overlay = overlay;
+    }
 
     public void setCamera(Camera camera) {
         this.camera = camera;
@@ -19,10 +30,6 @@ public class Input extends InputManager implements IController {
         this.player = player;
     }
 
-    public void setWorld(World world) {
-        this.world = world;
-    }
-
     @Override
     public void processKey(int key, int scancode, int action, int mods) {
         if (action == GLFW.GLFW_PRESS) {
@@ -30,10 +37,24 @@ public class Input extends InputManager implements IController {
                 window.toggleFullscreen();
             }
             if (key == GLFW.GLFW_KEY_X) {
-                player.fire();
+                if (player != null) {
+                    player.fire();
+                }
             }
-            if (key == GLFW.GLFW_KEY_P) {
-                world.togglePaused();
+            if (key == GLFW.GLFW_KEY_ENTER) {
+                overlay.trigger();
+            }
+            if (key == GLFW.GLFW_KEY_UP || key == GLFW.GLFW_KEY_W) {
+                overlay.up();
+            }
+            if (key == GLFW.GLFW_KEY_DOWN || key == GLFW.GLFW_KEY_S) {
+                overlay.down();
+            }
+            if (key == GLFW.GLFW_KEY_HOME) {
+                overlay.top();
+            }
+            if (key == GLFW.GLFW_KEY_END) {
+                overlay.bottom();
             }
         }
     }
@@ -45,14 +66,17 @@ public class Input extends InputManager implements IController {
 
     @Override
     public void moveCursor(double xPos, double yPos) {
+        overlay.positionPointer(xPos, yPos);
         if (window.getMouseButton(GLFW.GLFW_MOUSE_BUTTON_MIDDLE) == GLFW.GLFW_PRESS
             // TEMP DEBUG
             || window.getMouseButton(GLFW.GLFW_MOUSE_BUTTON_RIGHT) == GLFW.GLFW_PRESS
             ) {
-            double diffX = xPos - prevCursorX;
-            double diffY = yPos - prevCursorY;
-            camera.addYaw((float)-diffX / 100f);
-            camera.addPitch((float)diffY / 100f);
+            if (camera != null) {
+                double diffX = xPos - prevCursorX;
+                double diffY = yPos - prevCursorY;
+                camera.addYaw((float)-diffX / 100f);
+                camera.addPitch((float)diffY / 100f);
+            }
         }
         super.moveCursor(xPos, yPos);        
     }
@@ -61,13 +85,10 @@ public class Input extends InputManager implements IController {
     public void processMouseClick(int button, int action, int mods) {
         if (action == GLFW.GLFW_PRESS) {
             if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
-                //camera.addYaw(0.1f);
-            }
-            else if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
-                //camera.addYaw(-0.1f);
-            }
-            else if (button == GLFW.GLFW_MOUSE_BUTTON_MIDDLE) {
-                //camera.addPitch(0.1f);
+                boolean consumed = overlay.trigger();
+                if (consumed) {
+                    return;
+                }
             }
         }
     }

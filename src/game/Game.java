@@ -15,7 +15,7 @@ import sekelsta.engine.render.Window;
 import sekelsta.game.entity.Entities;
 import sekelsta.game.entity.Spaceship;
 import sekelsta.game.network.*;
-import sekelsta.game.render.Renderer;
+import sekelsta.game.render.*;
 
 public class Game implements ILoopable, INetworked {
     public static final SoftwareVersion VERSION = new SoftwareVersion(0, 0, 0);
@@ -29,27 +29,41 @@ public class Game implements ILoopable, INetworked {
     private Input input;
     private Camera camera;
     private NetworkManager networkManager;
+    private Overlay overlay;
 
     public Game(boolean graphical) {
         if (graphical) {
             this.window = new Window(DataFolders.getUserMachineFolder("initconfig.toml"), GAME_ID);
             this.renderer = new Renderer();
             this.window.setResizeListener(renderer);
-            this.input = new Input();
+            this.input = new Input(this);
             this.window.setInput(input);
+            this.overlay = new Overlay(this);
+            this.input.setOverlay(this.overlay);
         }
-        this.world = new World(this, true);
+        this.world = null;
         Entities.init();
     }
 
     public void enterWorld() {
+        this.world = new World(this, true);
         if (isGraphical()) {
             this.world.spawnLocalPlayer(input);
             this.camera = new Camera(world.getLocalPlayer());
             this.input.setCamera(camera);
             this.input.setPlayer(this.world.getLocalPlayer());
-            this.input.setWorld(this.world);
+            while (overlay.hasScreen()) {
+                overlay.popScreen();
+            }
         }
+    }
+
+    public void exitWorld() {
+        this.camera = null;
+        this.world = null;
+        this.input.setCamera(null);
+        this.input.setPlayer(null);
+        overlay.pushScreen(new MainMenuScreen(overlay, this));
     }
 
     public void takePawn(Spaceship pawn) {
@@ -60,9 +74,7 @@ public class Game implements ILoopable, INetworked {
             this.camera = new Camera(world.getLocalPlayer());
             this.input.setCamera(camera);
             this.input.setPlayer(this.world.getLocalPlayer());
-            this.input.setWorld(this.world);
         }
-
     }
 
     private boolean isGraphical() {
@@ -133,22 +145,29 @@ public class Game implements ILoopable, INetworked {
             return;
         }
         window.updateInput();
-        renderer.render(interpolation, camera, world);
+        renderer.render(interpolation, camera, world, overlay);
         window.swapBuffers();
+    }
+
+    public void stop() {
+        running = false;
     }
 
     @Override
     public void close() {
-        if (!running) {
-            // Already closed
-            return;
-        }
         running = false;
+        // Only close things once, even if called multiple times
+        if (overlay != null) {
+            overlay.close();
+            overlay = null;
+        }
         if (window != null) {
             window.close();
+            window = null;
         }
         if (networkManager != null) {
             networkManager.close();
+            networkManager = null;
         }
     }
 
