@@ -10,12 +10,11 @@ import sekelsta.engine.Log;
 
 public class Main {
     private static int DEFAULT_FRAME_CAP = 120;
-    private static int DEFAULT_PORT = 7654;
 
     public static void main(String[] args) {
         DataFolders.init(Game.GAME_ID);
         Log.info("Starting " + Game.GAME_ID + " " + Game.VERSION + " with args: " + String.join(" ", args));
-        int port = DEFAULT_PORT;
+        int port = Game.DEFAULT_PORT;
         if (args.length == 0 || args[0].equals("singleplayer")) {
             runSingleplayer();
         }
@@ -44,7 +43,7 @@ public class Main {
         }
         else {
             System.out.println("Unknown arguments, use server [port] or client [ipaddress] [port]\n" 
-                             + "Port is optional and defaults to " + DEFAULT_PORT);
+                             + "Port is optional and defaults to " + Game.DEFAULT_PORT);
             System.exit(1);
         }
     }

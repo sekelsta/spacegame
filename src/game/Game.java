@@ -18,6 +18,7 @@ import sekelsta.game.network.*;
 import sekelsta.game.render.*;
 
 public class Game implements ILoopable, INetworked {
+    public static final int DEFAULT_PORT = 7654;
     public static final SoftwareVersion VERSION = new SoftwareVersion(0, 0, 0);
     public static final String GAME_ID = "MySpaceGame";
 
@@ -50,18 +51,17 @@ public class Game implements ILoopable, INetworked {
         this.world = new World(this, true);
         if (isGraphical()) {
             this.world.spawnLocalPlayer(input);
-            this.camera = new Camera(world.getLocalPlayer());
-            this.input.setCamera(camera);
-            this.input.setPlayer(this.world.getLocalPlayer());
-            while (overlay.hasScreen()) {
-                overlay.popScreen();
-            }
         }
+        initGraphical();
     }
 
     public void exitWorld() {
         this.camera = null;
         this.world = null;
+        if (networkManager != null) {
+            networkManager.close();
+            networkManager = null;
+        }
         this.input.setCamera(null);
         this.input.setPlayer(null);
         overlay.pushScreen(new MainMenuScreen(overlay, this));
@@ -71,10 +71,17 @@ public class Game implements ILoopable, INetworked {
         assert(world.localPlayer == null);
         world.localPlayer = pawn;
         pawn.setController(input);
+        initGraphical();
+    }
+
+    private void initGraphical() {
         if (isGraphical()) {
             this.camera = new Camera(world.getLocalPlayer());
             this.input.setCamera(camera);
             this.input.setPlayer(this.world.getLocalPlayer());
+            while (overlay.hasScreen()) {
+                overlay.popScreen();
+            }
         }
     }
 
@@ -226,6 +233,11 @@ public class Game implements ILoopable, INetworked {
 
     public World getWorld() {
         return world;
+    }
+
+    // in-game as opposed to in the main menu
+    public boolean isInGame() {
+        return world != null;
     }
 
     public void escape() {

@@ -16,7 +16,6 @@ import sekelsta.math.Vector2f;
 public class Overlay {
     private static final double scale = 1.0;
     private final BitmapFont font = new BitmapFont(new Font(Font.SANS_SERIF, Font.PLAIN, 48), true);
-    private final SpriteBatch spriteBatch = new SpriteBatch();
 
     private Deque<Screen> screenStack = new ArrayDeque<>();
     private double xPointer, yPointer;
@@ -26,13 +25,18 @@ public class Overlay {
     }
 
     public void pushScreen(Screen screen) {
-        // TODO: Tell previous screen it lost focus
         screenStack.push(screen);
         screen.positionPointer(xPointer, yPointer);
     }
 
     public void popScreen() {
         screenStack.pop();
+    }
+
+    public void popScreenIfEquals(Screen screen) {
+        if (hasScreen() && screenStack.peek().equals(screen)) {
+            popScreen();
+        }
     }
 
     public boolean hasScreen() {
@@ -77,7 +81,6 @@ public class Overlay {
         }
     }
 
-    // TODO: Don't repeat so much code
     public boolean trigger() {
         if (hasScreen()) {
             return screenStack.peek().trigger();
@@ -85,32 +88,28 @@ public class Overlay {
         return false;
     }
 
-    public boolean up() {
+    public void up() {
         if (hasScreen()) {
-            return screenStack.peek().up();
+            screenStack.peek().up();
         }
-        return false;
     }
 
-    public boolean down() {
+    public void down() {
         if (hasScreen()) {
-            return screenStack.peek().down();
+            screenStack.peek().down();
         }
-        return false;
     }
 
-    public boolean top() {
+    public void top() {
         if (hasScreen()) {
-            return screenStack.peek().top();
+            screenStack.peek().top();
         }
-        return false;
     }
 
-    public boolean bottom() {
+    public void bottom() {
         if (hasScreen()) {
-            return screenStack.peek().bottom();
+            screenStack.peek().bottom();
         }
-        return false;
     }
 
     public void render(Vector2f uiDimensions) {
@@ -123,6 +122,5 @@ public class Overlay {
 
     public void close() {
         font.clean();
-        spriteBatch.clean();
     }
 }
