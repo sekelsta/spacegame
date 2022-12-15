@@ -12,7 +12,7 @@ import sekelsta.math.Vector3f;
 
 public class World implements IEntitySpace {
     private static final double spawnRadius = 1000;
-    private static final int MOB_CAP = 800;
+    private static final int MOB_CAP = 400;
 
     public final boolean authoritative;
     private long tick = 0;
