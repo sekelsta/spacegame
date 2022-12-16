@@ -1,42 +1,69 @@
 package sekelsta.game.render;
 
-import sekelsta.engine.render.gui.TextButton;
+import java.util.*;
+import sekelsta.engine.render.gui.*;
 
 public class Screen {
-    protected TextButtonList buttons = new TextButtonList();
+    protected SelectableElementList selectable = new SelectableElementList();
+    protected List<GuiElement> items = new ArrayList<>();
+
+    public void refresh() {
+        // Do nothing
+    }
+
+    protected void addSelectableItem(GuiElement item) {
+        items.add(item);
+        selectable.add(item);
+    }
 
     public boolean pausesGame() {
         return false;
     }
 
     public void positionPointer(double xPos, double yPos) {
-        buttons.positionPointer(xPos, yPos);
+        selectable.clearSelection();
+        selectable.selectByPointer(xPos, yPos);
     }
 
     public boolean trigger() {
-        return buttons.trigger();
+        GuiElement selected = selectable.getSelected();
+        if (selected != null) {
+            return selected.trigger();
+        }
+        return false;
     }
 
-    public boolean up() {
-        return buttons.up();
+    public void up() {
+        selectable.up();
     }
 
-    public boolean down() {
-        return buttons.down();
+    public void down() {
+        selectable.down();
     }
 
-    public boolean top() {
-        return buttons.top();
+    public void top() {
+        selectable.top();
     }
 
-    public boolean bottom() {
-        return buttons.bottom();
+    public void bottom() {
+        selectable.bottom();
     }
 
     public void blit(double screenWidth, double screenHeight) {
-        int xPos = ((int)screenWidth - buttons.getWidth()) / 2;
-        int yPos = ((int)screenHeight - buttons.getHeight()) / 2;
-        buttons.position(xPos, yPos);
-        buttons.blit();
+        int height = 0;
+        for (int i = 0; i < items.size(); ++i) {
+            int h = items.get(i).getHeight();
+            height += h;
+            if (i + 1 != items.size()) {
+                height += h / 4;
+            }
+        }
+        int yPos = ((int)screenHeight - height) / 2;
+        GuiElement selected = selectable.getSelected();
+        for (GuiElement item : items) {
+            item.position(((int)screenWidth - item.getWidth()) / 2, yPos);
+            yPos += (int)(1.25 * item.getHeight());
+            item.blit(item == selected);
+        }
     }
 }

@@ -31,6 +31,9 @@ public class Overlay {
 
     public void popScreen() {
         screenStack.pop();
+        if (hasScreen()) {
+            screenStack.peek().refresh();
+        }
     }
 
     public void popScreenIfEquals(Screen screen) {

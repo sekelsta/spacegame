@@ -104,6 +104,10 @@ public class Game implements ILoopable, INetworked {
         return running && (window == null || !window.shouldClose());
     }
 
+    public boolean isNetworked() {
+        return networkManager != null;
+    }
+
     @Override
     public NetworkManager getNetworkManager() {
         return networkManager;

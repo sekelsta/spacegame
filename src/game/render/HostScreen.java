@@ -13,8 +13,8 @@ public class HostScreen extends Screen {
         BitmapFont font = overlay.getButtonFont();
         this.done = new TextButton(font, "Done", () -> tryHostMultiplayer(overlay, game, String.valueOf(Game.DEFAULT_PORT)));
         this.cancel = new TextButton(font, "Cancel", () -> game.escape());
-        buttons.add(done);
-        buttons.add(cancel);
+        addSelectableItem(done);
+        addSelectableItem(cancel);
     }
 
     private void tryHostMultiplayer(Overlay overlay, Game game, String strPort) {

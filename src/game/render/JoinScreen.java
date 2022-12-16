@@ -22,8 +22,8 @@ public class JoinScreen extends Screen {
         BitmapFont font = overlay.getButtonFont();
         this.done = new TextButton(font, "Done", () -> tryJoinServer());
         this.cancel = new TextButton(font, "Cancel", () -> game.escape());
-        buttons.add(done);
-        buttons.add(cancel);
+        addSelectableItem(done);
+        addSelectableItem(cancel);
     }
 
     private void tryJoinServer() {

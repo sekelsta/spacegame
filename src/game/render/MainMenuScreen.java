@@ -7,13 +7,13 @@ import sekelsta.game.Game;
 public class MainMenuScreen extends Screen {
     public MainMenuScreen(Overlay overlay, Game game) {
         BitmapFont font = overlay.getButtonFont();
-        buttons.add(new TextButton(font, "Single player", () -> game.enterWorld()));
-        buttons.add(new TextButton(font, "Host and play", 
+        addSelectableItem(new TextButton(font, "Single player", () -> game.enterWorld()));
+        addSelectableItem(new TextButton(font, "Host and play", 
             () -> overlay.pushScreen(new HostScreen(overlay, game)))
         );
-        buttons.add(new TextButton(font, "Join server", 
+        addSelectableItem(new TextButton(font, "Join server", 
             () -> overlay.pushScreen(new JoinScreen(overlay, game)))
         );
-        buttons.add(new TextButton(font, "Exit", () -> game.stop()));     
+        addSelectableItem(new TextButton(font, "Exit", () -> game.stop()));     
     }
 }
