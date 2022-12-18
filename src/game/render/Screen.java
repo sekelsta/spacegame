@@ -33,6 +33,10 @@ public class Screen {
         return false;
     }
 
+    public boolean click(double xPos, double yPos) {
+        return trigger();
+    }
+
     public void up() {
         selectable.up();
     }
@@ -47,6 +51,24 @@ public class Screen {
 
     public void bottom() {
         selectable.bottom();
+    }
+
+    public void backspace() {
+        GuiElement textFocus = selectable.getTextFocus();
+        if (textFocus != null) {
+            textFocus.backspace();
+        }
+    }
+
+    public void inputCharacter(char character) {
+        GuiElement textFocus = selectable.getTextFocus();
+        if (textFocus != null) {
+            textFocus.inputCharacter(character);
+        }
+    }
+
+    public void tab() {
+        selectable.tab();
     }
 
     public void blit(double screenWidth, double screenHeight) {

@@ -17,6 +17,7 @@ public class BitmapFont {
     private static final int CHAR_MAX = 256;
 
     private Glyph[] glyphs;
+    private Glyph cursor;
     private SpriteBatch spriteBatch = new SpriteBatch();
 
     public BitmapFont(Font font, boolean antialias) {
@@ -39,18 +40,10 @@ public class BitmapFont {
             if (charWidth == 0) {
                 continue;
             }
-            int sideLength = charHeight * lengths.size();
-            int line = 0;
-            while (lengths.get(line) + charWidth > sideLength) {
-                line += 1;
-                if (line >= lengths.size()) {
-                    lengths.add(0);
-                    sideLength += charHeight;
-                }
-            }
-            glyphs[i - STARTING_CHAR] = new Glyph(lengths.get(line), line * charHeight, charWidth, charHeight);
-            lengths.set(line, lengths.get(line) + charWidth);
+            glyphs[i - STARTING_CHAR] = makeGlyph(charWidth, charHeight, lengths);
         }
+        int cursorWidth = (int)Math.ceil(font.getSize2D() / 18f);
+        cursor = makeGlyph(cursorWidth, charHeight, lengths);
 
         int imageWidth = 0;
         for (int x : lengths) {
@@ -89,9 +82,25 @@ public class BitmapFont {
 
             g.drawImage(charImage, null, glyph.x, glyph.y);
         }
+        g.setColor(Color.WHITE);
+        g.fillRect(cursor.x, cursor.y, cursor.width, cursor.height);
         g.dispose();
 
         spriteBatch.setTexture(new Texture(image, false));
+    }
+
+    private Glyph makeGlyph(int charWidth, int charHeight, ArrayList<Integer> lengths) {
+        int sideLength = charHeight * lengths.size();
+        int line = 0;
+        while (lengths.get(line) + charWidth > sideLength) {
+            line += 1;
+            if (line >= lengths.size()) {
+                lengths.add(0);
+                sideLength += charHeight;
+            }
+        }
+        lengths.set(line, lengths.get(line) + charWidth);
+        return new Glyph(lengths.get(line) - charWidth, line * charHeight, charWidth, charHeight);
     }
 
     public int getWidth(String text) {
@@ -122,6 +131,10 @@ public class BitmapFont {
             blit(c, x + w, y, r, g, b);
             w += glyphs[c - STARTING_CHAR].width;
         }
+    }
+
+    public void blitCursor(int x, int y, float r, float g, float b) {
+        spriteBatch.blit(x, y, cursor.width, cursor.height, cursor.x, cursor.y, r, g, b);
     }
 
     public void render() {

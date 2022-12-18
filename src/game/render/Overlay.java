@@ -16,6 +16,7 @@ import sekelsta.math.Vector2f;
 public class Overlay {
     private static final double scale = 1.0;
     private final BitmapFont font = new BitmapFont(new Font(Font.SANS_SERIF, Font.PLAIN, 48), true);
+    private final BitmapFont titleFont = new BitmapFont(new Font(Font.SANS_SERIF, Font.PLAIN, 72), true);
 
     private Deque<Screen> screenStack = new ArrayDeque<>();
     private double xPointer, yPointer;
@@ -48,6 +49,10 @@ public class Overlay {
 
     public BitmapFont getButtonFont() {
         return font;
+    }
+
+    public BitmapFont getTitleFont() {
+        return titleFont;
     }
 
     public static double getScale() {
@@ -91,6 +96,13 @@ public class Overlay {
         return false;
     }
 
+    public boolean click() {
+        if (hasScreen()) {
+            return screenStack.peek().click(xPointer, yPointer);
+        }
+        return false;
+    }
+
     public void up() {
         if (hasScreen()) {
             screenStack.peek().up();
@@ -115,15 +127,35 @@ public class Overlay {
         }
     }
 
+    public void backspace() {
+        if (hasScreen()) {
+            screenStack.peek().backspace();
+        }
+    }
+
+    public void inputCharacter(char character) {
+        if (hasScreen()) {
+            screenStack.peek().inputCharacter(character);
+        }
+    }
+
+    public void tab() {
+        if (hasScreen()) {
+            screenStack.peek().tab();
+        }
+    }
+
     public void render(Vector2f uiDimensions) {
         if (hasScreen()) {
             screenStack.peek().blit(uiDimensions.x, uiDimensions.y);
         }
 
         font.render();
+        titleFont.render();
     }
 
     public void close() {
         font.clean();
+        titleFont.clean();
     }
 }

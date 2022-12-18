@@ -55,35 +55,41 @@ public class Input extends InputManager implements IController {
             if (key == GLFW.GLFW_KEY_F11) {
                 window.toggleFullscreen();
             }
-            if (key == GLFW.GLFW_KEY_X) {
+            else if (key == GLFW.GLFW_KEY_X) {
                 if (player != null) {
                     player.fire();
                 }
             }
-            if (key == GLFW.GLFW_KEY_ESCAPE) {
+            else if (key == GLFW.GLFW_KEY_ESCAPE) {
                 game.escape();
             }
-            if (key == GLFW.GLFW_KEY_ENTER) {
+            else if (key == GLFW.GLFW_KEY_ENTER) {
                 overlay.trigger();
             }
-            if (key == GLFW.GLFW_KEY_UP || key == GLFW.GLFW_KEY_W) {
+            else if (key == GLFW.GLFW_KEY_UP) {
                 overlay.up();
             }
-            if (key == GLFW.GLFW_KEY_DOWN || key == GLFW.GLFW_KEY_S) {
+            else if (key == GLFW.GLFW_KEY_DOWN) {
                 overlay.down();
             }
-            if (key == GLFW.GLFW_KEY_HOME) {
+            else if (key == GLFW.GLFW_KEY_HOME) {
                 overlay.top();
             }
-            if (key == GLFW.GLFW_KEY_END) {
+            else if (key == GLFW.GLFW_KEY_END) {
                 overlay.bottom();
+            }
+            else if (key == GLFW.GLFW_KEY_BACKSPACE) {
+                overlay.backspace();
+            }
+            else if (key == GLFW.GLFW_KEY_TAB) {
+                overlay.tab();
             }
         }
     }
 
     @Override
     public void inputCharacter(char character) {
-        //System.out.println(character);
+        overlay.inputCharacter(character);
     }
 
     @Override
@@ -107,7 +113,7 @@ public class Input extends InputManager implements IController {
     public void processMouseClick(int button, int action, int mods) {
         if (action == GLFW.GLFW_PRESS) {
             if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
-                boolean consumed = overlay.trigger();
+                boolean consumed = overlay.click();
                 if (consumed) {
                     return;
                 }

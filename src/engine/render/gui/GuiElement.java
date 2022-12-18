@@ -5,7 +5,6 @@ import java.awt.Color;
 public abstract class GuiElement {
     public static final Color GRAY = new Color(0.5f, 0.5f, 0.5f);
 
-
     protected int x, y;
 
     public final int getX() {
@@ -30,6 +29,14 @@ public abstract class GuiElement {
 
     public boolean trigger() {
         return false;
+    }
+
+    public void inputCharacter(char character) {
+        // Do nothing
+    }
+
+    public void backspace() {
+        // Do nothing
     }
 
     public abstract void blit(boolean focused);
