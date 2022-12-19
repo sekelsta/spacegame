@@ -1,6 +1,7 @@
 package sekelsta.engine.network;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
@@ -28,6 +29,9 @@ public class NetworkManager {
     public NetworkManager(int port) {
         try {
             socket = new DatagramSocket(port);
+        }
+        catch (BindException e) {
+            throw new RuntimeBindException(e);
         }
         catch (IOException e) {
             throw new RuntimeException(e);

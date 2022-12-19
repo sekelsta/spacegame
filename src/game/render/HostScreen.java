@@ -1,6 +1,7 @@
 package sekelsta.game.render;
 
 import sekelsta.engine.Log;
+import sekelsta.engine.network.RuntimeBindException;
 import sekelsta.engine.render.gui.*;
 import sekelsta.engine.render.text.BitmapFont;
 import sekelsta.game.Game;
@@ -34,10 +35,17 @@ public class HostScreen extends Screen {
             Log.error("Could not parse port number:\n        " + e);
             return;
         }
+
+        try {
+            game.allowConnections(port);
+        }
+        catch (RuntimeBindException e) {
+            Log.error("Error: " + e.getMessage());
+            return;
+        }
         if (!game.isInGame()) {
             game.enterWorld();
         }
-        game.allowConnections(port);
         overlay.popScreenIfEquals(this);
     }
 
