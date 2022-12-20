@@ -1,6 +1,7 @@
 package sekelsta.engine.render;
 
 import java.util.ArrayList;
+import sekelsta.math.Matrix3f;
 import sekelsta.math.Matrix4f;
 
 public class MatrixStack {
@@ -8,6 +9,14 @@ public class MatrixStack {
 
     public void push() {
         stack.add(new Matrix4f());
+        onChange();
+    }
+
+    public void pushBillboard() {
+        Matrix3f rotationScale = getResult().getRotation();
+        // Rotation matrices are orthogonal; transpose to invert
+        rotationScale.transpose();
+        stack.add(new Matrix4f(rotationScale));
         onChange();
     }
 

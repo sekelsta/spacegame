@@ -458,10 +458,13 @@ public class Matrix4f {
         return this;
     }
 
-    public Matrix3f getRotScale() {
-        return new Matrix3f(m00, m01, m02,
-                            m10, m11, m12,
-                            m20, m21, m22);
+    public Matrix3f getRotation() {
+        float scaleX = (float)Math.sqrt(m00 * m00 + m01 * m01 + m02 * m02);
+        float scaleY = (float)Math.sqrt(m10 * m10 + m11 * m11 + m12 * m12);
+        float scaleZ = (float)Math.sqrt(m20 * m20 + m21 * m21 + m22 * m22);
+        return new Matrix3f(m00 / scaleX, m01 / scaleX, m02 / scaleX,
+                            m10 / scaleY, m11 / scaleY, m12 / scaleY,
+                            m20 / scaleZ, m21 / scaleZ, m22 / scaleZ);
     }
 
     public String toString() {

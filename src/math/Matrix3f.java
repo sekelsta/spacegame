@@ -269,4 +269,10 @@ public class Matrix3f {
         // atan2 implementation returns 0 in that case, exactly as we want.
         return (float) Math.atan2(-1 * m20, m22);
     }
+
+    public String toString() {
+        return m00 + " " + m01 + " " + m02 + "\n"
+            + m10 + " " + m11 + " " + m12 + "\n"
+            + m20 + " " + m21 + " " + m22 + "\n";
+    }
 }
