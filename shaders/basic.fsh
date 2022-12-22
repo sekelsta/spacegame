@@ -24,7 +24,6 @@ void main()
 
     vec4 specular_sample = texture(specular_sampler, texture_coord);
     float specular_str = pow(max(dot(normal, halfway_dir), 0.0), shininess) * specular_sample.a;
-    specular_str = specular_str * 0.001;
     vec4 color = texture(texture_sampler, texture_coord);
     vec4 emissive = texture(emission_sampler, texture_coord);
     float alpha = color.a + emissive.a;
