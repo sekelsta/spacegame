@@ -5,28 +5,33 @@ in vec3 normal;
 in vec2 texture_coord;
 in vec3 frag_pos;
 
+uniform vec3 light_pos;
+
 uniform sampler2D texture_sampler;
 uniform sampler2D specular_sampler;
 uniform sampler2D emission_sampler;
 
-const vec3 light_pos = vec3(1, 1, 1);
 const float shininess = 4;
 
 void main()
 {
     vec3 light_dir = normalize(light_pos - frag_pos);
-    // in view space the view pos is at the origin
-    // frag_pos should already be normalized
-    vec3 view_dir = -frag_pos;
-    vec3 halfway_dir = normalize(light_dir + view_dir);
     float diffuse_str = max(dot(normal, light_dir), 0.0);
+
+    // in view space the view pos is at the origin
+    vec3 view_dir = normalize(-frag_pos);
+    vec3 halfway_dir = normalize(light_dir + view_dir);
 
     vec4 specular_sample = texture(specular_sampler, texture_coord);
     float specular_str = pow(max(dot(normal, halfway_dir), 0.0), shininess) * specular_sample.a;
+    specular_str = specular_str * 0.001;
     vec4 color = texture(texture_sampler, texture_coord);
     vec4 emissive = texture(emission_sampler, texture_coord);
-    if (color.a + emissive.a < 0.1) {
+    float alpha = color.a + emissive.a;
+    if (alpha < 0.01) {
         discard;
     }
-    fragColor = vec4(color.xyz * (diffuse_str + specular_str) + emissive.xyz, 1.0);
+    vec3 lit = color.rgb * (diffuse_str + specular_str);
+    // OpenGL automatically clamps color components to the range [0, 1]
+    fragColor = vec4(color.a * lit + emissive.a * emissive.rgb, alpha);
 }

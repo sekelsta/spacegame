@@ -27,6 +27,10 @@ public class Vector4f {
         this(x, y, z, 1f);
     }
 
+    public Vector4f(Vector3f v) {
+        this(v.x, v.y, v.z);
+    }
+
     public Vector3f toVec3() {
         return new Vector3f(x/w, y/w, z/w);
     }

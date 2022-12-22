@@ -33,6 +33,13 @@ public class Vector3f {
         return this;
     }
 
+    public Vector3f translate(float x, float y, float z) {
+        this.x += x;
+        this.y += y;
+        this.z += z;
+        return this;
+    }
+
     public Vector3f addWeighted(Vector3f other, float w) {
         this.x += other.x * w;
         this.y += other.y * w;

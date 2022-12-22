@@ -9,6 +9,7 @@ import org.lwjgl.system.MemoryStack;
 import sekelsta.math.Matrix3f;
 import sekelsta.math.Matrix4f;
 import sekelsta.math.Vector2f;
+import sekelsta.math.Vector3f;
 
 public class ShaderProgram {
     private int handle;
@@ -83,14 +84,19 @@ public class ShaderProgram {
         GL20.glUniform1i(location, val);
     }
 
-    public void setUniform(String uniform, float f1, float f2, float f3, float f4) {
-        int location = getUniformLocation(uniform);
-        GL20.glUniform4f(location, f1, f2, f3, f4);
-    }
-
     public void setUniform(String uniform, Vector2f v) {
         int location = getUniformLocation(uniform);
         GL20.glUniform2f(location, v.x, v.y);
+    }
+
+    public void setUniform(String uniform, Vector3f v) {
+        int location = getUniformLocation(uniform);
+        GL20.glUniform3f(location, v.x, v.y, v.z);
+    }
+
+    public void setUniform(String uniform, float f1, float f2, float f3, float f4) {
+        int location = getUniformLocation(uniform);
+        GL20.glUniform4f(location, f1, f2, f3, f4);
     }
 
     public void setUniform(String uniform, Matrix3f matrix) {

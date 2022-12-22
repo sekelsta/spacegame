@@ -9,13 +9,13 @@ import sekelsta.engine.render.*;
 import sekelsta.engine.Frustum;
 import sekelsta.engine.entity.Movable;
 import sekelsta.engine.entity.Entity;
+import sekelsta.engine.render.Texture;
 import sekelsta.engine.render.entity.EntityRenderer;
+import sekelsta.engine.render.mesh.RigidMesh;
 import sekelsta.game.Camera;
 import sekelsta.game.World;
 import sekelsta.game.render.entity.*;
-import sekelsta.math.Matrix3f;
-import sekelsta.math.Matrix4f;
-import sekelsta.math.Vector2f;
+import sekelsta.math.*;
 
 public class Renderer implements IFramebufferSizeListener {
     private ShaderProgram shader = ShaderProgram.load("/shaders/basic.vsh", "/shaders/basic.fsh");
@@ -26,6 +26,17 @@ public class Renderer implements IFramebufferSizeListener {
     private final Matrix4f coordinate_convert = new Matrix4f().rotate((float)(-1 * Math.PI/2), 1f, 0f, 0f);
     private final Matrix3f identity3f = new Matrix3f();
     private final Vector2f uiDimensions = new Vector2f(1, 1);
+
+    private Vector3f lightPos = new Vector3f(0, 0, 0);
+    private final float[] sunVertices = {
+        // Position, normal, texture
+        0.5f, 0, 0.5f, 0, -1, 0, 1, 1,
+        -0.5f, 0, 0.5f, 0, -1, 0, 0, 1,
+        -0.5f, 0, -0.5f, 0, -1, 0, 0, 0,
+        0.5f, 0, -0.5f, 0, -1, 0, 1, 0};
+    private final int[] sunFaces = {0, 1, 2, 2, 3, 0};
+    private final RigidMesh sunMesh = new RigidMesh(sunVertices, sunFaces);
+    private final Texture sunTexture = new Texture("sun.png");
 
     private MatrixStack matrixStack = new MatrixStack() {
         @Override
@@ -70,6 +81,9 @@ public class Renderer implements IFramebufferSizeListener {
         matrixStack.push();
         // Move to camera coords
         camera.transform(matrixStack, lerp);
+        Vector4f tlight = new Vector4f(lightPos);
+        matrixStack.getResult().transform(tlight);
+        shader.setUniform("light_pos", tlight.toVec3());
 
         float realLerp = lerp;
         if (world.isPaused()) {
@@ -78,6 +92,18 @@ public class Renderer implements IFramebufferSizeListener {
         for (Movable entity : world.getMobs()) {
             renderEntity(entity, realLerp, matrixStack);
         }
+
+        // Render the sun
+        matrixStack.push();
+        matrixStack.translate(lightPos.x, lightPos.y, lightPos.z);
+        matrixStack.scale(100, 100, 100);
+        matrixStack.pushBillboard();
+        Textures.TRANSPARENT.bind();
+        sunTexture.bindEmission();
+        sunMesh.render();
+        matrixStack.pop();
+        matrixStack.pop();
+
         matrixStack.pop();
     }
 

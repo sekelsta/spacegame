@@ -40,7 +40,7 @@ public class World implements IEntitySpace {
     }
 
     public void spawnLocalPlayer(IController playerController) {
-        this.localPlayer = new Spaceship(0, 0, 0, playerController);
+        this.localPlayer = new Spaceship(0, -100, 0, playerController);
         localPlayer.skin = random.nextInt(Spaceship.NUM_SKINS);
         this.spawn(this.localPlayer);
     }
