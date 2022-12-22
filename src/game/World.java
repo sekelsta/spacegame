@@ -11,8 +11,8 @@ import sekelsta.game.network.MobUpdate;
 import sekelsta.math.Vector3f;
 
 public class World implements IEntitySpace {
-    private static final double spawnRadius = 1000;
-    private static final int MOB_CAP = 400;
+    private static final double spawnRadius = 100;
+    private static final int MOB_CAP = 200;
 
     public final boolean authoritative;
     private long tick = 0;
