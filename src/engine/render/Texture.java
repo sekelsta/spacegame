@@ -17,6 +17,7 @@ public class Texture {
     private int width;
     private int height;
     private ByteBuffer pixels;
+    private int type;
 
     public Texture(String name) {
         BufferedImage image = ImageUtils.loadResource(TEXTURE_LOCATION + name);
@@ -40,7 +41,6 @@ public class Texture {
     }
 
     private void init(BufferedImage image, boolean needsMipmaps) {
-        // TODO: handle non-rgba textures
         handle = GL11.glGenTextures();
         bind();
         GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
@@ -83,9 +83,16 @@ public class Texture {
     }
 
     private void internalUpdate(BufferedImage image, boolean needsMipmaps) {
+        // TODO: handle non-rgba textures
+        this.type = image.getType();
         this.width = image.getWidth();
         this.height = image.getHeight();
-        GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, pixels);
+        if (image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
+            GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RED, width, height, 0, GL11.GL_RED, GL11.GL_UNSIGNED_BYTE, pixels);
+        }
+        else {
+            GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, pixels);
+        }
         // TO_OPTIMIZE: set blend mode that doesn't expect mipmaps for these
         if (true || needsMipmaps) {
             GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);

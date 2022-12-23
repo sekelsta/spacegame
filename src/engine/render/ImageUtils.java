@@ -24,6 +24,32 @@ public class ImageUtils {
     }
 
     public static void updateImageBuffer(ByteBuffer buffer, BufferedImage image) {
+        if (image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
+            updateGrayscaleImageBuffer(buffer, image);
+        }
+        else {
+            updateRGBAImageBuffer(buffer, image);
+        }
+    }
+
+    private static void updateGrayscaleImageBuffer(ByteBuffer buffer, BufferedImage image) {
+        assert(buffer.remaining() == image.getWidth() * image.getHeight());
+        // TO_OPTIMIZE: We shouldn't need to convert to ARGB in between
+        int[] pixels = new int[image.getWidth() * image.getHeight()];
+        image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
+
+        buffer.clear();
+        for (int y = 0; y < image.getHeight(); ++y) {
+            for (int x = 0; x < image.getWidth(); ++x) {
+                int pixel = pixels[y * image.getWidth() + x];
+                buffer.put((byte)(pixel & 0xff));
+            }
+        }
+
+        buffer.flip();
+    }
+
+    private static void updateRGBAImageBuffer(ByteBuffer buffer, BufferedImage image) {
         assert(buffer.remaining() == 4 * image.getWidth() * image.getHeight());
 
         int[] pixels = new int[image.getWidth() * image.getHeight()];
@@ -46,10 +72,17 @@ public class ImageUtils {
 
     public static ByteBuffer bufferedImageToByteBuffer(BufferedImage image)
     {
+        ByteBuffer buffer = null;
         // TO_OPTIMIZE: Can use MemoryUtil.memAlloc() instead if I free the memory afterwards
         // See https://stackoverflow.com/questions/65599336/whats-the-difference-between-bufferutils-and-memoryutil-lwjgl
-        ByteBuffer buffer = ByteBuffer.allocateDirect(4 * image.getWidth() * image.getHeight());
-        updateImageBuffer(buffer, image);
+        if (image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
+            buffer = ByteBuffer.allocateDirect(image.getWidth() * image.getHeight());
+            updateGrayscaleImageBuffer(buffer, image);
+        }
+        else {
+            buffer = ByteBuffer.allocateDirect(4 * image.getWidth() * image.getHeight());
+            updateRGBAImageBuffer(buffer, image);
+        }
         return buffer;
     }
 }
