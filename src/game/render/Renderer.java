@@ -2,6 +2,7 @@ package sekelsta.game.render;
 
 import java.awt.Font;
 import java.io.IOException;
+import java.util.Scanner;
 
 import org.lwjgl.opengl.GL11;
 
@@ -16,6 +17,7 @@ import sekelsta.game.Camera;
 import sekelsta.game.World;
 import sekelsta.game.render.entity.*;
 import sekelsta.math.*;
+import sekelsta.tools.ObjParser;
 
 public class Renderer implements IFramebufferSizeListener {
     private ShaderProgram shader = ShaderProgram.load("/shaders/basic.vsh", "/shaders/basic.fsh");
@@ -37,6 +39,15 @@ public class Renderer implements IFramebufferSizeListener {
     private final int[] sunFaces = {0, 1, 2, 2, 3, 0};
     private final RigidMesh sunMesh = new RigidMesh(sunVertices, sunFaces);
     private final Texture sunTexture = new Texture("sun.png");
+
+    // sqrt 3 is because of the shape of a cube; not sure why the 0.8 is needed but it is
+    private final float CUBE_FACTOR = 0.8f / (float)Math.sqrt(3);
+    private final RigidMesh skybox = new RigidMesh(
+        ObjParser.parse(
+            new Scanner(Renderer.class.getResourceAsStream("/assets/obj/skybox.obj"))
+        )
+    );
+    private final Texture skyTexture = new Texture("skybox.png");
 
     private MatrixStack matrixStack = new MatrixStack() {
         @Override
@@ -85,12 +96,23 @@ public class Renderer implements IFramebufferSizeListener {
         if (world.isPaused()) {
             realLerp = 0;
         }
+
         // Move to camera coords
         camera.transform(matrixStack, realLerp);
         Vector4f tlight = new Vector4f(lightPos);
         matrixStack.getResult().transform(tlight);
         shader.setUniform("light_pos", tlight.toVec3());
 
+        // Render skybox
+        matrixStack.push();
+        matrixStack.center();
+        matrixStack.scale(frustum.getFar() * CUBE_FACTOR);
+        Textures.TRANSPARENT.bind();
+        skyTexture.bindEmission();
+        skybox.render();
+        matrixStack.pop();
+
+        // Render entities
         for (Movable entity : world.getMobs()) {
             renderEntity(entity, realLerp, matrixStack);
         }

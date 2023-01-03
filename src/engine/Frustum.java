@@ -6,10 +6,14 @@ public class Frustum {
     private final float height = 0.001f; // height from middle to top, AKA half the height
     private float width = height; // distance from middle to side, AKA half width
     private float near = 0.1f;
-    private float far = 2000;
+    private float far = 5000;
 
     private Matrix4f matrix = null;
     private Matrix4f inverse = null;
+
+    public float getFar() {
+        return far;
+    }
 
     public void setFar(float far) {
         this.far = far;
