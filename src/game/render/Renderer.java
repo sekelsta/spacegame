@@ -80,16 +80,18 @@ public class Renderer implements IFramebufferSizeListener {
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         // Render world
         matrixStack.push();
-        // Move to camera coords
-        camera.transform(matrixStack, lerp);
-        Vector4f tlight = new Vector4f(lightPos);
-        matrixStack.getResult().transform(tlight);
-        shader.setUniform("light_pos", tlight.toVec3());
 
         float realLerp = lerp;
         if (world.isPaused()) {
             realLerp = 0;
         }
+        // Move to camera coords
+        camera.transform(matrixStack, realLerp);
+        Vector4f tlight = new Vector4f(lightPos);
+        matrixStack.getResult().transform(tlight);
+        shader.setUniform("light_pos", tlight.toVec3());
+
+
         for (Movable entity : world.getMobs()) {
             renderEntity(entity, realLerp, matrixStack);
         }
