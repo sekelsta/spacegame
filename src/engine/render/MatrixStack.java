@@ -3,6 +3,7 @@ package sekelsta.engine.render;
 import java.util.ArrayList;
 import sekelsta.math.Matrix3f;
 import sekelsta.math.Matrix4f;
+import sekelsta.math.Vector3f;
 
 public class MatrixStack {
     private ArrayList<Matrix4f> stack = new ArrayList<>();
@@ -12,17 +13,31 @@ public class MatrixStack {
         onChange();
     }
 
-    public void pushBillboard() {
-        Matrix3f rotationScale = getResult().getRotation();
-        // Rotation matrices are orthogonal; transpose to invert
-        rotationScale.transpose();
-        stack.add(new Matrix4f(rotationScale));
-        onChange();
-    }
-
     public void pop() {
         stack.remove(topIndex());
         onChange();
+    }
+
+    public void billboard() {
+        Matrix3f rotationScale = getResult().getRotation();
+        // Rotation matrices are orthogonal; transpose to invert
+        rotationScale.transpose();
+        stack.get(topIndex()).multiply(new Matrix4f(rotationScale));
+        onChange();
+    }
+
+    public void center() {
+        // Undo rotation
+        Matrix3f rotationScale = getResult().getRotation();
+        rotationScale.transpose();
+        stack.get(topIndex()).multiply(new Matrix4f(rotationScale));
+        // Undo translation
+        Vector3f translation = getResult().getTranslation();
+        translation.scale(-1);
+        translate(translation.x, translation.y, translation.z);
+        // Re-do rotation
+        rotationScale.transpose();
+        stack.get(topIndex()).multiply(new Matrix4f(rotationScale));
     }
 
     public void translate(float x, float y, float z) {

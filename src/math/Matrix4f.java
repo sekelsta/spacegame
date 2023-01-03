@@ -467,6 +467,10 @@ public class Matrix4f {
                             m20 / scaleZ, m21 / scaleZ, m22 / scaleZ);
     }
 
+    public Vector3f getTranslation() {
+        return new Vector3f(m03, m13, m23);
+    }
+
     public String toString() {
         return m00 + " " + m01 + " " + m02 + " " + m03 + "\n"
             + m10 + " " + m11 + " " + m12 + " " + m13 + "\n"

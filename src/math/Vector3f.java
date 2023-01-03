@@ -163,4 +163,9 @@ public class Vector3f {
         while (v.length() > 1f || (v.x == 0f && v.y == 0f && v.z == 0f));
         return v;
     }
+
+    @Override
+    public String toString() {
+        return x + " " + y + " " + z;
+    }
 }

@@ -91,7 +91,6 @@ public class Renderer implements IFramebufferSizeListener {
         matrixStack.getResult().transform(tlight);
         shader.setUniform("light_pos", tlight.toVec3());
 
-
         for (Movable entity : world.getMobs()) {
             renderEntity(entity, realLerp, matrixStack);
         }
@@ -99,12 +98,11 @@ public class Renderer implements IFramebufferSizeListener {
         // Render the sun
         matrixStack.push();
         matrixStack.translate(lightPos.x, lightPos.y, lightPos.z);
-        matrixStack.scale(100, 100, 100);
-        matrixStack.pushBillboard();
+        matrixStack.scale(100);
+        matrixStack.billboard();
         Textures.TRANSPARENT.bind();
         sunTexture.bindEmission();
         sunMesh.render();
-        matrixStack.pop();
         matrixStack.pop();
 
         matrixStack.pop();
