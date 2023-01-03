@@ -99,7 +99,7 @@ public class World implements IEntitySpace {
         for (Movable mob : mobs) {
             if (mob.distSquared(0, 0, 0) > 100 * spawnRadius * spawnRadius
                     && mob.mayDespawn()) {
-                kill(mob);
+                remove(mob);
             }
         }
 
@@ -150,7 +150,7 @@ public class World implements IEntitySpace {
         return mob;
     }
 
-    public Movable kill(Movable mob) {
+    public Movable remove(Movable mob) {
         this.killed.add(mob);
         return mob;
     }

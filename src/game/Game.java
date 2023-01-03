@@ -215,23 +215,30 @@ public class Game implements ILoopable, INetworked {
 
     @Override
     public void connectionTimedOut(long connectionID) {
-        Log.debug("Connection timed out: " + connectionID);
-        removePawn(connectionID);
+        Log.info("Connection " + connectionID + " timed out");
+        disconnect(connectionID);
     }
 
     @Override
     public void handleDisconnect(long connectionID) {
-        Log.debug("connection " + connectionID + " disconnected");
-        removePawn(connectionID);
+        Log.info("Connection " + connectionID + " disconnected");
+        disconnect(connectionID);
     }
 
-    private void removePawn(long connectionID) {
-        // Note: If the pawn hasn't spawned yet, or is in the list awaiting spawning, this won't remove it
-        for (Movable mob : world.getMobs()) {
-            IController c = mob.getController();
-            if (c instanceof RemotePlayer && connectionID == ((RemotePlayer)c).connectionID) {
-                world.kill(mob);
+    private void disconnect(long connectionID) {
+        if (world.authoritative) {
+            // Note: If the pawn hasn't spawned yet, or is in the list awaiting spawning, this won't remove it
+            for (Movable mob : world.getMobs()) {
+                IController c = mob.getController();
+                if (c instanceof RemotePlayer && connectionID == ((RemotePlayer)c).connectionID) {
+                    world.remove(mob);
+                }
             }
+        }
+        else {
+            exitWorld();
+            assert(isGraphical());
+            overlay.pushScreen(new ConnectionLostScreen(overlay, this));
         }
     }
 

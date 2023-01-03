@@ -83,6 +83,6 @@ public class Asteroid extends Movable {
                 world.spawn(piece);
             }
         }
-        world.kill(this);
+        world.remove(this);
     }
 }

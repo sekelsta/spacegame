@@ -4,6 +4,6 @@ import java.util.Random;
 
 public interface IEntitySpace {
     <T extends Entity> T spawn(T entity);
-    Movable kill(Movable mob);
+    Movable remove(Movable mob);
     Random getRandom();
 }

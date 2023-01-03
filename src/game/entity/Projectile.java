@@ -46,6 +46,6 @@ public class Projectile extends Movable implements ICollider {
             ((Asteroid)other).destroy();
         }
 
-        world.kill(this);
+        world.remove(this);
     }
 }
