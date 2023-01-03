@@ -60,6 +60,7 @@ public class Renderer implements IFramebufferSizeListener {
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
         GL11.glEnable(GL11.GL_CULL_FACE);
+        GL11.glClearColor(0.005f, 0.005f, 0.005f, 1f);
     }
 
     public void render(float lerp, Camera camera, World world, Overlay overlay) {
