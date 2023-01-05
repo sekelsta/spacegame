@@ -164,7 +164,7 @@ public class Renderer implements IFramebufferSizeListener {
         Matrix4f.mul(coordinate_convert, perspective, perspective);
 
         // This is the size of UI's canvas, so the scale is inversly proportional to actual element size
-        // TODO: Make this scale adjustable
+        // TODO #24: Make this scale adjustable
         float uiScale = (float)Overlay.getScale();
         uiDimensions.x = width * uiScale;
         uiDimensions.y = height * uiScale;

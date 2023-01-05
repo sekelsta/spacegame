@@ -49,7 +49,7 @@ public class MobUpdate extends Message {
         }
         IController controller = mob.getController();
         if (controller == null || !(controller instanceof RemoteController)) {
-            // TODO: If the controller in an instanceof Input, maybe we shouldn't entirely ignore updates from the server
+            // TODO #22: If the controller is an instanceof Input, maybe we shouldn't entirely ignore updates from the server
             return;
         }
         if (controller instanceof RemotePlayer 

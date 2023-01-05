@@ -40,7 +40,7 @@ public class Texture {
     }
 
     private void init(BufferedImage image, boolean needsMipmaps) {
-        // TODO: handle non-rgba textures
+        // TODO #30: handle non-rgba textures
         handle = GL11.glGenTextures();
         bind();
         GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);

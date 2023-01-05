@@ -79,7 +79,7 @@ public class Asteroid extends Movable {
                 Asteroid piece = new Asteroid(getX(), getY(), getZ(), world.getRandom(), size - 1);
                 piece.setVelocity(getVelocityX(), getVelocityY(), getVelocityZ());
                 piece.accelerate((int)(i * split.x), (int)(i * split.y), (int)(i * split.z));
-                // TODO: Set angular velocity
+                // TODO #28: Set angular velocity
                 world.spawn(piece);
             }
         }

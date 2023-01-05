@@ -94,7 +94,7 @@ public class ModelData {
         return l;
     }
 
-    // TODO: fix API, shouldn't allow people to modify vertices/faces lists directly AND use this,
+    // TODO #29: fix API, shouldn't allow people to modify vertices/faces lists directly AND use this,
     // since it may not work as expected.
     // Should only do one or the other
     public void addTriangle(VertexData v0, VertexData v1, VertexData v2) {

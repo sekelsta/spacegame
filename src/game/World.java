@@ -129,7 +129,7 @@ public class World implements IEntitySpace {
             spawnMovable(mob);
             return entity;
         }
-        throw new RuntimeException("TODO: not yet implemented");
+        throw new RuntimeException("TODO #25: not yet implemented");
     }
 
     private Movable spawnMovable(Movable mob) {

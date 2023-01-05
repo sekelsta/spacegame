@@ -16,14 +16,14 @@ public class Projectile extends Movable implements ICollider {
 
     public Projectile(ByteBuffer buffer) {
         super(buffer);
-        // TODO
+        // TODO #27
         this.owner = null;
     }
 
     @Override
     public void encode(ByteVector buffer) {
         super.encode(buffer);
-        // TODO
+        // TODO #27
     }
 
     @Override

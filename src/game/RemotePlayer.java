@@ -9,5 +9,4 @@ public class RemotePlayer extends RemoteController {
         super(entity);
         this.connectionID = connectionID;
     }
-        // TODO: prevent teleportation cheats
 }

@@ -124,7 +124,7 @@ public class BitmapFont {
         blit(s, x, y, 1f, 1f, 1f);
     }
 
-    // TODO: Handle newlines and such
+    // TODO #31: Handle newlines and such
     public void blit(String s, int x, int y, float r, float g, float b) {
         int w = 0;
         for (char c : s.toCharArray()) {

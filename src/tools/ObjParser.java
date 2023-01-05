@@ -52,7 +52,7 @@ public class ObjParser {
                 scanner.nextLine();
             }
             else if (start.startsWith(FACE)) {
-                // TODO: throw error if face has more than three vertices
+                // TODO #19: throw error if face has more than three vertices
                 for (int i = 0; i < 3; ++i) {
                     if (scanner.hasNextInt()) {
                         // Read 1-indexed, write 0-indexed

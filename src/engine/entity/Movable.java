@@ -17,7 +17,7 @@ public abstract class Movable implements Entity {
     private double prevX, prevY, prevZ;
     private int velocityX, velocityY, velocityZ;
 
-    // TODO: Consider storing radians directly instead of converting constantly
+    // TODO #32: Consider storing radians directly instead of converting constantly
     private int yaw, pitch, roll;
     private int prevYaw, prevPitch, prevRoll;
     private int angularVelocityX, angularVelocityY, angularVelocityZ;
@@ -95,7 +95,7 @@ public abstract class Movable implements Entity {
     }
 
     public void updateFromLate(Movable other, int ticksLate) {
-        // TODO: Better way of handling this???
+        // TODO #22: Better way of handling this???
         updateFrom(other);
     }
 
@@ -104,7 +104,6 @@ public abstract class Movable implements Entity {
         return id;
     }
 
-    // TODO: Make a better interface
     public void setID(int id) {
         this.id = id;
     }
@@ -331,7 +330,7 @@ public abstract class Movable implements Entity {
         return distX * distX + distY * distY + distZ * distZ;
     }
 
-    // TODO: Stay more consistent about working with floats / ints
+    // TODO #32: Stay more consistent about working with floats / ints
     public void accelerateForwards(int amount) {
         // Formula obtained by transforming the forward vector (0, 1, 0) by the rotation matrix from yaw, pitch, and roll
         double dx = -1 * Math.cos(toRadians(pitch)) * Math.sin(toRadians(yaw));

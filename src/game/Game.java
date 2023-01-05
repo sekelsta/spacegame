@@ -189,7 +189,7 @@ public class Game implements ILoopable, INetworked {
 
     @Override
     public void connectionRejected(String reason) {
-        // TODO: Make sure this can only be called while we are trying to join a server, not while connected
+        // TODO #23: Make sure this can only be called while we are trying to join a server, not while connected
         networkManager.close();
         networkManager = null;
         Log.info("Connection rejected by server due to " + reason);

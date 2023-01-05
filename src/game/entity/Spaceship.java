@@ -37,7 +37,6 @@ public class Spaceship extends Movable implements ICollider {
     @Override
     public void encode(ByteVector buffer) {
         super.encode(buffer);
-        // TODO
         buffer.putInt(skin);
     }
 
@@ -53,7 +52,7 @@ public class Spaceship extends Movable implements ICollider {
 
     @Override
     public void collide(Entity other) {
-        // TODO: Get injured/die    
+        // TODO #26: Get injured/die    
     }
 
     @Override

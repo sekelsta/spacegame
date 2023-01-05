@@ -37,8 +37,8 @@ public class ServerGivePawn extends Message {
     @Override
     public void handle(INetworked INetworked) {
         Game game = (Game)INetworked;
-        // TODO: What if the mob isn't an instanceof Spaceship?
-        // TODO: Don't crash if, by the time takePawn runs, a local player has already been set
+        // TODO #20: What if the mob isn't an instanceof Spaceship?
+        // TODO #21: Don't crash if, by the time takePawn runs, a local player has already been set
         game.getWorld().runWhenMovableSpawns(mob -> game.takePawn((Spaceship)mob), entityID);
     }
 }

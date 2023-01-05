@@ -7,7 +7,7 @@ public class Camera {
     private Entity focus;
     private float distance = 6f;
     private float minDistance = 4f;
-    private float maxDistance = 200f; // TODO: Warn if greater than frustum.far
+    private float maxDistance = 200f; // Don't set this higher than frustum.far
     private float zoomSpeed = 1f;
 
     private float pitch = (float)Math.toRadians(45);
