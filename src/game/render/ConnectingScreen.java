@@ -1,19 +1,18 @@
 package sekelsta.game.render;
 
+import sekelsta.engine.render.gui.TextButton;
+import sekelsta.engine.render.gui.TextElement;
 import sekelsta.engine.render.text.BitmapFont;
+import sekelsta.game.Game;
 
 public class ConnectingScreen extends Screen {
-    public BitmapFont font;
-
-    public ConnectingScreen(Overlay overlay) {
-        this.font = overlay.getButtonFont();
-    }
-
-    @Override
-    public void blit(double screenWidth, double screenHeight) {
-        String text = "Connecting...";
-        int x = (int)((screenWidth - font.getWidth(text)) / 2);
-        int y = (int)((screenHeight - font.getHeight()) / 2);
-        font.blit(text, x, y);
+    public ConnectingScreen(Overlay overlay, Game game, String address) {
+        items.add(new TextElement(overlay.getTitleFont(), "Connecting..."));
+        BitmapFont font = overlay.getButtonFont();
+        items.add(new TextElement(font, address));
+        this.addSelectableItem(new TextButton(font, "Cancel", () -> {
+            game.cancelConnecting();
+            overlay.popScreen();
+        }));
     }
 }

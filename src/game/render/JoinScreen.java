@@ -43,6 +43,12 @@ public class JoinScreen extends Screen {
         String strAddress = addressInput.getEnteredText();
         String strPort = portInput.getEnteredText();
 
+        if (strAddress.equals("")) {
+            Log.error("IP address is empty");
+            selectable.setTextFocus(addressInput);
+            return;
+        }
+
         InetAddress netAddress = null;
         try {
             netAddress = InetAddress.getByName(strAddress);
@@ -64,7 +70,7 @@ public class JoinScreen extends Screen {
         }
 
         game.joinServer(new InetSocketAddress(netAddress, port));
-        overlay.pushScreen(new ConnectingScreen(overlay));
+        overlay.pushScreen(new ConnectingScreen(overlay, game, strAddress + ":" + strPort));
     }
 
     public void positionPointer(double xPos, double yPos) {

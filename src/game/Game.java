@@ -56,6 +56,13 @@ public class Game implements ILoopable, INetworked {
         initGraphical();
     }
 
+    public void cancelConnecting() {
+        if (networkManager != null) {
+            networkManager.close();
+            networkManager = null;
+        }
+    }
+
     public void exitWorld() {
         this.camera = null;
         this.world = null;
