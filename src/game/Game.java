@@ -11,6 +11,7 @@ import sekelsta.engine.entity.Movable;
 import sekelsta.engine.network.Connection;
 import sekelsta.engine.network.INetworked;
 import sekelsta.engine.network.NetworkManager;
+import sekelsta.engine.render.Camera;
 import sekelsta.engine.render.Window;
 import sekelsta.game.entity.Entities;
 import sekelsta.game.entity.Spaceship;

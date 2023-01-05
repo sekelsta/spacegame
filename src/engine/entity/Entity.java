@@ -1,6 +1,7 @@
 package sekelsta.engine.entity;
 
 import sekelsta.engine.network.ByteVector;
+import sekelsta.math.Vector3f;
 
 public interface Entity {
     public void encode(ByteVector buffer);
@@ -16,4 +17,8 @@ public interface Entity {
     public float getInterpolatedRoll(float lerp);
 
     public double getCollisionRadius();
+
+    default Vector3f getEyeOffset() {
+        return new Vector3f(0, 0, 0);
+    }
 }

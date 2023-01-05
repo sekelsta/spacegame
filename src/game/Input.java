@@ -6,6 +6,7 @@ import sekelsta.engine.InputManager;
 import sekelsta.engine.Gamepad;
 import sekelsta.engine.Log;
 import sekelsta.engine.entity.IController;
+import sekelsta.engine.render.Camera;
 import sekelsta.engine.render.Window;
 import sekelsta.game.entity.Spaceship;
 import sekelsta.game.render.Overlay;
@@ -54,6 +55,9 @@ public class Input extends InputManager implements IController {
         if (action == GLFW.GLFW_PRESS) {
             if (key == GLFW.GLFW_KEY_F11) {
                 window.toggleFullscreen();
+            }
+            else if (key == GLFW.GLFW_KEY_F5) {
+                camera.nextMode();
             }
             else if (key == GLFW.GLFW_KEY_X) {
                 if (player != null) {

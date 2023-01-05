@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import sekelsta.engine.entity.*;
 import sekelsta.engine.network.ByteVector;
 import sekelsta.game.World;
+import sekelsta.math.Vector3f;
 
 public class Spaceship extends Movable implements ICollider {
     public static final int NUM_SKINS = 3;
@@ -53,6 +54,11 @@ public class Spaceship extends Movable implements ICollider {
     @Override
     public void collide(Entity other) {
         // TODO: Get injured/die    
+    }
+
+    @Override
+    public Vector3f getEyeOffset() {
+        return new Vector3f(0, 2.204f, 0.365f);
     }
 
     public void thrust() {
