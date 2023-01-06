@@ -132,6 +132,10 @@ public class Game implements ILoopable, INetworked {
         networkManager.registerMessageType(ServerRemoveEntity::new);
         networkManager.registerMessageType(MobUpdate::new);
         networkManager.start();
+
+        if (world != null && world.isPaused()) {
+            world.togglePaused();
+        }
     }
 
     public void joinServer(InetSocketAddress socketAddress) {

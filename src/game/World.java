@@ -47,6 +47,9 @@ public class World implements IEntitySpace {
 
     public void togglePaused() {
         paused = !paused;
+        if (game.getNetworkManager() != null) {
+            paused = false;
+        }
     }
 
     public boolean isPaused() {
