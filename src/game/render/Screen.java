@@ -11,6 +11,10 @@ public class Screen {
         // Do nothing
     }
 
+    public void onEscape() {
+        // Do nothing
+    }
+
     protected void addSelectableItem(GuiElement item) {
         items.add(item);
         selectable.add(item);

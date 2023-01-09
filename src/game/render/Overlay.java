@@ -82,6 +82,7 @@ public class Overlay {
         }
 
         if (hasScreen()) {
+            screenStack.peek().onEscape();
             popScreen();
         }
         else {
