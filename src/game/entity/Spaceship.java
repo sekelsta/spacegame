@@ -9,7 +9,7 @@ import sekelsta.math.Vector3f;
 
 public class Spaceship extends Movable implements ICollider {
     public static final int NUM_SKINS = 3;
-    int shootSpeed = (int)Movable.RESOLUTION;
+    private static final float shootSpeed = (float)Movable.ONE_METER;
     private final float angularAcceleration = Movable.ANGLE_RESOLUTION / 4096;
 
     public int skin;
@@ -61,11 +61,11 @@ public class Spaceship extends Movable implements ICollider {
     }
 
     public void thrust() {
-        accelerateForwards((int)Movable.RESOLUTION / 16);
+        accelerateForwards((float)Movable.ONE_METER / 16);
     }
 
     public void reverse() {
-        accelerateForwards(-1 * (int)Movable.RESOLUTION / 16);
+        accelerateForwards(-1 * (float)Movable.ONE_METER / 16);
     }
 
     public void pitchUp() {

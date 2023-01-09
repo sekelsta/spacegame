@@ -58,17 +58,13 @@ public class Asteroid extends Movable {
         return Entities.ASTEROID;
     }
 
-    private int randRange(Random random, int range) {
-        return random.nextInt(2 * range) - range;
-    }
-
     private float randRange(Random random, float range) {
         return random.nextFloat() * 2 * range - range;
     }
 
     public void setRandomVelocity() {
         Random random = world.getRandom();
-        int velocityCap = (int)Movable.RESOLUTION;
+        float velocityCap = (float)Movable.ONE_METER;
         accelerate(randRange(random, velocityCap), randRange(random, velocityCap), randRange(random, velocityCap));
         setAngle(random.nextFloat() * Movable.ANGLE_RESOLUTION, 
             random.nextFloat() * Movable.ANGLE_RESOLUTION, random.nextFloat() * Movable.ANGLE_RESOLUTION);

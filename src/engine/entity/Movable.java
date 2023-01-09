@@ -7,7 +7,7 @@ import sekelsta.math.Matrix3f;
 import sekelsta.math.Vector3f;
 
 public abstract class Movable implements Entity {
-    public static final double RESOLUTION = 65536; // One meter
+    public static final double ONE_METER = 1.0;
     public static final float ANGLE_RESOLUTION = 1f; // Full circle
     private static final float FLOAT_PI = (float)Math.PI;
     private int id = -1;
@@ -15,7 +15,7 @@ public abstract class Movable implements Entity {
     protected IController controller = null;
     private double x, y, z;
     private double prevX, prevY, prevZ;
-    private int velocityX, velocityY, velocityZ;
+    private float velocityX, velocityY, velocityZ;
 
     // Angular values range from 0.0 to 1.0
     private float yaw, pitch, roll;
@@ -40,9 +40,9 @@ public abstract class Movable implements Entity {
         prevX = x;
         prevY = y;
         prevZ = z;
-        velocityX = buffer.getInt();
-        velocityY = buffer.getInt();
-        velocityZ = buffer.getInt();
+        velocityX = buffer.getFloat();
+        velocityY = buffer.getFloat();
+        velocityZ = buffer.getFloat();
         yaw = buffer.getFloat();
         pitch = buffer.getFloat();
         roll = buffer.getFloat();
@@ -63,9 +63,9 @@ public abstract class Movable implements Entity {
         buffer.putDouble(y);
         buffer.putDouble(z);
         // Skip prevX, prevY, prevZ
-        buffer.putInt(velocityX);
-        buffer.putInt(velocityY);
-        buffer.putInt(velocityZ);
+        buffer.putFloat(velocityX);
+        buffer.putFloat(velocityY);
+        buffer.putFloat(velocityZ);
         buffer.putFloat(yaw);
         buffer.putFloat(pitch);
         buffer.putFloat(roll);
@@ -150,13 +150,13 @@ public abstract class Movable implements Entity {
         return (float)(angle / (2 * Math.PI) * ANGLE_RESOLUTION);
     }
 
-    public void accelerate(int x, int y, int z) {
+    public void accelerate(float x, float y, float z) {
         velocityX += x;
         velocityY += y;
         velocityZ += z;
     }
 
-    public void setVelocity(int x, int y, int z) {
+    public void setVelocity(float x, float y, float z) {
         velocityX = x;
         velocityY = y;
         velocityZ = z;
@@ -184,9 +184,9 @@ public abstract class Movable implements Entity {
         prevX = x;
         prevY = y;
         prevZ = z;
-        x += velocityX / RESOLUTION;
-        y += velocityY / RESOLUTION;
-        z += velocityZ / RESOLUTION;
+        x += velocityX;
+        y += velocityY;
+        z += velocityZ;
 
         prevYaw = yaw;
         prevRoll = roll;
@@ -256,15 +256,15 @@ public abstract class Movable implements Entity {
         return (float)(lerp * z + (1 - lerp) * prevZ);
     }
 
-    public int getVelocityX() {
+    public float getVelocityX() {
         return velocityX;
     }
 
-    public int getVelocityY() {
+    public float getVelocityY() {
         return velocityY;
     }
 
-    public int getVelocityZ() {
+    public float getVelocityZ() {
         return velocityZ;
     }
 
@@ -330,13 +330,12 @@ public abstract class Movable implements Entity {
         return distX * distX + distY * distY + distZ * distZ;
     }
 
-    // TODO #32: Stay more consistent about working with floats / ints
-    public void accelerateForwards(int amount) {
+    public void accelerateForwards(float amount) {
         // Formula obtained by transforming the forward vector (0, 1, 0) by the rotation matrix from yaw, pitch, and roll
         double dx = -1 * Math.cos(toRadians(pitch)) * Math.sin(toRadians(yaw));
         double dy = Math.cos(toRadians(pitch)) * Math.cos(toRadians(yaw));
         double dz = Math.sin(toRadians(pitch));
-        accelerate((int)(dx * amount), (int)(dy * amount), (int)(dz * amount));
+        accelerate((float)(dx * amount), (float)(dy * amount), (float)(dz * amount));
     }
 
     public void angularAccelerateLocalAxis(float amount, float x, float y, float z) {
