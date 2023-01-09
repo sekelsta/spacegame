@@ -7,8 +7,8 @@ import sekelsta.math.Matrix3f;
 import sekelsta.math.Vector3f;
 
 public abstract class Movable implements Entity {
-    public static final double RESOLUTION = 65536;
-    public static final float ANGLE_RESOLUTION = 65536; // Integer units per full circle
+    public static final double RESOLUTION = 65536; // One meter
+    public static final float ANGLE_RESOLUTION = 1f; // Full circle
     private static final float FLOAT_PI = (float)Math.PI;
     private int id = -1;
     protected IEntitySpace world;
@@ -17,10 +17,10 @@ public abstract class Movable implements Entity {
     private double prevX, prevY, prevZ;
     private int velocityX, velocityY, velocityZ;
 
-    // TODO #32: Consider storing radians directly instead of converting constantly
-    private int yaw, pitch, roll;
-    private int prevYaw, prevPitch, prevRoll;
-    private int angularVelocityX, angularVelocityY, angularVelocityZ;
+    // Angular values range from 0.0 to 1.0
+    private float yaw, pitch, roll;
+    private float prevYaw, prevPitch, prevRoll;
+    private float angularVelocityX, angularVelocityY, angularVelocityZ;
 
     // 0.99 or 0.98 is like ice
     // 0.8 is like land
@@ -43,15 +43,15 @@ public abstract class Movable implements Entity {
         velocityX = buffer.getInt();
         velocityY = buffer.getInt();
         velocityZ = buffer.getInt();
-        yaw = buffer.getInt();
-        pitch = buffer.getInt();
-        roll = buffer.getInt();
+        yaw = buffer.getFloat();
+        pitch = buffer.getFloat();
+        roll = buffer.getFloat();
         prevYaw = yaw;
         prevPitch = pitch;
         prevRoll = roll;
-        angularVelocityX = buffer.getInt();
-        angularVelocityY = buffer.getInt();
-        angularVelocityZ = buffer.getInt();
+        angularVelocityX = buffer.getFloat();
+        angularVelocityY = buffer.getFloat();
+        angularVelocityZ = buffer.getFloat();
         drag = buffer.getFloat();
         angularDrag = buffer.getFloat();
     }
@@ -66,13 +66,13 @@ public abstract class Movable implements Entity {
         buffer.putInt(velocityX);
         buffer.putInt(velocityY);
         buffer.putInt(velocityZ);
-        buffer.putInt(yaw);
-        buffer.putInt(pitch);
-        buffer.putInt(roll);
+        buffer.putFloat(yaw);
+        buffer.putFloat(pitch);
+        buffer.putFloat(roll);
         // Skip prevYaw, prevPitch, prevRoll
-        buffer.putInt(angularVelocityX);
-        buffer.putInt(angularVelocityY);
-        buffer.putInt(angularVelocityZ);
+        buffer.putFloat(angularVelocityX);
+        buffer.putFloat(angularVelocityY);
+        buffer.putFloat(angularVelocityZ);
         buffer.putFloat(drag);
         buffer.putFloat(angularDrag);
     }
@@ -142,12 +142,12 @@ public abstract class Movable implements Entity {
         return true;
     }
 
-    public static double toRadians(int angle) {
+    public static double toRadians(float angle) {
         return angle / ANGLE_RESOLUTION * 2 * Math.PI;
     }
 
-    private static int fromRadians(double angle) {
-        return (int)(angle / (2 * Math.PI) * ANGLE_RESOLUTION);
+    private static float fromRadians(double angle) {
+        return (float)(angle / (2 * Math.PI) * ANGLE_RESOLUTION);
     }
 
     public void accelerate(int x, int y, int z) {
@@ -168,7 +168,7 @@ public abstract class Movable implements Entity {
         velocityZ *= s;
     }
 
-    public void angularAccelerate(int x, int y, int z) {
+    public void angularAccelerate(float x, float y, float z) {
         angularVelocityX += x;
         angularVelocityY += y;
         angularVelocityZ += z;
@@ -195,8 +195,8 @@ public abstract class Movable implements Entity {
         // Combine rotations with matrices
         // TO_OPTIMIZE: Quaternions might be faster
         Matrix3f rotation = new Matrix3f();
-        rotation.rotate((float)toRadians(angularVelocityZ), (float)toRadians(angularVelocityX), (float)toRadians(angularVelocityY));
-        rotation.rotate((float)toRadians(yaw), (float)toRadians(pitch), (float)toRadians(roll));
+        rotation.rotate(angularVelocityZ * 2 * FLOAT_PI, angularVelocityX * 2 * FLOAT_PI, angularVelocityY * 2 * FLOAT_PI);
+        rotation.rotate(yaw * 2 * FLOAT_PI, pitch * 2 * FLOAT_PI, roll * 2 * FLOAT_PI);
 
         this.yaw = fromRadians(rotation.getYaw());
         this.pitch = fromRadians(rotation.getPitch());
@@ -210,9 +210,9 @@ public abstract class Movable implements Entity {
         float ninetyDegrees = ANGLE_RESOLUTION / 4;
         if (getPositiveAngleBetween(yaw, prevYaw) > ninetyDegrees 
                 && getPositiveAngleBetween(roll, prevRoll) > ninetyDegrees) {
-            prevYaw += (int)ANGLE_RESOLUTION / 2;
-            prevRoll += (int)ANGLE_RESOLUTION / 2;
-            prevPitch = (int)ANGLE_RESOLUTION / 2 - prevPitch;
+            prevYaw += ANGLE_RESOLUTION / 2;
+            prevRoll += ANGLE_RESOLUTION / 2;
+            prevPitch = ANGLE_RESOLUTION / 2 - prevPitch;
 
             prevYaw %= ANGLE_RESOLUTION;
             prevPitch %= ANGLE_RESOLUTION;
@@ -226,7 +226,7 @@ public abstract class Movable implements Entity {
         this.z = this.prevZ = z;
     }
 
-    public final void setAngle(int y, int p, int r) {
+    public final void setAngle(float y, float p, float r) {
         this.yaw = y;
         this.pitch = p;
         this.roll = r;
@@ -268,27 +268,27 @@ public abstract class Movable implements Entity {
         return velocityZ;
     }
 
-    public int getYaw() {
+    public float getYaw() {
         return yaw;
     }
 
-    public int getPitch() {
+    public float getPitch() {
         return pitch;
     }
 
-    public int getRoll() {
+    public float getRoll() {
         return roll;
     }
 
-    public int getYawVelocity() {
+    public float getYawVelocity() {
         return angularVelocityZ;
     }
 
-    public int getPitchVelocity() {
+    public float getPitchVelocity() {
         return angularVelocityX;
     }
 
-    public int getRollVelocity() {
+    public float getRollVelocity() {
         return angularVelocityY;
     }
 
@@ -304,19 +304,19 @@ public abstract class Movable implements Entity {
         return interpolateAngle(roll, prevRoll, lerp) / ANGLE_RESOLUTION * 2 * FLOAT_PI;
     }
 
-    private float interpolateAngle(int current, int prev, float lerp) {
-        if (current - prev > (ANGLE_RESOLUTION / 2)) {
+    private float interpolateAngle(float current, float prev, float lerp) {
+        if (current - prev > ANGLE_RESOLUTION / 2) {
             current -= ANGLE_RESOLUTION;
         }
-        else if (prev - current > (ANGLE_RESOLUTION / 2)) {
+        else if (prev - current > ANGLE_RESOLUTION / 2) {
             current += ANGLE_RESOLUTION;
         }
         return lerp * current + (1 - lerp) * prev;
     }
 
-    private int getPositiveAngleBetween(int theta, int phi) {
-        int diff = Math.abs(theta - phi) % (int)ANGLE_RESOLUTION;
-        return (int)Math.min(diff, ANGLE_RESOLUTION - diff);
+    private float getPositiveAngleBetween(float theta, float phi) {
+        float diff = Math.abs(theta - phi) % ANGLE_RESOLUTION;
+        return (float)Math.min(diff, ANGLE_RESOLUTION - diff);
     }
 
     public double distSquared(Movable other) {
@@ -339,7 +339,7 @@ public abstract class Movable implements Entity {
         accelerate((int)(dx * amount), (int)(dy * amount), (int)(dz * amount));
     }
 
-    public void angularAccelerateLocalAxis(int amount, float x, float y, float z) {
+    public void angularAccelerateLocalAxis(float amount, float x, float y, float z) {
         // TO_OPTIMIZE: For axis-aligned rotations, the full matrix is not really needed
         Vector3f axis = new Vector3f(x, y, z);
         axis.rotate((float)toRadians(yaw), (float)toRadians(pitch), (float)toRadians(roll));
