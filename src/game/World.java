@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import sekelsta.engine.entity.*;
+import sekelsta.engine.Particle;
 import sekelsta.game.entity.*;
 import sekelsta.game.network.ServerSpawnEntity;
 import sekelsta.game.network.ServerRemoveEntity;
@@ -24,6 +25,8 @@ public class World implements IEntitySpace {
     // Mobs to add/remove, to avoid concurrent modififation while updating
     private List<Entity> killed = new ArrayList<>();
     private List<Entity> spawned = new ArrayList<>();
+
+    private List<Particle> particles = new ArrayList<>();
 
     public Spaceship localPlayer;
 
@@ -78,6 +81,7 @@ public class World implements IEntitySpace {
             asteroid.setRandomVelocity();
         }
 
+        // Update
         for (Entity mob : mobs) {
             mob.update();
             if (isNetworkServer()) {
@@ -105,8 +109,6 @@ public class World implements IEntitySpace {
                 remove(mob);
             }
         }
-
-        // Done iterating, safe to remove
         mobs.removeAll(killed);
         if (isNetworkServer()) {
             for (Entity mob : killed) {
@@ -115,11 +117,28 @@ public class World implements IEntitySpace {
             }
         }
         killed.clear();
+
+        // Update particles
+        ArrayList<Particle> removedParticles = new ArrayList<>();
+        for (Particle particle : particles) {
+            particle.update();
+            if (particle.isDead()) {
+                removedParticles.add(particle);
+            }
+        }
+        particles.removeAll(removedParticles);
+        removedParticles.clear();
+
+
         tick += 1;
     }
 
     public List<Entity> getMobs() {
         return mobs;
+    }
+
+    public List<Particle> getParticles() {
+        return particles;
     }
 
     public Spaceship getLocalPlayer() {
@@ -147,6 +166,11 @@ public class World implements IEntitySpace {
     public Entity remove(Entity entity) {
         this.killed.add(entity);
         return entity;
+    }
+
+    public Particle addParticle(Particle particle) {
+        particles.add(particle);
+        return particle;
     }
 
     public void runWhenEntitySpawns(Consumer<Entity> function, int id) {

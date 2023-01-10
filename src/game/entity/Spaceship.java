@@ -1,6 +1,8 @@
 package sekelsta.game.entity;
 
 import java.nio.ByteBuffer;
+import java.util.Random;
+import sekelsta.engine.Particle;
 import sekelsta.engine.entity.*;
 import sekelsta.engine.network.ByteVector;
 import sekelsta.game.World;
@@ -61,6 +63,30 @@ public class Spaceship extends Entity implements ICollider {
 
     public void thrust() {
         accelerateForwards((float)Entity.ONE_METER / 16);
+
+        for (int i = 0; i < 5; ++i) {
+            Random random = world.getRandom();
+            Vector3f spawnPoint = new Vector3f(0, -1.22f, 0);
+            spawnPoint.rotate(yaw, pitch, roll);
+            Particle particle = new Particle((float)getX() + spawnPoint.x, (float)getY() + spawnPoint.y, (float)getZ() + spawnPoint.z, 
+                random.nextInt(15) + 15);
+            // Ratio of minimum backwards velocity to sideways velocity
+            float ratio = 6;
+            float vy = -1 * random.nextFloat() * (float)Entity.ONE_METER / 2f;
+            float vx = 1;
+            float vz = 1;
+            while (vx * vx + vz * vz > 0.5f * 0.5f) {
+                vx = random.nextFloat() - 0.5f;
+                vz = random.nextFloat() - 0.5f;
+            }
+            float s = -1 * vy * 2 / ratio;
+            vx *= s;
+            vz *= s;
+            Vector3f velocity = new Vector3f(vx, vy, vz);
+            velocity.rotate(yaw, pitch, roll);
+            particle.setVelocity(getVelocityX() + velocity.x, getVelocityY() + velocity.y, getVelocityZ() + velocity.z);
+            world.addParticle(particle);
+        }
     }
 
     public void reverse() {

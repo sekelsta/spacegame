@@ -8,6 +8,7 @@ import org.lwjgl.opengl.GL11;
 
 import sekelsta.engine.render.*;
 import sekelsta.engine.Frustum;
+import sekelsta.engine.Particle;
 import sekelsta.engine.entity.Entity;
 import sekelsta.engine.render.Camera;
 import sekelsta.engine.render.Texture;
@@ -29,14 +30,14 @@ public class Renderer implements IFramebufferSizeListener {
     private final Vector2f uiDimensions = new Vector2f(1, 1);
 
     private Vector3f lightPos = new Vector3f(0, 0, 0);
-    private final float[] sunVertices = {
+    private final float[] quadVertices = {
         // Position, normal, texture
         0.5f, 0, 0.5f, 0, -1, 0, 1, 1,
         -0.5f, 0, 0.5f, 0, -1, 0, 0, 1,
         -0.5f, 0, -0.5f, 0, -1, 0, 0, 0,
         0.5f, 0, -0.5f, 0, -1, 0, 1, 0};
-    private final int[] sunFaces = {0, 1, 2, 2, 3, 0};
-    private final RigidMesh sunMesh = new RigidMesh(sunVertices, sunFaces);
+    private final int[] quadFaces = {0, 1, 2, 2, 3, 0};
+    private final RigidMesh quadMesh = new RigidMesh(quadVertices, quadFaces);
     private final Texture sunTexture = new Texture("sun.png");
 
     // sqrt 3 is because of the shape of a cube; not sure why the 0.8 is needed but it is
@@ -116,6 +117,17 @@ public class Renderer implements IFramebufferSizeListener {
             renderEntity(entity, realLerp, matrixStack);
         }
 
+        // Render particles
+        for (Particle particle : world.getParticles()) {
+            matrixStack.push();
+            matrixStack.translate(particle.getInterpolatedX(lerp), particle.getInterpolatedY(lerp), particle.getInterpolatedZ(lerp));
+            matrixStack.billboard();
+            Textures.TRANSPARENT.bind();
+            sunTexture.bindEmission();
+            quadMesh.render();
+            matrixStack.pop();
+        }
+
         // Render the sun
         matrixStack.push();
         matrixStack.translate(lightPos.x, lightPos.y, lightPos.z);
@@ -123,7 +135,7 @@ public class Renderer implements IFramebufferSizeListener {
         matrixStack.billboard();
         Textures.TRANSPARENT.bind();
         sunTexture.bindEmission();
-        sunMesh.render();
+        quadMesh.render();
         matrixStack.pop();
 
         matrixStack.pop();

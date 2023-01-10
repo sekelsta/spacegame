@@ -173,7 +173,7 @@ public abstract class Entity {
         angularVelocityZ *= s;
     }
 
-    public void tick() {
+    protected void tick() {
         prevX = x;
         prevY = y;
         prevZ = z;
