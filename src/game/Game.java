@@ -7,7 +7,7 @@ import sekelsta.engine.ILoopable;
 import sekelsta.engine.Log;
 import sekelsta.engine.SoftwareVersion;
 import sekelsta.engine.entity.IController;
-import sekelsta.engine.entity.Movable;
+import sekelsta.engine.entity.Entity;
 import sekelsta.engine.network.Connection;
 import sekelsta.engine.network.INetworked;
 import sekelsta.engine.network.NetworkManager;
@@ -130,7 +130,7 @@ public class Game implements ILoopable, INetworked {
         networkManager.registerMessageType(ServerSpawnEntity::new);
         networkManager.registerMessageType(ServerGivePawn::new);
         networkManager.registerMessageType(ServerRemoveEntity::new);
-        networkManager.registerMessageType(MobUpdate::new);
+        networkManager.registerMessageType(EntityUpdate::new);
         networkManager.start();
 
         if (world != null && world.isPaused()) {
@@ -159,7 +159,7 @@ public class Game implements ILoopable, INetworked {
             if (world != null) {
                 ((GameContext)NetworkManager.context).tick = world.getCurrentTick();
                 if (world.getLocalPlayer() != null && !world.authoritative) {
-                    networkManager.queueBroadcast(new MobUpdate(world.getLocalPlayer()));
+                    networkManager.queueBroadcast(new EntityUpdate(world.getLocalPlayer()));
                 }
             }
             networkManager.update(this);
@@ -219,7 +219,7 @@ public class Game implements ILoopable, INetworked {
         Log.info("Accepted connection " + client.getID());
         networkManager.queueMessage(client, new ServerSetWorldTick());
         // Send info about all existing entities
-        for (Movable mob : world.getMobs()) {
+        for (Entity mob : world.getMobs()) {
             ServerSpawnEntity message = new ServerSpawnEntity(mob);
             networkManager.queueMessage(client, message);
         }
@@ -240,7 +240,7 @@ public class Game implements ILoopable, INetworked {
     private void disconnect(long connectionID) {
         if (world.authoritative) {
             // Note: If the pawn hasn't spawned yet, or is in the list awaiting spawning, this won't remove it
-            for (Movable mob : world.getMobs()) {
+            for (Entity mob : world.getMobs()) {
                 IController c = mob.getController();
                 if (c instanceof RemotePlayer && connectionID == ((RemotePlayer)c).connectionID) {
                     world.remove(mob);

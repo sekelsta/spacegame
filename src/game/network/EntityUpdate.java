@@ -8,12 +8,12 @@ import sekelsta.game.Game;
 import sekelsta.game.RemoteController;
 import sekelsta.game.RemotePlayer;
 
-public class MobUpdate extends Message {
-    protected Movable entity;
+public class EntityUpdate extends Message {
+    protected Entity entity;
 
-    public MobUpdate() {}
+    public EntityUpdate() {}
 
-    public MobUpdate(Movable entity) {
+    public EntityUpdate(Entity entity) {
         this.entity = entity;
     }
 
@@ -38,12 +38,12 @@ public class MobUpdate extends Message {
     public void decode(ByteBuffer buffer) {
         int id = buffer.getInt();
         EntityType type = EntityType.getByID(id);
-        entity = (Movable)type.decode(buffer);
+        entity = type.decode(buffer);
     }
 
     @Override
     public void handle(INetworked game) {
-        Movable mob = ((Game)game).getWorld().getMovableByID(entity.getID());
+        Entity mob = ((Game)game).getWorld().getEntityByID(entity.getID());
         if (mob == null) {
             return;
         }

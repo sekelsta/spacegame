@@ -6,10 +6,10 @@ import sekelsta.engine.network.ByteVector;
 import sekelsta.game.World;
 import sekelsta.math.Vector3f;
 
-public class Spaceship extends Movable implements ICollider {
+public class Spaceship extends Entity implements ICollider {
     public static final int NUM_SKINS = 3;
-    private static final float shootSpeed = (float)Movable.ONE_METER;
-    private final float angularAcceleration = Movable.TAU / 4096;
+    private static final float shootSpeed = (float)Entity.ONE_METER;
+    private final float angularAcceleration = Entity.TAU / 4096;
 
     public int skin;
 
@@ -60,11 +60,11 @@ public class Spaceship extends Movable implements ICollider {
     }
 
     public void thrust() {
-        accelerateForwards((float)Movable.ONE_METER / 16);
+        accelerateForwards((float)Entity.ONE_METER / 16);
     }
 
     public void reverse() {
-        accelerateForwards(-1 * (float)Movable.ONE_METER / 16);
+        accelerateForwards(-1 * (float)Entity.ONE_METER / 16);
     }
 
     public void pitchUp() {
@@ -94,7 +94,7 @@ public class Spaceship extends Movable implements ICollider {
     }
 
     public void fire() {
-        Movable projectile = world.spawn(new Projectile(this, getX(), getY(), getZ()));
+        Entity projectile = world.spawn(new Projectile(this, getX(), getY(), getZ()));
         projectile.accelerate(getVelocityX(), getVelocityY(), getVelocityZ());
         projectile.setAngle(getYaw(), getPitch(), getRoll());
         projectile.accelerateForwards(shootSpeed);

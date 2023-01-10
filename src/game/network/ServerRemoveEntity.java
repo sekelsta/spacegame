@@ -36,6 +36,6 @@ public class ServerRemoveEntity extends Message {
     @Override
     public void handle(INetworked game) {
         World world = ((Game)game).getWorld();
-        world.runWhenMovableSpawns(mob -> world.remove(mob), entityID);
+        world.runWhenEntitySpawns(mob -> world.remove(mob), entityID);
     }
 }

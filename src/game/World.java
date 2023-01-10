@@ -7,7 +7,7 @@ import sekelsta.engine.entity.*;
 import sekelsta.game.entity.*;
 import sekelsta.game.network.ServerSpawnEntity;
 import sekelsta.game.network.ServerRemoveEntity;
-import sekelsta.game.network.MobUpdate;
+import sekelsta.game.network.EntityUpdate;
 import sekelsta.math.Vector3f;
 
 public class World implements IEntitySpace {
@@ -19,11 +19,11 @@ public class World implements IEntitySpace {
     private boolean paused;
 
     private Random random = new Random();
-    private List<Movable> mobs;
+    private List<Entity> mobs;
 
     // Mobs to add/remove, to avoid concurrent modififation while updating
-    private List<Movable> killed = new ArrayList<>();
-    private List<Movable> spawned = new ArrayList<>();
+    private List<Entity> killed = new ArrayList<>();
+    private List<Entity> spawned = new ArrayList<>();
 
     public Spaceship localPlayer;
 
@@ -31,7 +31,7 @@ public class World implements IEntitySpace {
 
     private Game game;
 
-    private Map<Integer, List<Consumer<Movable>>> onSpawnFunctions = new HashMap<>();
+    private Map<Integer, List<Consumer<Entity>>> onSpawnFunctions = new HashMap<>();
 
     public World(Game game, boolean authoritative) {
         this.game = game;
@@ -63,7 +63,7 @@ public class World implements IEntitySpace {
         // Spawn
         mobs.addAll(spawned);
         if (isNetworkServer()) {
-            for (Movable mob : spawned) {
+            for (Entity mob : spawned) {
                 ServerSpawnEntity spawnMessage = new ServerSpawnEntity(mob);
                 game.getNetworkManager().queueBroadcast(spawnMessage);
             }
@@ -78,17 +78,17 @@ public class World implements IEntitySpace {
             asteroid.setRandomVelocity();
         }
 
-        for (Movable mob : mobs) {
+        for (Entity mob : mobs) {
             mob.update();
             if (isNetworkServer()) {
-                MobUpdate message = new MobUpdate(mob);
+                EntityUpdate message = new EntityUpdate(mob);
                 game.getNetworkManager().queueBroadcast(message);
             }
         }
 
-        List<Movable> collidableMobs = mobs.stream().filter(mob -> mob instanceof ICollider).collect(Collectors.toList());
-        for (Movable collider : collidableMobs) {
-            for (Movable collidee : mobs) {
+        List<Entity> collidableMobs = mobs.stream().filter(mob -> mob instanceof ICollider).collect(Collectors.toList());
+        for (Entity collider : collidableMobs) {
+            for (Entity collidee : mobs) {
                 double tolerance = collider.getCollisionRadius() + collidee.getCollisionRadius();
                 tolerance *= tolerance;
                 double distSq = collider.distSquared(collidee);
@@ -99,7 +99,7 @@ public class World implements IEntitySpace {
         }
 
         // Despawn
-        for (Movable mob : mobs) {
+        for (Entity mob : mobs) {
             if (mob.distSquared(0, 0, 0) > 100 * spawnRadius * spawnRadius
                     && mob.mayDespawn()) {
                 remove(mob);
@@ -109,7 +109,7 @@ public class World implements IEntitySpace {
         // Done iterating, safe to remove
         mobs.removeAll(killed);
         if (isNetworkServer()) {
-            for (Movable mob : killed) {
+            for (Entity mob : killed) {
                 ServerRemoveEntity message = new ServerRemoveEntity(mob.getID());
                 game.getNetworkManager().queueBroadcast(message);
             }
@@ -118,7 +118,7 @@ public class World implements IEntitySpace {
         tick += 1;
     }
 
-    public List<Movable> getMobs() {
+    public List<Entity> getMobs() {
         return mobs;
     }
 
@@ -127,45 +127,36 @@ public class World implements IEntitySpace {
     }
 
     public <T extends Entity> T spawn(T entity) {
-        if (entity instanceof Movable) {
-            Movable mob = (Movable)entity;
-            spawnMovable(mob);
-            return entity;
-        }
-        throw new RuntimeException("TODO #25: not yet implemented");
-    }
-
-    private Movable spawnMovable(Movable mob) {
-        this.spawned.add(mob);
-        mob.enterWorld(this);
+        this.spawned.add(entity);
+        entity.enterWorld(this);
         if (authoritative) {
-            mob.setID(nextID);
+            entity.setID(nextID);
             nextID += 1;
         }
 
-        if (onSpawnFunctions.containsKey(mob.getID())) {
-            for (Consumer<Movable> function : onSpawnFunctions.get(mob.getID())) {
-                function.accept(mob);
+        if (onSpawnFunctions.containsKey(entity.getID())) {
+            for (Consumer<Entity> function : onSpawnFunctions.get(entity.getID())) {
+                function.accept(entity);
             }
-            onSpawnFunctions.remove(mob.getID());
+            onSpawnFunctions.remove(entity.getID());
         }
 
-        return mob;
+        return entity;
     }
 
-    public Movable remove(Movable mob) {
-        this.killed.add(mob);
-        return mob;
+    public Entity remove(Entity entity) {
+        this.killed.add(entity);
+        return entity;
     }
 
-    public void runWhenMovableSpawns(Consumer<Movable> function, int id) {
-        for (Movable mob : mobs) {
+    public void runWhenEntitySpawns(Consumer<Entity> function, int id) {
+        for (Entity mob : mobs) {
             if (mob.getID() == id) {
                 function.accept(mob);
                 return;
             }
         }
-        for (Movable mob : spawned) {
+        for (Entity mob : spawned) {
             if (mob.getID() == id) {
                 function.accept(mob);
                 return;
@@ -176,14 +167,14 @@ public class World implements IEntitySpace {
             onSpawnFunctions.get(id).add(function);
         }
         else {
-            List<Consumer<Movable>> f = new ArrayList<>();
+            List<Consumer<Entity>> f = new ArrayList<>();
             f.add(function);
             onSpawnFunctions.put(id, f);
         }
     }
 
-    public Movable getMovableByID(int id) {
-        for (Movable mob : mobs) {
+    public Entity getEntityByID(int id) {
+        for (Entity mob : mobs) {
             if (mob.getID() == id) {
                 return mob;
             }

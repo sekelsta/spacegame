@@ -3,19 +3,19 @@ package sekelsta.game;
 import java.util.*;
 
 import sekelsta.engine.entity.IController;
-import sekelsta.engine.entity.Movable;
+import sekelsta.engine.entity.Entity;
 
 public class RemoteController implements IController {
 
-    private final Movable entity;
-    private LinkedList<Movable> pastUpdates = new LinkedList<>();
+    private final Entity entity;
+    private LinkedList<Entity> pastUpdates = new LinkedList<>();
     private long lastUpdateTick;
 
-    public RemoteController(Movable entity) {
+    public RemoteController(Entity entity) {
         this.entity = entity;
     }
 
-    public void handleUpdateMessage(long tick, Movable entity) {
+    public void handleUpdateMessage(long tick, Entity entity) {
         if (tick > lastUpdateTick) {
             for (long i = lastUpdateTick; i < tick - 1; ++i) {
                 pastUpdates.add(null);

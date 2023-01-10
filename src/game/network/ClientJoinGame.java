@@ -3,7 +3,6 @@ package sekelsta.game.network;
 import java.nio.ByteBuffer;
 
 import sekelsta.engine.Log;
-import sekelsta.engine.entity.Movable;
 import sekelsta.engine.network.ByteVector;
 import sekelsta.engine.network.INetworked;
 import sekelsta.engine.network.Message;

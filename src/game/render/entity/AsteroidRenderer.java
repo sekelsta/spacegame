@@ -2,7 +2,6 @@ package sekelsta.game.render.entity;
 
 import java.util.Scanner;
 
-import sekelsta.engine.entity.Entity;
 import sekelsta.engine.render.MatrixStack;
 import sekelsta.engine.render.Texture;
 import sekelsta.engine.render.entity.EntityRenderer;

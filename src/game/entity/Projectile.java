@@ -6,7 +6,7 @@ import sekelsta.engine.entity.*;
 import sekelsta.engine.network.ByteVector;
 import sekelsta.game.World;
 
-public class Projectile extends Movable implements ICollider {
+public class Projectile extends Entity implements ICollider {
     Entity owner;
 
     public Projectile(Entity owner, double x, double y, double z) {

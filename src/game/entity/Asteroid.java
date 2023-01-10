@@ -7,7 +7,7 @@ import sekelsta.engine.entity.*;
 import sekelsta.engine.network.ByteVector;
 import sekelsta.math.Vector3f;
 
-public class Asteroid extends Movable {
+public class Asteroid extends Entity {
     public static final int NUM_MESH_VARIANTS = 4;
 
     protected int size;
@@ -64,11 +64,11 @@ public class Asteroid extends Movable {
 
     public void setRandomVelocity() {
         Random random = world.getRandom();
-        float velocityCap = (float)Movable.ONE_METER;
+        float velocityCap = (float)Entity.ONE_METER;
         accelerate(randRange(random, velocityCap), randRange(random, velocityCap), randRange(random, velocityCap));
-        setAngle(random.nextFloat() * Movable.TAU, 
-            random.nextFloat() * Movable.TAU, random.nextFloat() * Movable.TAU);
-        float rotCap = Movable.TAU / 64f;
+        setAngle(random.nextFloat() * Entity.TAU, 
+            random.nextFloat() * Entity.TAU, random.nextFloat() * Entity.TAU);
+        float rotCap = Entity.TAU / 64f;
         angularAccelerate(randRange(random, rotCap), randRange(random, rotCap), randRange(random, rotCap));
     }
 

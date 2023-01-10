@@ -8,7 +8,6 @@ import org.lwjgl.opengl.GL11;
 
 import sekelsta.engine.render.*;
 import sekelsta.engine.Frustum;
-import sekelsta.engine.entity.Movable;
 import sekelsta.engine.entity.Entity;
 import sekelsta.engine.render.Camera;
 import sekelsta.engine.render.Texture;
@@ -113,7 +112,7 @@ public class Renderer implements IFramebufferSizeListener {
         matrixStack.pop();
 
         // Render entities
-        for (Movable entity : world.getMobs()) {
+        for (Entity entity : world.getMobs()) {
             renderEntity(entity, realLerp, matrixStack);
         }
 
