@@ -1,7 +1,6 @@
 package sekelsta.game.entity;
 
 import java.nio.ByteBuffer;
-
 import sekelsta.engine.entity.*;
 import sekelsta.engine.network.ByteVector;
 import sekelsta.game.World;
@@ -10,7 +9,7 @@ import sekelsta.math.Vector3f;
 public class Spaceship extends Movable implements ICollider {
     public static final int NUM_SKINS = 3;
     private static final float shootSpeed = (float)Movable.ONE_METER;
-    private final float angularAcceleration = Movable.ANGLE_RESOLUTION / 4096;
+    private final float angularAcceleration = Movable.TAU / 4096;
 
     public int skin;
 
@@ -21,7 +20,7 @@ public class Spaceship extends Movable implements ICollider {
     public Spaceship(int x, int y, int z, IController controller) {
         super(x, y, z);
         this.controller = controller;
-        angularDrag = 0.9f;
+        angularDrag = 0.7f;
     }
 
     public Spaceship(ByteBuffer buffer) {

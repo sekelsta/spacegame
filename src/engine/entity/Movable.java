@@ -8,8 +8,7 @@ import sekelsta.math.Vector3f;
 
 public abstract class Movable implements Entity {
     public static final double ONE_METER = 1.0;
-    public static final float ANGLE_RESOLUTION = 1f; // Full circle
-    private static final float FLOAT_PI = (float)Math.PI;
+    public static final float TAU = 2 * (float)Math.PI; // Full circle
     private int id = -1;
     protected IEntitySpace world;
     protected IController controller = null;
@@ -18,7 +17,7 @@ public abstract class Movable implements Entity {
     private float velocityX, velocityY, velocityZ;
 
     // Angular values range from 0.0 to 1.0
-    private float yaw, pitch, roll;
+    protected float yaw, pitch, roll;
     private float prevYaw, prevPitch, prevRoll;
     private float angularVelocityX, angularVelocityY, angularVelocityZ;
 
@@ -142,14 +141,6 @@ public abstract class Movable implements Entity {
         return true;
     }
 
-    public static double toRadians(float angle) {
-        return angle / ANGLE_RESOLUTION * 2 * Math.PI;
-    }
-
-    private static float fromRadians(double angle) {
-        return (float)(angle / (2 * Math.PI) * ANGLE_RESOLUTION);
-    }
-
     public void accelerate(float x, float y, float z) {
         velocityX += x;
         velocityY += y;
@@ -195,28 +186,28 @@ public abstract class Movable implements Entity {
         // Combine rotations with matrices
         // TO_OPTIMIZE: Quaternions might be faster
         Matrix3f rotation = new Matrix3f();
-        rotation.rotate(angularVelocityZ * 2 * FLOAT_PI, angularVelocityX * 2 * FLOAT_PI, angularVelocityY * 2 * FLOAT_PI);
-        rotation.rotate(yaw * 2 * FLOAT_PI, pitch * 2 * FLOAT_PI, roll * 2 * FLOAT_PI);
+        rotation.rotate(angularVelocityZ, angularVelocityX, angularVelocityY);
+        rotation.rotate(yaw, pitch, roll);
 
-        this.yaw = fromRadians(rotation.getYaw());
-        this.pitch = fromRadians(rotation.getPitch());
-        this.roll = fromRadians(rotation.getRoll());
+        this.yaw = rotation.getYaw();
+        this.pitch = rotation.getPitch();
+        this.roll = rotation.getRoll();
 
-        yaw %= ANGLE_RESOLUTION;
-        pitch %= ANGLE_RESOLUTION;
-        roll %= ANGLE_RESOLUTION;
+        yaw %= TAU;
+        pitch %= TAU;
+        roll %= TAU;
 
         // If yaw and roll just changed by 180 degrees, adjust prevYaw, prevPitch, and prevRoll to match
-        float ninetyDegrees = ANGLE_RESOLUTION / 4;
+        float ninetyDegrees = TAU / 4;
         if (getPositiveAngleBetween(yaw, prevYaw) > ninetyDegrees 
                 && getPositiveAngleBetween(roll, prevRoll) > ninetyDegrees) {
-            prevYaw += ANGLE_RESOLUTION / 2;
-            prevRoll += ANGLE_RESOLUTION / 2;
-            prevPitch = ANGLE_RESOLUTION / 2 - prevPitch;
+            prevYaw += TAU / 2;
+            prevRoll += TAU / 2;
+            prevPitch = TAU / 2 - prevPitch;
 
-            prevYaw %= ANGLE_RESOLUTION;
-            prevPitch %= ANGLE_RESOLUTION;
-            prevRoll %= ANGLE_RESOLUTION;
+            prevYaw %= TAU;
+            prevPitch %= TAU;
+            prevRoll %= TAU;
         }
     }
 
@@ -293,30 +284,30 @@ public abstract class Movable implements Entity {
     }
 
     public float getInterpolatedYaw(float lerp) {
-        return interpolateAngle(yaw, prevYaw, lerp) / ANGLE_RESOLUTION * 2 * FLOAT_PI;
+        return interpolateAngle(yaw, prevYaw, lerp);
     }
 
     public float getInterpolatedPitch(float lerp) {
-        return interpolateAngle(pitch, prevPitch, lerp) / ANGLE_RESOLUTION * 2 * FLOAT_PI;
+        return interpolateAngle(pitch, prevPitch, lerp);
     }
 
     public float getInterpolatedRoll(float lerp) {
-        return interpolateAngle(roll, prevRoll, lerp) / ANGLE_RESOLUTION * 2 * FLOAT_PI;
+        return interpolateAngle(roll, prevRoll, lerp);
     }
 
     private float interpolateAngle(float current, float prev, float lerp) {
-        if (current - prev > ANGLE_RESOLUTION / 2) {
-            current -= ANGLE_RESOLUTION;
+        if (current - prev > TAU / 2) {
+            current -= TAU;
         }
-        else if (prev - current > ANGLE_RESOLUTION / 2) {
-            current += ANGLE_RESOLUTION;
+        else if (prev - current > TAU / 2) {
+            current += TAU;
         }
         return lerp * current + (1 - lerp) * prev;
     }
 
     private float getPositiveAngleBetween(float theta, float phi) {
-        float diff = Math.abs(theta - phi) % ANGLE_RESOLUTION;
-        return (float)Math.min(diff, ANGLE_RESOLUTION - diff);
+        float diff = Math.abs(theta - phi) % TAU;
+        return (float)Math.min(diff, TAU - diff);
     }
 
     public double distSquared(Movable other) {
@@ -332,22 +323,22 @@ public abstract class Movable implements Entity {
 
     public void accelerateForwards(float amount) {
         // Formula obtained by transforming the forward vector (0, 1, 0) by the rotation matrix from yaw, pitch, and roll
-        double dx = -1 * Math.cos(toRadians(pitch)) * Math.sin(toRadians(yaw));
-        double dy = Math.cos(toRadians(pitch)) * Math.cos(toRadians(yaw));
-        double dz = Math.sin(toRadians(pitch));
+        double dx = -1 * Math.cos(pitch) * Math.sin(yaw);
+        double dy = Math.cos(pitch) * Math.cos(yaw);
+        double dz = Math.sin(pitch);
         accelerate((float)(dx * amount), (float)(dy * amount), (float)(dz * amount));
     }
 
     public void angularAccelerateLocalAxis(float amount, float x, float y, float z) {
         // TO_OPTIMIZE: For axis-aligned rotations, the full matrix is not really needed
         Vector3f axis = new Vector3f(x, y, z);
-        axis.rotate((float)toRadians(yaw), (float)toRadians(pitch), (float)toRadians(roll));
+        axis.rotate(yaw, pitch, roll);
 
         Matrix3f rotation = new Matrix3f();
-        rotation.rotate((float)toRadians(amount), axis.x, axis.y, axis.z);
+        rotation.rotate(amount, axis.x, axis.y, axis.z);
 
-        this.angularVelocityX += fromRadians(rotation.getPitch());
-        this.angularVelocityY += fromRadians(rotation.getRoll());
-        this.angularVelocityZ += fromRadians(rotation.getYaw());
+        this.angularVelocityX += rotation.getPitch();
+        this.angularVelocityY += rotation.getRoll();
+        this.angularVelocityZ += rotation.getYaw();
     }
 }
