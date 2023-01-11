@@ -458,6 +458,20 @@ public class Matrix4f {
         return this;
     }
 
+    public Matrix3f normalTransform() {
+        Matrix3f n = new Matrix3f();
+        n.m00 = this.m00;
+        n.m01 = this.m01;
+        n.m02 = this.m02;
+        n.m10 = this.m10;
+        n.m11 = this.m11;
+        n.m12 = this.m12;
+        n.m20 = this.m20;
+        n.m21 = this.m21;
+        n.m22 = this.m22;
+        return (Matrix3f)(n.invert().transpose());
+    }
+
     public Matrix3f getRotation() {
         float scaleX = (float)Math.sqrt(m00 * m00 + m01 * m01 + m02 * m02);
         float scaleY = (float)Math.sqrt(m10 * m10 + m11 * m11 + m12 * m12);

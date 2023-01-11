@@ -54,7 +54,7 @@ public class Renderer implements IFramebufferSizeListener {
         protected void onChange() {
             Matrix4f result = getResult();
             shader.setUniform("modelview", result);
-            shader.setUniform("normal_transform", normalTransform(result));
+            shader.setUniform("normal_transform", result.normalTransform());
         }
     };
 
@@ -179,20 +179,6 @@ public class Renderer implements IFramebufferSizeListener {
         float uiScale = (float)Overlay.getScale();
         uiDimensions.x = width * uiScale;
         uiDimensions.y = height * uiScale;
-    }
-
-    private Matrix3f normalTransform(Matrix4f matrix) {
-        Matrix3f n = new Matrix3f();
-        n.m00 = matrix.m00;
-        n.m01 = matrix.m01;
-        n.m02 = matrix.m02;
-        n.m10 = matrix.m10;
-        n.m11 = matrix.m11;
-        n.m12 = matrix.m12;
-        n.m20 = matrix.m20;
-        n.m21 = matrix.m21;
-        n.m22 = matrix.m22;
-        return (Matrix3f)(n.invert().transpose());
     }
 
     public void enterWireframe() {
