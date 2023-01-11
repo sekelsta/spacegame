@@ -64,7 +64,7 @@ public class Spaceship extends Entity implements ICollider {
     public void thrust() {
         accelerateForwards((float)Entity.ONE_METER / 16);
 
-        for (int i = 0; i < 5; ++i) {
+        for (int i = 0; i < 20; ++i) {
             Random random = world.getRandom();
             Vector3f spawnPoint = new Vector3f(0, -1.22f, 0);
             spawnPoint.rotate(yaw, pitch, roll);

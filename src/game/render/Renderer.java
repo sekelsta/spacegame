@@ -22,6 +22,7 @@ import sekelsta.tools.ObjParser;
 public class Renderer implements IFramebufferSizeListener {
     private ShaderProgram shader = ShaderProgram.load("/shaders/basic.vsh", "/shaders/basic.fsh");
     private ShaderProgram shader2D = ShaderProgram.load("/shaders/2d.vsh", "/shaders/2d.fsh");
+    private ShaderProgram fireShader = ShaderProgram.load("/shaders/fire.vsh", "/shaders/fire.fsh");
     private Frustum frustum = new Frustum();
     private Matrix4f perspective = new Matrix4f();
     // Rotate from Y up (-Z forward) to Z up (+Y forward)
@@ -39,6 +40,7 @@ public class Renderer implements IFramebufferSizeListener {
     private final int[] quadFaces = {0, 1, 2, 2, 3, 0};
     private final RigidMesh quadMesh = new RigidMesh(quadVertices, quadFaces);
     private final Texture sunTexture = new Texture("sun.png");
+    private final Texture circleTexture = new Texture("white_circle.png");
 
     // sqrt 3 is because of the shape of a cube; not sure why the 0.8 is needed but it is
     private final float CUBE_FACTOR = 0.8f / (float)Math.sqrt(3);
@@ -117,15 +119,19 @@ public class Renderer implements IFramebufferSizeListener {
         }
 
         // Render particles
+        fireShader.use();
+        fireShader.setUniform("projection", perspective);
         for (Particle particle : world.getParticles()) {
             matrixStack.push();
             matrixStack.translate(particle.getInterpolatedX(lerp), particle.getInterpolatedY(lerp), particle.getInterpolatedZ(lerp));
+            matrixStack.scale(0.1f);
             matrixStack.billboard();
-            Textures.TRANSPARENT.bind();
-            sunTexture.bindEmission();
+            fireShader.setUniform("modelview", matrixStack.getResult());
+            circleTexture.bind();
             quadMesh.render();
             matrixStack.pop();
         }
+        shader.use();
 
         // Render the sun
         matrixStack.push();
