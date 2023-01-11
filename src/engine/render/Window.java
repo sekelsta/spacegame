@@ -81,9 +81,7 @@ public class Window {
         Boolean configFullscreen = toml.getBoolean("fullscreen");
         Boolean configMaximized = toml.getBoolean("maximized");
         boolean maximized = configMaximized == null? false : configMaximized.booleanValue();
-        if (configFullscreen != null) {
-            fullscreen = configFullscreen;
-        }
+        fullscreen = configFullscreen == null? true : configFullscreen.booleanValue();
 
         // Get screen size
         GLFWVidMode mode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
@@ -92,6 +90,8 @@ public class Window {
 
         this.width = configWidth == null? defaultWidth : (int)configWidth.longValue();
         this.height = configHeight == null? defaultHeight : (int)configHeight.longValue();
+        this.width = Math.min(this.width, mode.width());
+        this.height = Math.min(this.height, mode.height());
         windowWidth[0] = this.width;
         windowHeight[0] = this.height;
 
@@ -128,6 +128,8 @@ public class Window {
         int defaultPosY = (mode.height() - windowHeight[0]) / 2;
         windowPosX[0] = configPosX == null? defaultPosX : (int)configPosX.longValue();
         windowPosY[0] = configPosY == null? defaultPosY : (int)configPosY.longValue();
+        windowPosX[0] = Math.min(windowPosX[0], mode.width() - this.width);
+        windowPosY[0] = Math.min(windowPosY[0], mode.height() - this.height);
         if (!maximized && !fullscreen) {
             GLFW.glfwSetWindowPos(window, windowPosX[0], windowPosY[0]);
         }
