@@ -6,7 +6,7 @@ import sekelsta.engine.Particle;
 import sekelsta.engine.entity.*;
 import sekelsta.engine.network.ByteVector;
 import sekelsta.game.World;
-import sekelsta.math.Vector3f;
+import shadowfox.math.Vector3f;
 
 public class Spaceship extends Entity implements ICollider {
     public static final int NUM_SKINS = 3;

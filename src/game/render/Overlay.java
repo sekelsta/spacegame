@@ -10,7 +10,7 @@ import sekelsta.engine.render.*;
 import sekelsta.engine.render.gui.TextButton;
 import sekelsta.engine.render.text.BitmapFont;
 import sekelsta.game.Game;
-import sekelsta.math.Vector2f;
+import shadowfox.math.Vector2f;
 
 // For rendering 2D text and images in front of the world
 public class Overlay {

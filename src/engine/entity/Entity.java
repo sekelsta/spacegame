@@ -3,8 +3,8 @@ package sekelsta.engine.entity;
 import java.nio.ByteBuffer;
 
 import sekelsta.engine.network.ByteVector;
-import sekelsta.math.Matrix3f;
-import sekelsta.math.Vector3f;
+import shadowfox.math.Matrix3f;
+import shadowfox.math.Vector3f;
 
 public abstract class Entity {
     public static final double ONE_METER = 1.0;

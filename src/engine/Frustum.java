@@ -1,6 +1,6 @@
 package sekelsta.engine;
 
-import sekelsta.math.Matrix4f;
+import shadowfox.math.Matrix4f;
 
 public class Frustum {
     private final float height = 0.001f; // height from middle to top, AKA half the height

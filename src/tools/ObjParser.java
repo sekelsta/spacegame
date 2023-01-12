@@ -6,8 +6,8 @@ import java.util.Scanner;
 
 import sekelsta.engine.render.mesh.ModelData;
 import sekelsta.engine.render.mesh.ModelData.VertexData;
-import sekelsta.math.Vector2f;
-import sekelsta.math.Vector3f;
+import shadowfox.math.Vector2f;
+import shadowfox.math.Vector3f;
 
 public class ObjParser {
     final static String COMMENT = "#";

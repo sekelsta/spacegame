@@ -3,8 +3,8 @@ package sekelsta.engine.render.mesh;
 import java.util.*;
 
 import sekelsta.engine.render.Bone;
-import sekelsta.math.Vector2f;
-import sekelsta.math.Vector3f;
+import shadowfox.math.Vector2f;
+import shadowfox.math.Vector3f;
 
 public class ModelData {
     // Maximum number of bones that can influence the same vertex

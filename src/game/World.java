@@ -9,7 +9,7 @@ import sekelsta.game.entity.*;
 import sekelsta.game.network.ServerSpawnEntity;
 import sekelsta.game.network.ServerRemoveEntity;
 import sekelsta.game.network.EntityUpdate;
-import sekelsta.math.Vector3f;
+import shadowfox.math.Vector3f;
 
 public class World implements IEntitySpace {
     private static final double spawnRadius = 1000;

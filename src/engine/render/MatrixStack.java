@@ -1,9 +1,9 @@
 package sekelsta.engine.render;
 
 import java.util.ArrayList;
-import sekelsta.math.Matrix3f;
-import sekelsta.math.Matrix4f;
-import sekelsta.math.Vector3f;
+import shadowfox.math.Matrix3f;
+import shadowfox.math.Matrix4f;
+import shadowfox.math.Vector3f;
 
 public class MatrixStack {
     private ArrayList<Matrix4f> stack = new ArrayList<>();

@@ -15,9 +15,9 @@ import org.xml.sax.SAXException;
 
 import sekelsta.engine.Pair;
 import sekelsta.engine.render.mesh.ModelData;
-import sekelsta.math.Matrix4f;
-import sekelsta.math.Vector2f;
-import sekelsta.math.Vector3f;
+import shadowfox.math.Matrix4f;
+import shadowfox.math.Vector2f;
+import shadowfox.math.Vector3f;
 import sekelsta.tools.ColladaData.ColladaJoint;
 
 public class ColladaParser {

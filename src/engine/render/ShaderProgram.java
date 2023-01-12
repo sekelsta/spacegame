@@ -6,10 +6,10 @@ import java.nio.FloatBuffer;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.system.MemoryStack;
 
-import sekelsta.math.Matrix3f;
-import sekelsta.math.Matrix4f;
-import sekelsta.math.Vector2f;
-import sekelsta.math.Vector3f;
+import shadowfox.math.Matrix3f;
+import shadowfox.math.Matrix4f;
+import shadowfox.math.Vector2f;
+import shadowfox.math.Vector3f;
 
 public class ShaderProgram {
     private int handle;

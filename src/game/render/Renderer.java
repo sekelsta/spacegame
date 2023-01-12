@@ -16,7 +16,7 @@ import sekelsta.engine.render.entity.EntityRenderer;
 import sekelsta.engine.render.mesh.RigidMesh;
 import sekelsta.game.World;
 import sekelsta.game.render.entity.*;
-import sekelsta.math.*;
+import shadowfox.math.*;
 import sekelsta.tools.ObjParser;
 
 public class Renderer implements IFramebufferSizeListener {

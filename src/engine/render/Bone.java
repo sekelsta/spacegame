@@ -1,6 +1,6 @@
 package sekelsta.engine.render;
 
-import sekelsta.math.Matrix4f;
+import shadowfox.math.Matrix4f;
 
 public class Bone {
     public final String name;

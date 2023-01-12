@@ -1,7 +1,7 @@
 package sekelsta.engine.render;
 
 import sekelsta.engine.entity.Entity;
-import sekelsta.math.Vector3f;
+import shadowfox.math.Vector3f;
 
 public class Camera {
     private Entity focus;

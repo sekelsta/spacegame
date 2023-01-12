@@ -1,6 +1,6 @@
 package sekelsta.engine;
 
-import sekelsta.math.Vector3f;
+import shadowfox.math.Vector3f;
 
 // Axis aligned bounding box
 public class AABB {

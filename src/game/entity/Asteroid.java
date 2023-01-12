@@ -5,7 +5,7 @@ import java.util.Random;
 
 import sekelsta.engine.entity.*;
 import sekelsta.engine.network.ByteVector;
-import sekelsta.math.Vector3f;
+import shadowfox.math.Vector3f;
 
 public class Asteroid extends Entity {
     public static final int NUM_MESH_VARIANTS = 4;
