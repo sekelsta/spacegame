@@ -27,6 +27,10 @@ public class Particle {
         return lerp * z + (1 - lerp) * prevZ;
     }
 
+    public float getRelativeAge(float lerp) {
+        return (age + lerp) / lifespan;
+    }
+
     public void update() {
         prevX = x;
         prevY = y;

@@ -79,17 +79,17 @@ public class Camera {
         mode = mode.next();
     }
 
-    private float getX(float lerp) {
+    public float getX(float lerp) {
         float x = focus.getInterpolatedX(lerp);
         return x + distance * (float)(Math.cos(pitch) * Math.sin(yaw));
     }
 
-    private float getY(float lerp) {
+    public float getY(float lerp) {
         float y = focus.getInterpolatedY(lerp);
         return y - distance * (float)(Math.cos(pitch) * Math.cos(yaw));
     }
 
-    private float getZ(float lerp) {
+    public float getZ(float lerp) {
         float z = focus.getInterpolatedZ(lerp);
         return z - distance * (float)Math.sin(-pitch);
     }
