@@ -165,6 +165,7 @@ public class Renderer implements IFramebufferSizeListener {
         }
     }
 
+    @Override
     public void windowResized(int width, int height) {
         // Ban 0 width or height
         width = Math.max(width, 1);
