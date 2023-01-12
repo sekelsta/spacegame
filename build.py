@@ -12,8 +12,6 @@ test_class = 'sekelsta.test.Main'
 misc_compiler_args = '-Xlint:unchecked'
 output_directory = 'bin'
 source_directory = 'src'
-# ':' on Linux, ';' on Windows
-path_separator = ':'
 
 def join_paths(root, *paths):
     for path in paths:
@@ -22,9 +20,11 @@ def join_paths(root, *paths):
 
 classpath = ''
 for lib in lwjgl_libs:
-    classpath += join_paths(lwjgl_directory, lib, '*') + path_separator
+    # os.pathsep is ';' on Windows or ':' on Linux.
+    # Not to be confused with os.path.sep, which is '/' or '\'
+    classpath += join_paths(lwjgl_directory, lib, '*') + os.pathsep
 for lib in other_libs:
-    classpath += lib + path_separator
+    classpath += lib + os.pathsep
 
 def clean():
     if os.path.isdir(output_directory):
@@ -62,7 +62,7 @@ def build():
 
 def run(main_class, args):
     command = 'java -ea -cp ' + classpath \
-        + output_directory + path_separator + ' ' + main_class + ' ' + args
+        + output_directory + os.pathsep + ' ' + main_class + ' ' + args
     print(command)
     os.system(command)
 
