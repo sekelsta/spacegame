@@ -31,7 +31,7 @@ public class TextButton extends TextElement {
                 HIGHLIGHT_COLOR.getRed() / 255f, HIGHLIGHT_COLOR.getGreen() / 255f, HIGHLIGHT_COLOR.getBlue() / 255f);
         }
         else {
-            font.blit(text, x, y);
+            font.blit(text, x, y, color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f);
         }
     }
 }
