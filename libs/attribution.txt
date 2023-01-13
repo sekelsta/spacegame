@@ -1,0 +1,8 @@
+toml4j:
+https://github.com/mwanji/toml4j
+MIT license, by github user mwanji
+
+gson:
+https://github.com/google/gson
+Apache-2.0 license, by Google
+
