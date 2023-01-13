@@ -1,5 +1,6 @@
 package sekelsta.game.render.entity;
 
+import java.awt.Color;
 import java.util.Scanner;
 
 import sekelsta.engine.render.MatrixStack;
@@ -12,9 +13,11 @@ import sekelsta.tools.ObjParser;
 
 public final class SpaceshipRenderer extends EntityRenderer<Spaceship> {
     private Texture[] skins = new Texture[Spaceship.NUM_SKINS];
+    private RigidMesh ship = new RigidMesh(ObjParser.parse(new Scanner(EntityRenderer.class.getResourceAsStream("/assets/obj/spaceship.obj"))));
+    private RigidMesh window = new RigidMesh(ObjParser.parse(new Scanner(EntityRenderer.class.getResourceAsStream("/assets/obj/spaceship_window.obj"))));
+    private Texture windowTexture = new Texture(new Color(0.04f, 0.06f, 0.05f, 0.95f));
 
     public SpaceshipRenderer() {
-        mesh = new RigidMesh(ObjParser.parse(new Scanner(EntityRenderer.class.getResourceAsStream("/assets/obj/spaceship.obj"))));
         skins[0] = new Texture("gray.jpg");
         skins[1] = new Texture("red.jpg");
         skins[2] = new Texture("blue.jpg");
@@ -22,7 +25,11 @@ public final class SpaceshipRenderer extends EntityRenderer<Spaceship> {
 
     @Override
     public void render(Spaceship entity, float lerp, MatrixStack stack) {
+        this.mesh = ship;
         this.texture = skins[entity.skin];
+        super.render(entity, lerp, stack);
+        this.mesh = window;
+        this.texture = windowTexture;
         super.render(entity, lerp, stack);
     }
 }

@@ -92,13 +92,12 @@ public class Renderer implements IFramebufferSizeListener {
         // Render world
         matrixStack.push();
 
-        float realLerp = lerp;
         if (world.isPaused()) {
-            realLerp = 0;
+            lerp = 0;
         }
 
         // Move to camera coords
-        camera.transform(matrixStack, realLerp);
+        camera.transform(matrixStack, lerp);
         Vector4f tlight = new Vector4f(lightPos);
         matrixStack.getResult().transform(tlight);
         shader.setUniform("light_pos", tlight.toVec3());
@@ -114,7 +113,7 @@ public class Renderer implements IFramebufferSizeListener {
 
         // Render entities
         for (Entity entity : world.getMobs()) {
-            renderEntity(entity, realLerp, matrixStack);
+            renderEntity(entity, lerp, matrixStack);
         }
 
         // Render particles
