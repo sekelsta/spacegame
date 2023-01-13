@@ -10,8 +10,8 @@ public class ConnectingScreen extends Screen {
 
     public ConnectingScreen(Overlay overlay, Game game, String address) {
         this.game = game;
-        items.add(new TextElement(overlay.getTitleFont(), "Connecting..."));
-        BitmapFont font = overlay.getButtonFont();
+        items.add(new TextElement(Fonts.getTitleFont(), "Connecting..."));
+        BitmapFont font = Fonts.getButtonFont();
         items.add(new TextElement(font, address));
         this.addSelectableItem(new TextButton(font, "Cancel", () -> {
             game.cancelConnecting();

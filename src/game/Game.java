@@ -36,6 +36,7 @@ public class Game implements ILoopable, INetworked {
     public Game(boolean graphical) {
         if (graphical) {
             this.window = new Window(DataFolders.getUserMachineFolder("initconfig.toml"), GAME_ID);
+            Fonts.load();
             this.renderer = new Renderer();
             this.window.setResizeListener(renderer);
             this.input = new Input(this);
@@ -183,11 +184,8 @@ public class Game implements ILoopable, INetworked {
     @Override
     public void close() {
         running = false;
+        Fonts.clean();
         // Only close things once, even if called multiple times
-        if (overlay != null) {
-            overlay.close();
-            overlay = null;
-        }
         if (window != null) {
             window.close();
             window = null;
@@ -250,7 +248,7 @@ public class Game implements ILoopable, INetworked {
         else {
             exitWorld();
             assert(isGraphical());
-            overlay.pushScreen(new ConnectionLostScreen(overlay, this));
+            overlay.pushScreen(new ConnectionLostScreen(this));
         }
     }
 

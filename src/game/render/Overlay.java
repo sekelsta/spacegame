@@ -1,6 +1,5 @@
 package sekelsta.game.render;
 
-import java.awt.Font;
 import java.io.IOException;
 import java.util.*;
 
@@ -8,15 +7,12 @@ import org.lwjgl.opengl.GL11;
 
 import sekelsta.engine.render.*;
 import sekelsta.engine.render.gui.TextButton;
-import sekelsta.engine.render.text.BitmapFont;
 import sekelsta.game.Game;
 import shadowfox.math.Vector2f;
 
 // For rendering 2D text and images in front of the world
 public class Overlay {
     private static final double scale = 1.0;
-    private final BitmapFont font = new BitmapFont(new Font(Font.SANS_SERIF, Font.PLAIN, 48), true);
-    private final BitmapFont titleFont = new BitmapFont(new Font(Font.SANS_SERIF, Font.PLAIN, 72), true);
 
     private Deque<Screen> screenStack = new ArrayDeque<>();
     private double xPointer, yPointer;
@@ -45,14 +41,6 @@ public class Overlay {
 
     public boolean hasScreen() {
         return screenStack.size() > 0;
-    }
-
-    public BitmapFont getButtonFont() {
-        return font;
-    }
-
-    public BitmapFont getTitleFont() {
-        return titleFont;
     }
 
     public static double getScale() {
@@ -150,13 +138,6 @@ public class Overlay {
         if (hasScreen()) {
             screenStack.peek().blit(uiDimensions.x, uiDimensions.y);
         }
-
-        font.render();
-        titleFont.render();
-    }
-
-    public void close() {
-        font.clean();
-        titleFont.clean();
+        Fonts.render();
     }
 }

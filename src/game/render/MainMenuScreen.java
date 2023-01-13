@@ -6,7 +6,7 @@ import sekelsta.game.Game;
 
 public class MainMenuScreen extends Screen {
     public MainMenuScreen(Overlay overlay, Game game) {
-        BitmapFont font = overlay.getButtonFont();
+        BitmapFont font = Fonts.getButtonFont();
         addSelectableItem(new TextButton(font, "Single player", () -> game.enterWorld()));
         addSelectableItem(new TextButton(font, "Host and play", 
             () -> overlay.pushScreen(new HostScreen(overlay, game)))

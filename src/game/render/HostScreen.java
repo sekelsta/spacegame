@@ -14,8 +14,8 @@ public class HostScreen extends Screen {
     private TextButton cancel;
 
     public HostScreen(Overlay overlay, Game game) {
-        this.title = new TextElement(overlay.getTitleFont(), "Host Multiplayer");
-        BitmapFont font = overlay.getButtonFont();
+        this.title = new TextElement(Fonts.getTitleFont(), "Host Multiplayer");
+        BitmapFont font = Fonts.getButtonFont();
         this.portLabel = new TextElement(font, "Enter port number:");
         this.portInput = new TextInput(font, String.valueOf(Game.DEFAULT_PORT), "Port");
         this.done = new TextButton(font, "Done", () -> tryHostMultiplayer(overlay, game, portInput.getEnteredText()));
