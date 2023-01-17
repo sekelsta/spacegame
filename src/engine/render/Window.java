@@ -38,6 +38,9 @@ public class Window {
     private String initialConfigPath;
     private static Thread mainThread;
 
+    private static final int MIN_WIDTH = 20;
+    private static final int MIN_HEIGHT = 20;
+
     // Cached values from before entering fullscreen
     // The GLFW function to update these values takes arrays (or IntBuffers)
     private int[] windowPosX = new int[1];
@@ -83,15 +86,23 @@ public class Window {
         boolean maximized = configMaximized == null? false : configMaximized.booleanValue();
         fullscreen = configFullscreen == null? true : configFullscreen.booleanValue();
 
-        // Get screen size
+        // Get screen size and monitor work area
         GLFWVidMode mode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
-        int defaultWidth = mode.width() * 2 / 3;
-        int defaultHeight = mode.height() * 2 / 3;
+        int[] workX = new int[1];
+        int[] workY = new int[1];
+        int[] workWidth = new int[1];
+        int[] workHeight = new int[1];
+        GLFW.glfwGetMonitorWorkarea(GLFW.glfwGetPrimaryMonitor(), workX, workY, workWidth, workHeight);
+
+        int defaultWidth = workWidth[0] * 2 / 3;
+        int defaultHeight = workHeight[0] * 2 / 3;
 
         this.width = configWidth == null? defaultWidth : (int)configWidth.longValue();
         this.height = configHeight == null? defaultHeight : (int)configHeight.longValue();
-        this.width = Math.min(this.width, mode.width());
-        this.height = Math.min(this.height, mode.height());
+        this.width = Math.min(this.width, workWidth[0]);
+        this.height = Math.min(this.height, workHeight[0]);
+        this.width = Math.max(this.width, MIN_WIDTH);
+        this.height = Math.max(this.height, MIN_HEIGHT);
         windowWidth[0] = this.width;
         windowHeight[0] = this.height;
 
@@ -114,6 +125,7 @@ public class Window {
             throw new RuntimeException("Failed to create GLFW window.");
         }
 
+        GLFW.glfwSetWindowSizeLimits(window, MIN_WIDTH, MIN_HEIGHT, GLFW.GLFW_DONT_CARE, GLFW.GLFW_DONT_CARE);
         if (maximized) {
             GLFW.glfwMaximizeWindow(window);
         }
@@ -123,13 +135,25 @@ public class Window {
                 GLFW.glfwGetWindowSize(window, windowWidth, windowHeight);
             }
         }
+
+        // Get window decorations size
+        int[] frameLeft = new int[1];
+        int[] frameTop = new int[1];
+        int[] frameRight = new int[1];
+        int[] frameBottom = new int[1];
+        GLFW.glfwGetWindowFrameSize(window, frameLeft, frameTop, frameRight, frameBottom);
+
         // Position the window
         int defaultPosX = (mode.width() - windowWidth[0]) / 2;
         int defaultPosY = (mode.height() - windowHeight[0]) / 2;
         windowPosX[0] = configPosX == null? defaultPosX : (int)configPosX.longValue();
         windowPosY[0] = configPosY == null? defaultPosY : (int)configPosY.longValue();
-        windowPosX[0] = Math.min(windowPosX[0], mode.width() - this.width);
-        windowPosY[0] = Math.min(windowPosY[0], mode.height() - this.height);
+        // Limit position
+        windowPosX[0] = Math.min(windowPosX[0], workX[0] + workWidth[0] - this.width - frameRight[0]);
+        windowPosY[0] = Math.min(windowPosY[0], workY[0] + workHeight[0] - this.height - frameBottom[0]);
+        windowPosX[0] = Math.max(windowPosX[0], workX[0] + frameLeft[0]);
+        windowPosY[0] = Math.max(windowPosY[0], workY[0] + frameTop[0]);
+
         if (!maximized && !fullscreen) {
             GLFW.glfwSetWindowPos(window, windowPosX[0], windowPosY[0]);
         }
@@ -301,7 +325,27 @@ public class Window {
             GLFW.glfwSetWindowMonitor(window, monitor, 0, 0, videoMode.width(), videoMode.height(), GLFW.GLFW_DONT_CARE);
         }
         else {
+            // First, set the window to not be fullscreen
             GLFW.glfwSetWindowMonitor(window, MemoryUtil.NULL, windowPosX[0], windowPosY[0], windowWidth[0], windowHeight[0], GLFW.GLFW_DONT_CARE);
+            // Get monitor work area
+            int[] workX = new int[1];
+            int[] workY = new int[1];
+            int[] workWidth = new int[1];
+            int[] workHeight = new int[1];
+            GLFW.glfwGetMonitorWorkarea(GLFW.glfwGetPrimaryMonitor(), workX, workY, workWidth, workHeight);
+            // Get window decorations size
+            int[] frameLeft = new int[1];
+            int[] frameTop = new int[1];
+            int[] frameRight = new int[1];
+            int[] frameBottom = new int[1];
+            GLFW.glfwGetWindowFrameSize(window, frameLeft, frameTop, frameRight, frameBottom);
+            // Limit position, width, and height
+            windowPosX[0] = Math.max(windowPosX[0], workX[0] + frameLeft[0]);
+            windowPosY[0] = Math.max(windowPosY[0], workY[0] + frameTop[0]);
+            windowWidth[0]  = Math.min(windowWidth[0], workWidth[0] - frameLeft[0] - frameRight[0]);
+            windowHeight[0] = Math.min(windowHeight[0], workHeight[0] - frameTop[0] - frameBottom[0]);
+            GLFW.glfwSetWindowPos(window, windowPosX[0], windowPosY[0]);
+            GLFW.glfwSetWindowSize(window, windowWidth[0], windowHeight[0]);
         }
     }
 }
