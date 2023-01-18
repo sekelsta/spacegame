@@ -61,36 +61,52 @@ public class Spaceship extends Entity implements ICollider {
         return new Vector3f(0, 2.204f, 0.365f);
     }
 
-    public void thrust() {
-        accelerateForwards((float)Entity.ONE_METER / 16);
+    private void spawnParticle(Vector3f spawnPoint, float velocityRatio, float maxVelocity) {
+        Random random = world.getRandom();
+        int lifespan = random.nextInt(15) + 15;
+        Particle particle = new Particle((float)getX() + spawnPoint.x, (float)getY() + spawnPoint.y, (float)getZ() + spawnPoint.z, lifespan);
+        float vy = random.nextFloat() * maxVelocity;
+        float vx = 1;
+        float vz = 1;
+        while (vx * vx + vz * vz > 0.5f * 0.5f) {
+            vx = random.nextFloat() - 0.5f;
+            vz = random.nextFloat() - 0.5f;
+        }
+        float s = Math.abs(vy * 2 / velocityRatio);
+        vx *= s;
+        vz *= s;
+        Vector3f velocity = new Vector3f(vx, vy, vz);
+        velocity.rotate(yaw, pitch, roll);
+        particle.setVelocity(getVelocityX() + velocity.x, getVelocityY() + velocity.y, getVelocityZ() + velocity.z);
+        world.addParticle(particle);
+    }
 
+    public void thrust() {
+        float acceleration = (float)Entity.ONE_METER / 32;
+        accelerateForwards(acceleration);
+
+        Vector3f spawnPoint = new Vector3f(0, -1.3f, 0);
+        spawnPoint.rotate(yaw, pitch, roll);
+        // Ratio of minimum backwards velocity to sideways velocity
+        float velocityRatio = 6;
+        float maxVelocity = -16 * acceleration;
         for (int i = 0; i < 20; ++i) {
-            Random random = world.getRandom();
-            Vector3f spawnPoint = new Vector3f(0, -1.3f, 0);
-            spawnPoint.rotate(yaw, pitch, roll);
-            Particle particle = new Particle((float)getX() + spawnPoint.x, (float)getY() + spawnPoint.y, (float)getZ() + spawnPoint.z, 
-                random.nextInt(15) + 15);
-            // Ratio of minimum backwards velocity to sideways velocity
-            float ratio = 6;
-            float vy = -1 * random.nextFloat() * (float)Entity.ONE_METER / 2f;
-            float vx = 1;
-            float vz = 1;
-            while (vx * vx + vz * vz > 0.5f * 0.5f) {
-                vx = random.nextFloat() - 0.5f;
-                vz = random.nextFloat() - 0.5f;
-            }
-            float s = -1 * vy * 2 / ratio;
-            vx *= s;
-            vz *= s;
-            Vector3f velocity = new Vector3f(vx, vy, vz);
-            velocity.rotate(yaw, pitch, roll);
-            particle.setVelocity(getVelocityX() + velocity.x, getVelocityY() + velocity.y, getVelocityZ() + velocity.z);
-            world.addParticle(particle);
+            spawnParticle(spawnPoint, velocityRatio, maxVelocity);
         }
     }
 
     public void reverse() {
-        accelerateForwards(-1 * (float)Entity.ONE_METER / 16);
+        float acceleration = -1 * (float)Entity.ONE_METER / 64;
+        accelerateForwards(acceleration);
+
+        Vector3f spawnPoint = new Vector3f(0, 2.3f, 0);
+        spawnPoint.rotate(yaw, pitch, roll);
+        // Ratio of minimum backwards velocity to sideways velocity
+        float velocityRatio = 8;
+        float maxVelocity = -16 * acceleration;
+        for (int i = 0; i < 10; ++i) {
+            spawnParticle(random, spawnPoint, velocityRatio, maxVelocity);
+        }
     }
 
     public void pitchUp() {
