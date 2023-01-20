@@ -90,25 +90,29 @@ public class World implements IEntitySpace {
             }
         }
 
-        List<Entity> collidableMobs = mobs.stream().filter(mob -> mob instanceof ICollider).collect(Collectors.toList());
-        for (Entity collider : collidableMobs) {
-            for (Entity collidee : mobs) {
-                double tolerance = collider.getCollisionRadius() + collidee.getCollisionRadius();
-                tolerance *= tolerance;
-                double distSq = collider.distSquared(collidee);
-                if (distSq < tolerance && collider != collidee) {
-                    ((ICollider)collider).collide(collidee);
+        if (authoritative) {
+            // Collide
+            List<Entity> collidableMobs = mobs.stream().filter(mob -> mob instanceof ICollider).collect(Collectors.toList());
+            for (Entity collider : collidableMobs) {
+                for (Entity collidee : mobs) {
+                    double tolerance = collider.getCollisionRadius() + collidee.getCollisionRadius();
+                    tolerance *= tolerance;
+                    double distSq = collider.distSquared(collidee);
+                    if (distSq < tolerance && collider != collidee) {
+                        ((ICollider)collider).collide(collidee);
+                    }
+                }
+            }
+
+            // Despawn
+            for (Entity mob : mobs) {
+                if (mob.distSquared(0, 0, 0) > 100 * spawnRadius * spawnRadius
+                        && mob.mayDespawn()) {
+                    remove(mob);
                 }
             }
         }
 
-        // Despawn
-        for (Entity mob : mobs) {
-            if (mob.distSquared(0, 0, 0) > 100 * spawnRadius * spawnRadius
-                    && mob.mayDespawn()) {
-                remove(mob);
-            }
-        }
         mobs.removeAll(killed);
         if (isNetworkServer()) {
             for (Entity mob : killed) {
