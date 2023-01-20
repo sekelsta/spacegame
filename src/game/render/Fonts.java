@@ -1,12 +1,15 @@
 package sekelsta.game.render;
 
 import java.awt.Font;
+import java.awt.Color;
 
 import sekelsta.engine.render.text.BitmapFont;
 
 public class Fonts {
     private static BitmapFont font; 
     private static BitmapFont titleFont;
+
+    public static Color ERROR_COLOR = new Color(0.8f, 0.1f, 0.1f);
 
     public static void load() {
         font = new BitmapFont(new Font(Font.SANS_SERIF, Font.PLAIN, 48), true);

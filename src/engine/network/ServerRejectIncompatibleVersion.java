@@ -36,6 +36,6 @@ public class ServerRejectIncompatibleVersion extends Message {
     @Override
     public void handle(INetworked game) {
         game.getNetworkManager().removeBroadcastRecipient(sender);
-        game.connectionRejected("incompatible game version (server version: " + version + ")");
+        game.connectionRejected("Incompatible game version\nServer version: " + version + "\nClient version: " + game.getVersion());
     }
 }
