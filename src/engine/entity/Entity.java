@@ -131,8 +131,6 @@ public abstract class Entity {
             controller.preUpdate();
         }
         tick();
-        scaleVelocity(drag);
-        scaleAngularVelocity(angularDrag);
         if (controller != null)
         {
             controller.postUpdate();
@@ -211,6 +209,9 @@ public abstract class Entity {
             prevPitch %= TAU;
             prevRoll %= TAU;
         }
+
+        scaleVelocity(drag);
+        scaleAngularVelocity(angularDrag);
     }
 
     public final void teleport(double x, double y, double z) {

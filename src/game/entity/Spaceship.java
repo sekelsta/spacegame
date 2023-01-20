@@ -11,9 +11,15 @@ import shadowfox.math.Vector3f;
 public class Spaceship extends Entity implements ICollider {
     public static final int NUM_SKINS = 3;
     private static final float shootSpeed = (float)Entity.ONE_METER;
+    private static final float thrustSpeed = (float)Entity.ONE_METER / 32;
+    private static final float reverseSpeed = -1 * (float)Entity.ONE_METER / 64;
     private final float angularAcceleration = Entity.TAU / 4096;
 
     public int skin;
+    private boolean isThrusting = false;
+    private boolean wasThrusting = false;
+    private boolean isReversing = false;
+    private boolean wasReversing = false;
 
     public Spaceship(int x, int y, int z) {
         this(x, y, z, null);
@@ -28,6 +34,8 @@ public class Spaceship extends Entity implements ICollider {
     public Spaceship(ByteBuffer buffer) {
         super(buffer);
         skin = buffer.getInt();
+        isThrusting = buffer.get() != 0;
+        isReversing = buffer.get() != 0;
     }
 
     @Override
@@ -39,6 +47,16 @@ public class Spaceship extends Entity implements ICollider {
     public void encode(ByteVector buffer) {
         super.encode(buffer);
         buffer.putInt(skin);
+        buffer.put((isThrusting || wasThrusting)? (byte)1 : (byte)0);
+        buffer.put((isReversing || wasReversing)? (byte)1 : (byte)0);
+    }
+
+    @Override
+    public void updateFrom(Entity other) {
+        super.updateFrom(other);
+        Spaceship ship = (Spaceship)other;
+        isThrusting = ship.isThrusting;
+        isReversing = ship.isReversing;
     }
 
     @Override
@@ -54,6 +72,36 @@ public class Spaceship extends Entity implements ICollider {
     @Override
     public void collide(Entity other) {
         // TODO #26: Get injured/die    
+    }
+
+    @Override
+    protected void tick() {
+        super.tick();
+        if (isThrusting) {
+            Vector3f spawnPoint = new Vector3f(0, -1.3f, 0);
+            spawnPoint.rotate(yaw, pitch, roll);
+            // Ratio of minimum backwards velocity to sideways velocity
+            float velocityRatio = 6;
+            float maxVelocity = -16 * thrustSpeed;
+            for (int i = 0; i < 20; ++i) {
+                spawnParticle(spawnPoint, velocityRatio, maxVelocity);
+            }
+        }
+        if (isReversing) {
+            Vector3f spawnPoint = new Vector3f(0, 2.3f, 0);
+            spawnPoint.rotate(yaw, pitch, roll);
+            // Ratio of minimum backwards velocity to sideways velocity
+            float velocityRatio = 8;
+            float maxVelocity = -16 * reverseSpeed;
+            for (int i = 0; i < 10; ++i) {
+                spawnParticle(spawnPoint, velocityRatio, maxVelocity);
+            }
+        }
+
+        wasThrusting = isThrusting;
+        isThrusting = false;
+        wasReversing = isReversing;
+        isReversing = false;
     }
 
     @Override
@@ -82,31 +130,13 @@ public class Spaceship extends Entity implements ICollider {
     }
 
     public void thrust() {
-        float acceleration = (float)Entity.ONE_METER / 32;
-        accelerateForwards(acceleration);
-
-        Vector3f spawnPoint = new Vector3f(0, -1.3f, 0);
-        spawnPoint.rotate(yaw, pitch, roll);
-        // Ratio of minimum backwards velocity to sideways velocity
-        float velocityRatio = 6;
-        float maxVelocity = -16 * acceleration;
-        for (int i = 0; i < 20; ++i) {
-            spawnParticle(spawnPoint, velocityRatio, maxVelocity);
-        }
+        accelerateForwards(thrustSpeed);
+        isThrusting = true;
     }
 
     public void reverse() {
-        float acceleration = -1 * (float)Entity.ONE_METER / 64;
-        accelerateForwards(acceleration);
-
-        Vector3f spawnPoint = new Vector3f(0, 2.3f, 0);
-        spawnPoint.rotate(yaw, pitch, roll);
-        // Ratio of minimum backwards velocity to sideways velocity
-        float velocityRatio = 8;
-        float maxVelocity = -16 * acceleration;
-        for (int i = 0; i < 10; ++i) {
-            spawnParticle(random, spawnPoint, velocityRatio, maxVelocity);
-        }
+        accelerateForwards(reverseSpeed);
+        isReversing = true;
     }
 
     public void pitchUp() {
