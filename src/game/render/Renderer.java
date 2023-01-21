@@ -22,6 +22,7 @@ import sekelsta.engine.render.entity.EntityRenderer;
 import sekelsta.engine.render.mesh.RigidMesh;
 import sekelsta.game.World;
 import sekelsta.game.render.entity.*;
+import sekelsta.game.render.gui.Overlay;
 import shadowfox.math.*;
 import sekelsta.tools.ObjParser;
 

@@ -9,7 +9,7 @@ import sekelsta.engine.entity.IController;
 import sekelsta.engine.render.Camera;
 import sekelsta.engine.render.Window;
 import sekelsta.game.entity.Spaceship;
-import sekelsta.game.render.Overlay;
+import sekelsta.game.render.gui.Overlay;
 
 public class Input extends InputManager implements IController {
     Overlay overlay;

@@ -1,4 +1,4 @@
-package sekelsta.game.render;
+package sekelsta.game.render.gui;
 
 import java.io.IOException;
 import java.util.*;

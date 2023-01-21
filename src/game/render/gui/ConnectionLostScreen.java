@@ -1,4 +1,4 @@
-package sekelsta.game.render;
+package sekelsta.game.render.gui;
 
 import sekelsta.engine.render.gui.*;
 import sekelsta.engine.render.text.BitmapFont;

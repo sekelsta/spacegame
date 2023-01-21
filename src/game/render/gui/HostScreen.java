@@ -1,4 +1,4 @@
-package sekelsta.game.render;
+package sekelsta.game.render.gui;
 
 import sekelsta.engine.Log;
 import sekelsta.engine.network.RuntimeBindException;

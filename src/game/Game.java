@@ -16,7 +16,8 @@ import sekelsta.engine.render.Window;
 import sekelsta.game.entity.Entities;
 import sekelsta.game.entity.Spaceship;
 import sekelsta.game.network.*;
-import sekelsta.game.render.*;
+import sekelsta.game.render.Renderer;
+import sekelsta.game.render.gui.*;
 
 public class Game implements ILoopable, INetworked {
     public static final int DEFAULT_PORT = 7654;
