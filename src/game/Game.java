@@ -272,4 +272,8 @@ public class Game implements ILoopable, INetworked {
             world.togglePaused();
         }
     }
+
+    public void respawn() {
+        System.out.println("TODO: Respawn");
+    }
 }
