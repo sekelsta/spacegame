@@ -1,6 +1,7 @@
 package sekelsta.game;
 
 import java.net.InetSocketAddress;
+import javax.sound.sampled.*;
 
 import sekelsta.engine.DataFolders;
 import sekelsta.engine.ILoopable;
@@ -45,6 +46,16 @@ public class Game implements ILoopable, INetworked {
             this.overlay = new Overlay(this);
             this.input.setOverlay(this.overlay);
             this.input.updateConnectedGamepads();
+
+            try {
+                Clip clip = AudioSystem.getClip();
+                AudioInputStream input = AudioSystem.getAudioInputStream(Game.class.getResourceAsStream("/assets/audio/planetrise.wav"));
+                clip.open(input);
+                clip.start();
+            }
+            catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
         this.world = null;
         Entities.init();
