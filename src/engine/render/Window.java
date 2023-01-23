@@ -1,16 +1,9 @@
 package sekelsta.engine.render;
 
-import com.moandjiezana.toml.Toml;
-import com.moandjiezana.toml.TomlWriter;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.lwjgl.Version;
 import org.lwjgl.glfw.Callbacks;
@@ -25,6 +18,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
+import sekelsta.engine.InitialConfig;
 import sekelsta.engine.InputManager;
 import sekelsta.engine.Log;
 
@@ -35,7 +29,6 @@ public class Window {
     private int height;
     private boolean focused;
     private boolean fullscreen;
-    private String initialConfigPath;
     private static Thread mainThread;
 
     private static final int MIN_WIDTH = 20;
@@ -68,23 +61,9 @@ public class Window {
         return GLFW.glfwWindowShouldClose(window);
     }
 
-    public Window(String configPath, String title) {
-        this.initialConfigPath = configPath;
-        // Try to use the same size and position as last session
-        Toml toml = new Toml();
-        try {
-            FileInputStream initconfig = new FileInputStream(initialConfigPath);
-            toml.read(initconfig);
-        }
-        catch (FileNotFoundException e) { }
-        Long configWidth = toml.getLong("windowWidth");
-        Long configHeight = toml.getLong("windowHeight");
-        Long configPosX = toml.getLong("windowPosX");
-        Long configPosY = toml.getLong("windowPosY");
-        Boolean configFullscreen = toml.getBoolean("fullscreen");
-        Boolean configMaximized = toml.getBoolean("maximized");
-        boolean maximized = configMaximized == null? false : configMaximized.booleanValue();
-        fullscreen = configFullscreen == null? true : configFullscreen.booleanValue();
+    public Window(InitialConfig config, String title) {
+        this.fullscreen = config.fullscreen;
+        boolean maximized = config.maximized;
 
         // Get screen size and monitor work area
         GLFWVidMode mode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
@@ -97,8 +76,8 @@ public class Window {
         int defaultWidth = workWidth[0] * 2 / 3;
         int defaultHeight = workHeight[0] * 2 / 3;
 
-        this.width = configWidth == null? defaultWidth : (int)configWidth.longValue();
-        this.height = configHeight == null? defaultHeight : (int)configHeight.longValue();
+        this.width = config.windowWidth == null? defaultWidth : (int)config.windowWidth.longValue();
+        this.height = config.windowHeight == null? defaultHeight : (int)config.windowHeight.longValue();
         this.width = Math.min(this.width, workWidth[0]);
         this.height = Math.min(this.height, workHeight[0]);
         this.width = Math.max(this.width, MIN_WIDTH);
@@ -146,8 +125,8 @@ public class Window {
         // Position the window
         int defaultPosX = (mode.width() - windowWidth[0]) / 2;
         int defaultPosY = (mode.height() - windowHeight[0]) / 2;
-        windowPosX[0] = configPosX == null? defaultPosX : (int)configPosX.longValue();
-        windowPosY[0] = configPosY == null? defaultPosY : (int)configPosY.longValue();
+        windowPosX[0] = config.windowPosX == null? defaultPosX : (int)config.windowPosX.longValue();
+        windowPosY[0] = config.windowPosY == null? defaultPosY : (int)config.windowPosY.longValue();
         // Limit position
         windowPosX[0] = Math.min(windowPosX[0], workX[0] + workWidth[0] - this.width - frameRight[0]);
         windowPosY[0] = Math.min(windowPosY[0], workY[0] + workHeight[0] - this.height - frameBottom[0]);
@@ -212,7 +191,7 @@ public class Window {
         GLFW.glfwPollEvents();
     }
 
-    public void close() {
+    public void close(InitialConfig config) {
         if (Thread.currentThread() != mainThread) {
             throw new RuntimeException("Window was closed from the wrong thread");
         }
@@ -228,24 +207,12 @@ public class Window {
         GLFW.glfwSetErrorCallback(null).free();
 
         // Save size and position for next session
-        TomlWriter tomlWriter = new TomlWriter();
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("windowWidth", this.windowWidth[0]);
-        map.put("windowHeight", this.windowHeight[0]);
-        map.put("windowPosX", this.windowPosX[0]);
-        map.put("windowPosY", this.windowPosY[0]);
-        map.put("fullscreen", this.fullscreen);
-        map.put("maximized", maximized);
-        try {
-            File config = new File(initialConfigPath);
-            config.getParentFile().mkdirs();
-            config.createNewFile();
-            FileOutputStream out = new FileOutputStream(config);
-            tomlWriter.write(map, out);
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        config.windowWidth = Long.valueOf(this.windowWidth[0]);
+        config.windowHeight = Long.valueOf(this.windowHeight[0]);
+        config.windowPosX = Long.valueOf(this.windowPosX[0]);
+        config.windowPosY = Long.valueOf(this.windowPosY[0]);
+        config.fullscreen = this.fullscreen;
+        config.maximized = maximized;
     }
 
     private static void handleError(int error, long description) {

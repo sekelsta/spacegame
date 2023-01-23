@@ -3,9 +3,7 @@ package sekelsta.game;
 import java.net.InetSocketAddress;
 import javax.sound.sampled.*;
 
-import sekelsta.engine.DataFolders;
-import sekelsta.engine.ILoopable;
-import sekelsta.engine.Log;
+import sekelsta.engine.*;
 import sekelsta.engine.SoftwareVersion;
 import sekelsta.engine.entity.IController;
 import sekelsta.engine.entity.Entity;
@@ -27,6 +25,7 @@ public class Game implements ILoopable, INetworked {
 
     private boolean running = true;
 
+    private InitialConfig initialConfig;
     private World world;
     private Window window;
     private Renderer renderer;
@@ -37,7 +36,8 @@ public class Game implements ILoopable, INetworked {
 
     public Game(boolean graphical) {
         if (graphical) {
-            this.window = new Window(DataFolders.getUserMachineFolder("initconfig.toml"), GAME_ID);
+            this.initialConfig = new InitialConfig(DataFolders.getUserMachineFolder("initconfig.toml"));
+            this.window = new Window(initialConfig, GAME_ID);
             Fonts.load();
             this.renderer = new Renderer();
             this.window.setResizeListener(renderer);
@@ -51,6 +51,7 @@ public class Game implements ILoopable, INetworked {
                 Clip clip = AudioSystem.getClip();
                 AudioInputStream input = AudioSystem.getAudioInputStream(Game.class.getResourceAsStream("/assets/audio/planetrise.wav"));
                 clip.open(input);
+                // TODO: Set volume
                 clip.start();
             }
             catch (Exception e) {
@@ -199,12 +200,15 @@ public class Game implements ILoopable, INetworked {
         Fonts.clean();
         // Only close things once, even if called multiple times
         if (window != null) {
-            window.close();
+            window.close(initialConfig);
             window = null;
         }
         if (networkManager != null) {
             networkManager.close();
             networkManager = null;
+        }
+        if (initialConfig != null) {
+            initialConfig.save();
         }
     }
 
