@@ -51,7 +51,9 @@ public class Game implements ILoopable, INetworked {
                 Clip clip = AudioSystem.getClip();
                 AudioInputStream input = AudioSystem.getAudioInputStream(Game.class.getResourceAsStream("/assets/audio/planetrise.wav"));
                 clip.open(input);
-                // TODO: Set volume
+                FloatControl gainControl = (FloatControl)clip.getControl(FloatControl.Type.MASTER_GAIN);
+                double decibels = Math.log(initialConfig.volume) / Math.log(2) * 20.0;
+                gainControl.setValue((float)decibels);
                 clip.start();
             }
             catch (Exception e) {
