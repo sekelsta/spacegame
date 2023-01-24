@@ -124,6 +124,10 @@ public class BitmapFont {
         blit(s, x, y, 1f, 1f, 1f);
     }
 
+    public void blit(String s, int x, int y, Color color) {
+        blit(s, x, y, color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f);
+    }
+
     // TODO #31: Handle newlines and such
     public void blit(String s, int x, int y, float r, float g, float b) {
         int w = 0;

@@ -38,6 +38,6 @@ public class TextElement extends GuiElement {
 
     @Override
     public void blit(boolean focused) {
-        font.blit(text, x, y, color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f);
+        font.blit(text, x, y, color);
     }
 }

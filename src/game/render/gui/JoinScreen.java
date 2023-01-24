@@ -10,28 +10,21 @@ import sekelsta.engine.render.gui.*;
 import sekelsta.engine.render.text.BitmapFont;
 import sekelsta.game.Game;
 
-public class JoinScreen extends Screen {
-    private TextElement title;
+public class JoinScreen extends PortEntryScreen {
     private TextElement addressLabel;
-    private TextElement portLabel;
     private TextInput addressInput;
-    private TextInput portInput;
-    private TextButton done;
-    private TextButton cancel;
     private Overlay overlay;
     private Game game;
 
     public JoinScreen(Overlay overlay, Game game) {
+        super(game);
         this.overlay = overlay;
         this.game = game;
         this.title = new TextElement(Fonts.getTitleFont(), "Join Server");
         BitmapFont font = Fonts.getButtonFont();
         this.addressLabel = new TextElement(font, "Enter server IP address:");
-        this.portLabel = new TextElement(font, "Enter port number:");
         this.addressInput = new TextInput(font, "", "IP address");
-        this.portInput = new TextInput(font, String.valueOf(Game.DEFAULT_PORT), "Port");
         this.done = new TextButton(font, "Done", () -> tryJoinServer());
-        this.cancel = new TextButton(font, "Cancel", () -> game.escape());
         selectable = new SelectableElementList();
         selectable.add(addressInput);
         selectable.add(portInput);
@@ -44,7 +37,7 @@ public class JoinScreen extends Screen {
         String strPort = portInput.getEnteredText();
 
         if (strAddress.equals("")) {
-            Log.error("IP address is empty");
+            error = "Enter an IP address";
             selectable.setTextFocus(addressInput);
             return;
         }
@@ -54,17 +47,13 @@ public class JoinScreen extends Screen {
             netAddress = InetAddress.getByName(strAddress);
         }
         catch (UnknownHostException e) {
-            Log.error("Could not parse IP address:\n        " + e);
+            error = "Error parsing IP address";
             selectable.setTextFocus(addressInput);
             return;
         }
 
-        int port = 0;
-        try {
-            port = Integer.valueOf(strPort);
-        }
-        catch (NumberFormatException e) {
-            Log.error("Could not parse port number:\n        " + e);
+        int port = tryParsePort(strPort);
+        if (port == -1) {
             selectable.setTextFocus(portInput);
             return;
         }
@@ -108,7 +97,10 @@ public class JoinScreen extends Screen {
                 + (int)(1.25 * portLabel.getHeight())
                 + portInput.getHeight() * 2
                 + (int)(done.getHeight() * 1.25)
-                + (int)(cancel.getHeight() * 1.25);
+                + cancel.getHeight();
+        if (error != null) {
+            height += (int)(errorFont.getHeight() * 1.25);
+        }
         int yPos = ((int)screenHeight - height) / 2;
         title.position((w - title.getWidth()) / 2, yPos);
         title.blit(false);
@@ -125,6 +117,11 @@ public class JoinScreen extends Screen {
         portInput.position((w - portInput.getWidth()) / 2, yPos);
         portInput.blit(portInput == textFocus);
         yPos += 2 * portInput.getHeight();
+        if (error != null) {
+            int xPos = (w - errorFont.getWidth(error)) / 2;
+            errorFont.blit(error, xPos, yPos, Fonts.ERROR_COLOR);
+            yPos += (int)(errorFont.getHeight() * 1.25);
+        }
         done.position((w - done.getWidth()) / 2, yPos);
         done.blit(done == selected);
         yPos += done.getHeight() + done.getHeight() / 4;
