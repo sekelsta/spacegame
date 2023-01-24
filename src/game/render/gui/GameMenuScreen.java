@@ -33,6 +33,7 @@ public class GameMenuScreen extends Screen {
             addSelectableItem(new TextButton(font, "Host LAN game",
                         () -> overlay.pushScreen(new HostScreen(overlay, game))));
         }
+        addSelectableItem(new TextButton(font, "Options", () -> overlay.pushScreen(new OptionsScreen(overlay, game))));
         addSelectableItem(new TextButton(font, "Quit", () -> game.exitWorld())); 
     }
 

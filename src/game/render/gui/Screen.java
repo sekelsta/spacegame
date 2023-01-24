@@ -38,6 +38,7 @@ public class Screen {
     }
 
     public boolean click(double xPos, double yPos) {
+        positionPointer(xPos, yPos);
         return trigger();
     }
 
