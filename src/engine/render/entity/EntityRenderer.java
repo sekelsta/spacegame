@@ -7,7 +7,6 @@ import sekelsta.engine.render.mesh.*;
 public abstract class EntityRenderer<T extends Entity> {
     protected Mesh mesh;
     protected Texture texture;
-    protected Texture specular = Textures.WHITE;
     protected Texture emission = Textures.BLACK;
     protected float scale = 1.0f;
 
@@ -26,7 +25,6 @@ public abstract class EntityRenderer<T extends Entity> {
         stack.rotate(yaw, pitch, roll);
 
         texture.bind();
-        specular.bindSpecular();
         emission.bindEmission();
         mesh.render();
         stack.pop();

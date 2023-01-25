@@ -62,13 +62,8 @@ public class Texture {
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, handle);
     }
 
-    public void bindSpecular() {
-        GL13.glActiveTexture(GL13.GL_TEXTURE1);
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, handle);
-    }
-
     public void bindEmission() {
-        GL13.glActiveTexture(GL13.GL_TEXTURE2);
+        GL13.glActiveTexture(GL13.GL_TEXTURE1);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, handle);
     }
 

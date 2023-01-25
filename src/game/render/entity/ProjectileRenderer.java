@@ -23,7 +23,7 @@ public final class ProjectileRenderer extends EntityRenderer<Projectile> {
         border = new RigidMesh(ObjParser.parse(new Scanner(EntityRenderer.class.getResourceAsStream("/assets/obj/projectile_border.obj"))));
         glow = new Texture(new Color(0x6c, 0xe0, 0xff));
         texture = Textures.BLACK;
-        specular = Textures.BLACK;
+        // TODO #47: Set reflectance to 0
     }
 
     @Override

@@ -75,8 +75,7 @@ public class Renderer implements IFramebufferSizeListener {
     public Renderer() {
         shader.use();
         shader.setUniform("texture_sampler", 0);
-        shader.setUniform("specular_sampler", 1);
-        shader.setUniform("emission_sampler", 2);
+        shader.setUniform("emission_sampler", 1);
 
         frustum.setFOV(Math.toRadians(30));
 
