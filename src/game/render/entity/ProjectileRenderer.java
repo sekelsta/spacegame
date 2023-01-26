@@ -3,9 +3,7 @@ package sekelsta.game.render.entity;
 import java.awt.Color;
 import java.util.Scanner;
 
-import sekelsta.engine.render.MatrixStack;
-import sekelsta.engine.render.Texture;
-import sekelsta.engine.render.Textures;
+import sekelsta.engine.render.*;
 import sekelsta.engine.render.entity.EntityRenderer;
 import sekelsta.engine.render.mesh.RigidMesh;
 
@@ -27,12 +25,13 @@ public final class ProjectileRenderer extends EntityRenderer<Projectile> {
     }
 
     @Override
-    public void render(Projectile entity, float lerp, MatrixStack stack) {
+    public void render(Projectile entity, float lerp, MatrixStack stack, MaterialShader shader) {
+        shader.setReflectance(0f);
         mesh = border;
         emission = glow;
-        super.render(entity, lerp, stack);
+        super.render(entity, lerp, stack, shader);
         mesh = center;
         emission = Textures.BLACK;
-        super.render(entity, lerp, stack);
+        super.render(entity, lerp, stack, shader);
     }
 }

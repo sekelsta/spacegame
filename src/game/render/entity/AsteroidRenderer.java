@@ -2,8 +2,7 @@ package sekelsta.game.render.entity;
 
 import java.util.Scanner;
 
-import sekelsta.engine.render.MatrixStack;
-import sekelsta.engine.render.Texture;
+import sekelsta.engine.render.*;
 import sekelsta.engine.render.entity.EntityRenderer;
 import sekelsta.engine.render.mesh.RigidMesh;
 import sekelsta.game.entity.Asteroid;
@@ -25,9 +24,10 @@ public final class AsteroidRenderer extends EntityRenderer<Asteroid> {
     }
 
     @Override
-    public void render(Asteroid entity, float lerp, MatrixStack stack) {
+    public void render(Asteroid entity, float lerp, MatrixStack stack, MaterialShader shader) {
+        shader.setReflectance(0.05f);
         this.mesh = mesh_variants[entity.getMeshVariant()];
         this.scale = entity.getSizeScale();
-        super.render(entity, lerp, stack);
+        super.render(entity, lerp, stack, shader);
     }
 }

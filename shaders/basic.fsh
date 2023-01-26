@@ -10,10 +10,10 @@ uniform vec3 light_pos;
 uniform sampler2D texture_sampler;
 uniform sampler2D emission_sampler;
 
-const float reflectance = 1.0;
+uniform float reflectance;
 // Range: 0 < scattering <= 1
-const float scattering = 0.05;
-const float shininess = 16;
+uniform float scattering = 0.05;
+uniform float shininess = 16;
 
 void main()
 {
@@ -24,13 +24,10 @@ void main()
     if (dot(normal, light_dir) > 0) {
         // in view space the view pos is at the origin
         vec3 view_dir = normalize(-frag_pos);
-        //vec3 halfway_dir = normalize(light_dir + view_dir);
-        vec3 reflection = 2 * dot(light_dir, normal) * normal - light_dir;
+        vec3 halfway_dir = normalize(light_dir + view_dir);
 
-        //specular_str = pow(max(dot(normal, halfway_dir), 0.0), shininess) * reflectance;
-        specular_str = pow(max(dot(view_dir, reflection), 0.0), shininess) * reflectance;
-
-        specular_str *= min(1.0, dot(normal, light_dir) / scattering);
+        specular_str = pow(max(dot(normal, halfway_dir), 0.0), shininess) * reflectance
+                         * min(1.0, dot(normal, light_dir) / scattering);
     }
 
     float ambient_str = 0.005;

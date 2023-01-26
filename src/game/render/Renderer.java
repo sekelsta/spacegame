@@ -27,7 +27,7 @@ import shadowfox.math.*;
 import sekelsta.tools.ObjParser;
 
 public class Renderer implements IFramebufferSizeListener {
-    private ShaderProgram shader = ShaderProgram.load("/shaders/basic.vsh", "/shaders/basic.fsh");
+    private MaterialShader shader = MaterialShader.load("/shaders/basic.vsh", "/shaders/basic.fsh");
     private ShaderProgram shader2D = ShaderProgram.load("/shaders/2d.vsh", "/shaders/2d.fsh");
     private ShaderProgram fireShader = ShaderProgram.load("/shaders/fire.vsh", "/shaders/fire.fsh");
     private Frustum frustum = new Frustum();
@@ -76,6 +76,7 @@ public class Renderer implements IFramebufferSizeListener {
         shader.use();
         shader.setUniform("texture_sampler", 0);
         shader.setUniform("emission_sampler", 1);
+        shader.setDefaultMaterial();
 
         frustum.setFOV(Math.toRadians(30));
 
@@ -164,7 +165,8 @@ public class Renderer implements IFramebufferSizeListener {
 
         // Render entities
         for (Entity entity : world.getMobs()) {
-            renderEntity(entity, lerp, matrixStack);
+            renderEntity(entity, lerp, matrixStack, shader);
+            shader.setDefaultMaterial();
         }
 
         // Render particles
@@ -229,13 +231,13 @@ public class Renderer implements IFramebufferSizeListener {
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends Entity> void renderEntity(T entity, float lerp, MatrixStack matrixStack) {
+    private <T extends Entity> void renderEntity(T entity, float lerp, MatrixStack matrixStack, MaterialShader shader) {
         assert(entity != null);
         assert(entity.getType() != null);
         assert(entity.getType().getRenderer() != null);
         // Unchecked cast
         EntityRenderer<? super T> renderer = (EntityRenderer<? super T>)(entity.getType().getRenderer());
-        renderer.render(entity, lerp, matrixStack);
+        renderer.render(entity, lerp, matrixStack, shader);
     }
 
     public void setJointTransforms(Matrix4f[] joints) {

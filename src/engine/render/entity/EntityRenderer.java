@@ -10,7 +10,7 @@ public abstract class EntityRenderer<T extends Entity> {
     protected Texture emission = Textures.BLACK;
     protected float scale = 1.0f;
 
-    public void render(T entity, float lerp, MatrixStack stack) {
+    public void render(T entity, float lerp, MatrixStack stack, MaterialShader shader) {
         float x = entity.getInterpolatedX(lerp);
         float y = entity.getInterpolatedY(lerp);
         float z = entity.getInterpolatedZ(lerp);

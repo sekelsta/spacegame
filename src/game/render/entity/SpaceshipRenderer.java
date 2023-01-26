@@ -3,8 +3,7 @@ package sekelsta.game.render.entity;
 import java.awt.Color;
 import java.util.Scanner;
 
-import sekelsta.engine.render.MatrixStack;
-import sekelsta.engine.render.Texture;
+import sekelsta.engine.render.*;
 import sekelsta.engine.render.entity.EntityRenderer;
 import sekelsta.engine.render.mesh.RigidMesh;
 import sekelsta.game.entity.Spaceship;
@@ -24,12 +23,14 @@ public final class SpaceshipRenderer extends EntityRenderer<Spaceship> {
     }
 
     @Override
-    public void render(Spaceship entity, float lerp, MatrixStack stack) {
+    public void render(Spaceship entity, float lerp, MatrixStack stack, MaterialShader shader) {
         this.mesh = ship;
         this.texture = skins[entity.skin];
-        super.render(entity, lerp, stack);
+        super.render(entity, lerp, stack, shader);
+        shader.setShininess(64);
+        shader.setReflectance(1);
         this.mesh = window;
         this.texture = windowTexture;
-        super.render(entity, lerp, stack);
+        super.render(entity, lerp, stack, shader);
     }
 }

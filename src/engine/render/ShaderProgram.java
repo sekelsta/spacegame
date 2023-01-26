@@ -39,7 +39,7 @@ public class ShaderProgram {
         return new ShaderProgram(loadResource(vertexResource), loadResource(fragmentResource));
     }
 
-    private static String loadResource(String name) {
+    protected static String loadResource(String name) {
         try {
             return new String(ShaderProgram.class.getResourceAsStream(name).readAllBytes());
         }
