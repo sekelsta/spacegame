@@ -35,7 +35,6 @@ public class ServerGivePawn extends Message {
     @Override
     public void handle(INetworked INetworked) {
         Game game = (Game)INetworked;
-        // TODO #21: Don't crash if, by the time takePawn runs, a local player has already been set
         game.getWorld().runWhenEntitySpawns(entity -> onSpawn(entity, game), entityID);
     }
 

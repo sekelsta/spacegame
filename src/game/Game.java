@@ -92,7 +92,9 @@ public class Game implements ILoopable, INetworked {
     }
 
     public void takePawn(Spaceship pawn) {
-        assert(world.localPlayer == null);
+        if (world.localPlayer != null) {
+            Log.warn("takePawn() called when a pawn is already set. Old: " + world.localPlayer + ", new: " + pawn);
+        }
         world.localPlayer = pawn;
         pawn.setController(input);
         initGraphical();
