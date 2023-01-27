@@ -5,6 +5,9 @@ import sekelsta.engine.render.text.BitmapFont;
 import sekelsta.game.Game;
 
 public class PortEntryScreen extends Screen {
+    protected Overlay overlay;
+    protected Game game;
+
     protected TextElement title;
     protected TextElement portLabel;
     protected TextInput portInput;
@@ -13,7 +16,10 @@ public class PortEntryScreen extends Screen {
     protected String error;
     protected BitmapFont errorFont;
 
-    protected PortEntryScreen(Game game) {
+    protected PortEntryScreen(Overlay overlay, Game game) {
+        this.overlay = overlay;
+        this.game = game;
+
         errorFont = Fonts.getButtonFont();
         this.portLabel = new TextElement(Fonts.getButtonFont(), "Enter port number:");
         this.portInput = new TextInput(Fonts.getButtonFont(), String.valueOf(Game.DEFAULT_PORT), "Port");

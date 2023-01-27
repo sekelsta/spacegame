@@ -17,9 +17,7 @@ public class JoinScreen extends PortEntryScreen {
     private Game game;
 
     public JoinScreen(Overlay overlay, Game game) {
-        super(game);
-        this.overlay = overlay;
-        this.game = game;
+        super(overlay, game);
         this.title = new TextElement(Fonts.getTitleFont(), "Join Server");
         BitmapFont font = Fonts.getButtonFont();
         this.addressLabel = new TextElement(font, "Enter server IP address:");

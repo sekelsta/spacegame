@@ -9,16 +9,17 @@ import sekelsta.game.Game;
 public class HostScreen extends PortEntryScreen {
 
     public HostScreen(Overlay overlay, Game game) {
-        super(game);
+        super(overlay, game);
         this.title = new TextElement(Fonts.getTitleFont(), "Host Multiplayer");
         BitmapFont font = Fonts.getButtonFont();
-        this.done = new TextButton(font, "Done", () -> tryHostMultiplayer(overlay, game, portInput.getEnteredText()));
+        this.done = new TextButton(font, "Done", () -> tryHostMultiplayer());
         selectable.add(portInput);
         selectable.add(done);
         selectable.add(cancel);
     }
 
-    private void tryHostMultiplayer(Overlay overlay, Game game, String strPort) {
+    private void tryHostMultiplayer() {
+        String strPort = portInput.getEnteredText();
         int port = tryParsePort(strPort);
         if (port == -1) {
             return;
@@ -36,6 +37,16 @@ public class HostScreen extends PortEntryScreen {
             game.enterWorld();
         }
         overlay.popScreenIfEquals(this);
+    }
+
+    @Override
+    public boolean trigger() {
+        if (super.trigger()) {
+            return true;
+        }
+
+        tryHostMultiplayer();
+        return true;
     }
 
     public void blit(double screenWidth, double screenHeight) {
