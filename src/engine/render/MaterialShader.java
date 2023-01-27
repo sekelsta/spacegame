@@ -10,15 +10,15 @@ public class MaterialShader extends ShaderProgram {
     }
 
     public void setReflectance(float reflectance) {
-        setUniform("reflectance", reflectance);
+        setFloat("reflectance", reflectance);
     }
 
     public void setShininess(float shininess) {
-        setUniform("shininess", shininess);
+        setFloat("shininess", shininess);
     }
 
     public void setScattering(float scattering) {
-        setUniform("scattering", scattering);
+        setFloat("scattering", scattering);
     }
 
     public void setDefaultMaterial() {
