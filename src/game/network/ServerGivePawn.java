@@ -2,11 +2,9 @@ package sekelsta.game.network;
 
 import java.nio.ByteBuffer;
 
+import sekelsta.engine.Log;
 import sekelsta.engine.entity.Entity;
-import sekelsta.engine.network.ByteVector;
-import sekelsta.engine.network.INetworked;
-import sekelsta.engine.network.Message;
-import sekelsta.engine.network.NetworkDirection;
+import sekelsta.engine.network.*;
 import sekelsta.game.Game;
 import sekelsta.game.entity.Spaceship;
 
@@ -37,8 +35,15 @@ public class ServerGivePawn extends Message {
     @Override
     public void handle(INetworked INetworked) {
         Game game = (Game)INetworked;
-        // TODO #20: What if the mob isn't an instanceof Spaceship?
         // TODO #21: Don't crash if, by the time takePawn runs, a local player has already been set
-        game.getWorld().runWhenEntitySpawns(mob -> game.takePawn((Spaceship)mob), entityID);
+        game.getWorld().runWhenEntitySpawns(entity -> onSpawn(entity, game), entityID);
+    }
+
+    private void onSpawn(Entity entity, Game game) {
+        if (! (entity instanceof Spaceship)) {
+            Log.debug("ServerGivePawn message sent pawn of wrong class: " + entity.getClass().getName() + ", entityID=" + entityID);
+            return;
+        }
+        game.takePawn((Spaceship)entity);
     }
 }
