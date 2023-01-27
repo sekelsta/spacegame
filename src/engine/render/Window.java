@@ -29,6 +29,7 @@ public class Window {
     private int height;
     private boolean focused;
     private boolean fullscreen;
+    private boolean wasMaximized;
     private static Thread mainThread;
 
     private static final int MIN_WIDTH = 20;
@@ -63,7 +64,7 @@ public class Window {
 
     public Window(InitialConfig config, String title) {
         this.fullscreen = config.fullscreen;
-        boolean maximized = config.maximized;
+        this.wasMaximized = config.maximized;
 
         // Get screen size and monitor work area
         GLFWVidMode mode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
@@ -105,7 +106,7 @@ public class Window {
         }
 
         GLFW.glfwSetWindowSizeLimits(window, MIN_WIDTH, MIN_HEIGHT, GLFW.GLFW_DONT_CARE, GLFW.GLFW_DONT_CARE);
-        if (maximized) {
+        if (wasMaximized) {
             GLFW.glfwMaximizeWindow(window);
         }
         else {
@@ -133,7 +134,7 @@ public class Window {
         windowPosX[0] = Math.max(windowPosX[0], workX[0] + frameLeft[0]);
         windowPosY[0] = Math.max(windowPosY[0], workY[0] + frameTop[0]);
 
-        if (!maximized && !fullscreen) {
+        if (!wasMaximized && !fullscreen) {
             GLFW.glfwSetWindowPos(window, windowPosX[0], windowPosY[0]);
         }
 
@@ -196,7 +197,18 @@ public class Window {
             throw new RuntimeException("Window was closed from the wrong thread");
         }
 
-        boolean maximized = isMaximized();
+        // Save size and position for next session
+        config.windowWidth = Long.valueOf(this.windowWidth[0]);
+        config.windowHeight = Long.valueOf(this.windowHeight[0]);
+        config.windowPosX = Long.valueOf(this.windowPosX[0]);
+        config.windowPosY = Long.valueOf(this.windowPosY[0]);
+        config.fullscreen = this.fullscreen;
+        if (fullscreen) {
+            config.maximized = wasMaximized;
+        }
+        else {
+            config.maximized = isMaximized();
+        }
 
 		// Free the window callbacks and destroy the window
         Callbacks.glfwFreeCallbacks(window);
@@ -205,14 +217,6 @@ public class Window {
 	    // Terminate GLFW and free the error callback
         GLFW.glfwTerminate();
         GLFW.glfwSetErrorCallback(null).free();
-
-        // Save size and position for next session
-        config.windowWidth = Long.valueOf(this.windowWidth[0]);
-        config.windowHeight = Long.valueOf(this.windowHeight[0]);
-        config.windowPosX = Long.valueOf(this.windowPosX[0]);
-        config.windowPosY = Long.valueOf(this.windowPosY[0]);
-        config.fullscreen = this.fullscreen;
-        config.maximized = maximized;
     }
 
     private static void handleError(int error, long description) {
@@ -287,6 +291,7 @@ public class Window {
     public void toggleFullscreen() {
         fullscreen = !fullscreen;
         if (fullscreen) {
+            wasMaximized = isMaximized();
             long monitor = GLFW.glfwGetPrimaryMonitor();
             GLFWVidMode videoMode = GLFW.glfwGetVideoMode(monitor);
             GLFW.glfwSetWindowMonitor(window, monitor, 0, 0, videoMode.width(), videoMode.height(), GLFW.GLFW_DONT_CARE);
@@ -313,6 +318,9 @@ public class Window {
             windowHeight[0] = Math.min(windowHeight[0], workHeight[0] - frameTop[0] - frameBottom[0]);
             GLFW.glfwSetWindowPos(window, windowPosX[0], windowPosY[0]);
             GLFW.glfwSetWindowSize(window, windowWidth[0], windowHeight[0]);
+            if (wasMaximized) {
+                GLFW.glfwMaximizeWindow(window);
+            }
         }
     }
 }

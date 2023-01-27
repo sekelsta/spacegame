@@ -38,7 +38,7 @@ public class InitialConfig {
 
         Boolean configFullscreen = toml.getBoolean("fullscreen");
         Boolean configMaximized = toml.getBoolean("maximized");
-        boolean maximized = configMaximized == null? false : configMaximized.booleanValue();
+        maximized = configMaximized == null? false : configMaximized.booleanValue();
         fullscreen = configFullscreen == null? true : configFullscreen.booleanValue();
 
         Double configVolume = toml.getDouble("volume");
