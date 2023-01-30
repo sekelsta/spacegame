@@ -13,8 +13,6 @@ import sekelsta.game.Game;
 public class JoinScreen extends PortEntryScreen {
     private TextElement addressLabel;
     private TextInput addressInput;
-    private Overlay overlay;
-    private Game game;
 
     public JoinScreen(Overlay overlay, Game game) {
         super(overlay, game);
