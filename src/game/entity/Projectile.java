@@ -48,4 +48,8 @@ public class Projectile extends Entity implements ICollider {
 
         world.remove(this);
     }
+
+    public boolean isOwnedBy(Entity entity) {
+        return entity == owner;
+    }
 }

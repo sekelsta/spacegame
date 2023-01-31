@@ -13,7 +13,7 @@ public class Spaceship extends Entity implements ICollider {
     private static final float shootSpeed = (float)Entity.ONE_METER;
     private static final float thrustSpeed = (float)Entity.ONE_METER / 32;
     private static final float reverseSpeed = -1 * (float)Entity.ONE_METER / 64;
-    private final float angularAcceleration = Entity.TAU / 4096;
+    private final float angularAcceleration = Entity.TAU / 2048;
 
     public int skin;
     private boolean isThrusting = false;
@@ -71,7 +71,14 @@ public class Spaceship extends Entity implements ICollider {
 
     @Override
     public void collide(Entity other) {
-        // TODO #26: Get injured/die    
+        if (other instanceof Projectile) {
+            Projectile projectile = (Projectile)other;
+            if (projectile.isOwnedBy(this)) {
+                return;
+            }
+        }
+        world.remove(this);
+        explode();
     }
 
     @Override
@@ -170,5 +177,23 @@ public class Spaceship extends Entity implements ICollider {
         projectile.accelerate(getVelocityX(), getVelocityY(), getVelocityZ());
         projectile.setAngle(getYaw(), getPitch(), getRoll());
         projectile.accelerateForwards(shootSpeed);
+    }
+
+    private void explode() {
+        Random random = world.getRandom();
+        for (int i = 0; i < 200; ++i) {
+            int lifespan = random.nextInt(15) + 15;
+            Particle particle = new Particle((float)getX(), (float)getY(), (float)getZ(), lifespan);
+            float vx = 1;
+            float vy = 1;
+            float vz = 1;
+            while (vx * vx + vy * vy + vz * vz > 1) {
+                vx = 2 * random.nextFloat() - 1;
+                vy = 2 * random.nextFloat() - 1;
+                vz = 2 * random.nextFloat() - 1;
+            }
+            particle.setVelocity(getVelocityX() + vx, getVelocityY() + vy, getVelocityZ() + vz);
+            world.addParticle(particle);
+        }
     }
 }
