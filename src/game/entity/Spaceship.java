@@ -77,8 +77,7 @@ public class Spaceship extends Entity implements ICollider {
                 return;
             }
         }
-        world.remove(this);
-        explode();
+        ((World)world).destroyShip(this);
     }
 
     @Override
@@ -179,7 +178,7 @@ public class Spaceship extends Entity implements ICollider {
         projectile.accelerateForwards(shootSpeed);
     }
 
-    private void explode() {
+    public void explode() {
         Random random = world.getRandom();
         for (int i = 0; i < 200; ++i) {
             int lifespan = random.nextInt(15) + 15;

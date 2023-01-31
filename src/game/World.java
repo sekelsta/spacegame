@@ -6,9 +6,7 @@ import java.util.stream.Collectors;
 import sekelsta.engine.entity.*;
 import sekelsta.engine.Particle;
 import sekelsta.game.entity.*;
-import sekelsta.game.network.ServerSpawnEntity;
-import sekelsta.game.network.ServerRemoveEntity;
-import sekelsta.game.network.EntityUpdate;
+import sekelsta.game.network.*;
 import shadowfox.math.Vector3f;
 
 public class World implements IEntitySpace {
@@ -226,6 +224,17 @@ public class World implements IEntitySpace {
             return;
         }
         this.tick = tick;
+    }
+
+    public void destroyShip(Spaceship ship) {
+        assert(authoritative);
+        remove(ship);
+        ship.explode();
+
+        if (isNetworkServer()) {
+            ServerExplodeShip message = new ServerExplodeShip(ship.getID());
+            game.getNetworkManager().queueBroadcast(message);
+        }
     }
 
     private boolean isNetworkServer() {
