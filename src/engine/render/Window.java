@@ -47,7 +47,7 @@ public class Window {
         GLFWErrorCallback.createPrint(System.err).set();
 
         if (!GLFW.glfwInit()) {
-			throw new IllegalStateException("Failed to initialize GLFW");
+            throw new IllegalStateException("Failed to initialize GLFW");
         }
         mainThread = Thread.currentThread();
         Log.info("Initialized GLFW " + GLFW.glfwGetVersionString());
@@ -160,11 +160,7 @@ public class Window {
         GLFW.glfwSwapInterval(1);
         GLFW.glfwShowWindow(window);
 
-		// This line is critical for LWJGL's interoperation with GLFW's
-		// OpenGL context, or any context that is managed externally.
-		// LWJGL detects the context that is current in the current thread,
-		// creates the GLCapabilities instance and makes the OpenGL
-		// bindings available for use.
+        // Allow LWJGL to interoperate with GLFW's OpenGL context
         GL.createCapabilities();
 
         // Set window icon
@@ -210,11 +206,9 @@ public class Window {
             config.maximized = isMaximized();
         }
 
-		// Free the window callbacks and destroy the window
         Callbacks.glfwFreeCallbacks(window);
         GLFW.glfwDestroyWindow(window);
 
-	    // Terminate GLFW and free the error callback
         GLFW.glfwTerminate();
         GLFW.glfwSetErrorCallback(null).free();
     }
