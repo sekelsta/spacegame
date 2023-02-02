@@ -50,6 +50,20 @@ public class Screen {
         selectable.down();
     }
 
+    public void left() {
+        GuiElement selected = selectable.getSelected();
+        if (selected instanceof Slider) {
+            ((Slider)selected).decrement();
+        }
+    }
+
+    public void right() {
+        GuiElement selected = selectable.getSelected();
+        if (selected instanceof Slider) {
+            ((Slider)selected).increment();
+        }
+    }
+
     public void top() {
         selectable.top();
     }

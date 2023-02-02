@@ -76,6 +76,12 @@ public class Input extends InputManager implements IController {
             else if (key == GLFW.GLFW_KEY_DOWN) {
                 overlay.down();
             }
+            else if (key == GLFW.GLFW_KEY_LEFT) {
+                overlay.left();
+            }
+            else if (key == GLFW.GLFW_KEY_RIGHT) {
+                overlay.right();
+            }
             else if (key == GLFW.GLFW_KEY_HOME) {
                 overlay.top();
             }

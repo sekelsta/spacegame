@@ -104,6 +104,18 @@ public class Overlay {
         }
     }
 
+    public void left() {
+        if (hasScreen()) {
+            screenStack.peek().left();
+        }
+    }
+
+    public void right() {
+        if (hasScreen()) {
+            screenStack.peek().right();
+        }
+    }
+
     public void top() {
         if (hasScreen()) {
             screenStack.peek().top();

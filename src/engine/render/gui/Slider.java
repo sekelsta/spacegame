@@ -11,6 +11,14 @@ public class Slider extends GuiElement {
         this.val = val;
     }
 
+    public void increment() {
+        val = Math.min(1f, val + 0.05f);
+    }
+
+    public void decrement() {
+        val = Math.max(0f, val - 0.05f);
+    }
+
     @Override
     public int getWidth() {
         return 256;
@@ -29,7 +37,8 @@ public class Slider extends GuiElement {
         else {
             spritebatch.blit(x, y, getWidth(), getHeight(), 0, 0);
         }
-        int slide = BAR_WIDTH + (int)(val * (getWidth() - 3 * BAR_WIDTH));
+        int usableWidth = getWidth() - 3 * BAR_WIDTH;
+        int slide = BAR_WIDTH + (int)(val * usableWidth);
         spritebatch.blit(x + slide, y, BAR_WIDTH, getHeight(), 0, 0);
     }
 }
