@@ -19,8 +19,6 @@ public class InitialConfig {
     public boolean fullscreen;
     public boolean maximized;
 
-    public float volume;
-
     public InitialConfig(String filePath) {
         this.filePath = filePath;
 
@@ -40,10 +38,6 @@ public class InitialConfig {
         Boolean configMaximized = toml.getBoolean("maximized");
         maximized = configMaximized == null? false : configMaximized.booleanValue();
         fullscreen = configFullscreen == null? true : configFullscreen.booleanValue();
-
-        Double configVolume = toml.getDouble("volume");
-        volume = configVolume == null? 1 : (float)configVolume.doubleValue();
-        volume = (float)Math.min(1, Math.max(0, volume));
     }
 
     public void save() {
@@ -56,8 +50,6 @@ public class InitialConfig {
         map.put("windowPosY", this.windowPosY);
         map.put("fullscreen", this.fullscreen);
         map.put("maximized", this.maximized);
-
-        map.put("volume", this.volume);
 
         try {
             File config = new File(filePath);

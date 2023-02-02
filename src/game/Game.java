@@ -26,6 +26,7 @@ public class Game implements ILoopable, INetworked {
     private boolean running = true;
 
     private InitialConfig initialConfig;
+    private UserSettings settings;
     private World world;
     private Window window;
     private Renderer renderer;
@@ -47,12 +48,14 @@ public class Game implements ILoopable, INetworked {
             this.input.setOverlay(this.overlay);
             this.input.updateConnectedGamepads();
 
+            this.settings = new UserSettings(DataFolders.getUserFolder("settings.toml"));
+
             try {
                 Clip clip = AudioSystem.getClip();
                 AudioInputStream input = AudioSystem.getAudioInputStream(Game.class.getResourceAsStream("/assets/audio/planetrise.wav"));
                 clip.open(input);
                 FloatControl gainControl = (FloatControl)clip.getControl(FloatControl.Type.MASTER_GAIN);
-                double decibels = Math.log(initialConfig.volume) / Math.log(2) * 20.0;
+                double decibels = Math.log(settings.volume) / Math.log(2) * 20.0;
                 gainControl.setValue((float)decibels);
                 clip.start();
             }
@@ -128,6 +131,10 @@ public class Game implements ILoopable, INetworked {
     @Override
     public boolean isRunning() {
         return running && (window == null || !window.shouldClose());
+    }
+
+    public UserSettings getSettings() {
+        return settings;
     }
 
     public boolean isNetworked() {
@@ -214,6 +221,11 @@ public class Game implements ILoopable, INetworked {
         }
         if (initialConfig != null) {
             initialConfig.save();
+            initialConfig = null;
+        }
+        if (settings != null) {
+            settings.save();
+            settings = null;
         }
     }
 

@@ -19,7 +19,7 @@ public class JoinScreen extends PortEntryScreen {
         this.title = new TextElement(Fonts.getTitleFont(), "Join Server");
         BitmapFont font = Fonts.getButtonFont();
         this.addressLabel = new TextElement(font, "Enter server IP address:");
-        this.addressInput = new TextInput(font, "", "IP address");
+        this.addressInput = new TextInput(font, game.getSettings().lastJoinedIP, "IP address");
         this.done = new TextButton(font, "Done", () -> tryJoinServer());
         selectable = new SelectableElementList();
         selectable.add(addressInput);
@@ -56,6 +56,8 @@ public class JoinScreen extends PortEntryScreen {
 
         game.joinServer(new InetSocketAddress(netAddress, port));
         overlay.pushScreen(new ConnectingScreen(overlay, game, strAddress + ":" + strPort));
+
+        game.getSettings().lastJoinedIP = strAddress;
     }
 
     public void positionPointer(double xPos, double yPos) {
