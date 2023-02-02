@@ -2,8 +2,11 @@ package sekelsta.engine.render.gui;
 
 import java.awt.Color;
 
+import sekelsta.engine.render.SpriteBatch;
+
 public abstract class GuiElement {
     public static final Color GRAY = new Color(0.5f, 0.5f, 0.5f);
+    protected static final Color HIGHLIGHT_COLOR = new Color(0.6f, 0.6f, 0.9f);
 
     protected int x, y;
 
@@ -39,5 +42,5 @@ public abstract class GuiElement {
         // Do nothing
     }
 
-    public abstract void blit(boolean focused);
+    public abstract void blit(SpriteBatch spritebatch, boolean focused);
 }

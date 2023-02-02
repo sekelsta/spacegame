@@ -90,7 +90,7 @@ public class Screen {
         for (GuiElement item : items) {
             item.position(((int)screenWidth - item.getWidth()) / 2, yPos);
             yPos += (int)(1.25 * item.getHeight());
-            item.blit(item == selected);
+            item.blit(null, item == selected);
         }
     }
 }

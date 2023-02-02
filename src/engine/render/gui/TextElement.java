@@ -2,6 +2,7 @@ package sekelsta.engine.render.gui;
 
 import java.awt.Color;
 
+import sekelsta.engine.render.SpriteBatch;
 import sekelsta.engine.render.text.BitmapFont;
 
 public class TextElement extends GuiElement {
@@ -36,8 +37,12 @@ public class TextElement extends GuiElement {
         return font.getHeight();
     }
 
-    @Override
     public void blit(boolean focused) {
+        blit(null, focused);
+    }
+
+    @Override
+    public void blit(SpriteBatch spritebatch, boolean focused) {
         font.blit(text, x, y, color);
     }
 }

@@ -1,5 +1,6 @@
 package sekelsta.engine.render;
 
+import java.awt.Color;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
@@ -72,6 +73,10 @@ public class SpriteBatch extends Mesh {
 
     public void blit(int x, int y, int width, int height, int texX, int texY) {
         blit(x, y, width, height, texX, texY, 1f, 1f, 1f);
+    }
+
+    public void blit(int x, int y, int width, int height, int texX, int texY, Color color) {
+        blit(x, y, width, height, texX, texY, color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f);
     }
 
     // Params: Screen rect, texture x and y to draw from, texture size, and color to draw

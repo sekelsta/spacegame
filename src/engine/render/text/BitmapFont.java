@@ -18,7 +18,7 @@ public class BitmapFont {
 
     private Glyph[] glyphs;
     private Glyph cursor;
-    private SpriteBatch spriteBatch = new SpriteBatch();
+    private SpriteBatch spritebatch = new SpriteBatch();
 
     public BitmapFont(Font font, boolean antialias) {
         FontMetrics metrics = getMetrics(font, antialias);
@@ -86,7 +86,7 @@ public class BitmapFont {
         g.fillRect(cursor.x, cursor.y, cursor.width, cursor.height);
         g.dispose();
 
-        spriteBatch.setTexture(new Texture(image, false));
+        spritebatch.setTexture(new Texture(image, false));
     }
 
     private Glyph makeGlyph(int charWidth, int charHeight, ArrayList<Integer> lengths) {
@@ -117,7 +117,7 @@ public class BitmapFont {
 
     public void blit(char c, int x, int y, float r, float g, float b) {
         Glyph glyph = glyphs[c - STARTING_CHAR];
-        spriteBatch.blit(x, y, glyph.width, glyph.height, glyph.x, glyph.y, r, g, b);
+        spritebatch.blit(x, y, glyph.width, glyph.height, glyph.x, glyph.y, r, g, b);
     }
 
     public void blit(String s, int x, int y) {
@@ -138,15 +138,15 @@ public class BitmapFont {
     }
 
     public void blitCursor(int x, int y, float r, float g, float b) {
-        spriteBatch.blit(x, y, cursor.width, cursor.height, cursor.x, cursor.y, r, g, b);
+        spritebatch.blit(x, y, cursor.width, cursor.height, cursor.x, cursor.y, r, g, b);
     }
 
     public void render() {
-        spriteBatch.render();
+        spritebatch.render();
     }
 
     public void clean() {
-        spriteBatch.clean();
+        spritebatch.clean();
     }
 
     private FontMetrics getMetrics(Font font, boolean antialias) {

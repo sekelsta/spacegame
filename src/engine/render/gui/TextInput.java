@@ -1,5 +1,6 @@
 package sekelsta.engine.render.gui;
 
+import sekelsta.engine.render.SpriteBatch;
 import sekelsta.engine.render.text.BitmapFont;
 
 public class TextInput extends TextElement {
@@ -32,7 +33,7 @@ public class TextInput extends TextElement {
     }
 
     @Override
-    public void blit(boolean focused) {
+    public void blit(SpriteBatch spritebatch, boolean focused) {
         int textWidth = font.getWidth(text);
         int hintWidth = font.getWidth(hint);
         int xOffset = 0;
