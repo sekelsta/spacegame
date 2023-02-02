@@ -9,12 +9,14 @@ import java.io.FileOutputStream;
 import java.util.HashMap;
 
 public class UserSettings {
-    private String filePath;
+    private final Game game;
+    private final String filePath;
 
     public String lastJoinedIP;
-    public float volume;
+    private float volume;
 
-    public UserSettings(String filePath) {
+    public UserSettings(String filePath, Game game) {
+        this.game = game;
         this.filePath = filePath;
 
         Toml toml = new Toml();
@@ -25,8 +27,8 @@ public class UserSettings {
         catch (FileNotFoundException e) { }
 
         Double configVolume = toml.getDouble("volume");
-        volume = configVolume == null? 1 : (float)configVolume.doubleValue();
-        volume = (float)Math.min(1, Math.max(0, volume));
+        float v = configVolume == null? 0.5f : (float)configVolume.doubleValue();
+        setVolume(v);
 
         lastJoinedIP = toml.getString("lastJoinedIP");
         if (lastJoinedIP == null) {
@@ -34,7 +36,14 @@ public class UserSettings {
         }
     }
 
+    public float getVolume() {
+        return volume;
+    }
 
+    public void setVolume(float volume) {
+        this.volume = Math.min(1f, Math.max(0f, volume));
+        game.setVolume(this.volume);
+    }
 
     public void save() {
         TomlWriter tomlWriter = new TomlWriter();

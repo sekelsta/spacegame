@@ -14,7 +14,10 @@ public class OptionsScreen extends Screen {
     public OptionsScreen(Overlay overlay, Game game) {
         BitmapFont font = Fonts.getButtonFont();
         items.add(new TextElement(font, "Audio volume:"));
-        slider = new Slider(0.5f);
+        slider = new Slider(
+            game.getSettings().getVolume(),
+            () -> game.getSettings().setVolume(slider.getValue())
+        );
         addSelectableItem(slider);
         addSelectableItem(new TextButton(font, "Credits", () -> overlay.pushScreen(new CreditsScreen(game))));
         addSelectableItem(new TextButton(font, "Done", () -> game.escape()));

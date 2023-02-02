@@ -6,17 +6,25 @@ public class Slider extends GuiElement {
     private static final int BAR_WIDTH = 7;
 
     private float val;
+    private Runnable onValChanged;
 
-    public Slider(float val) {
+    public Slider(float val, Runnable onValueChanged) {
         this.val = val;
+        this.onValChanged = onValueChanged;
+    }
+
+    public float getValue() {
+        return val;
     }
 
     public void increment() {
         val = Math.min(1f, val + 0.05f);
+        onValChanged.run();
     }
 
     public void decrement() {
         val = Math.max(0f, val - 0.05f);
+        onValChanged.run();
     }
 
     @Override

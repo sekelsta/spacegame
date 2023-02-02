@@ -34,6 +34,7 @@ public class Game implements ILoopable, INetworked {
     private Camera camera;
     private NetworkManager networkManager;
     private Overlay overlay;
+    private Clip music;
 
     public Game(boolean graphical) {
         if (graphical) {
@@ -48,20 +49,18 @@ public class Game implements ILoopable, INetworked {
             this.input.setOverlay(this.overlay);
             this.input.updateConnectedGamepads();
 
-            this.settings = new UserSettings(DataFolders.getUserFolder("settings.toml"));
-
             try {
-                Clip clip = AudioSystem.getClip();
+                music = AudioSystem.getClip();
                 AudioInputStream input = AudioSystem.getAudioInputStream(Game.class.getResourceAsStream("/assets/audio/planetrise.wav"));
-                clip.open(input);
-                FloatControl gainControl = (FloatControl)clip.getControl(FloatControl.Type.MASTER_GAIN);
-                double decibels = Math.log(settings.volume) / Math.log(2) * 20.0;
-                gainControl.setValue((float)decibels);
-                clip.start();
+                music.open(input);
             }
             catch (Exception e) {
                 throw new RuntimeException(e);
             }
+
+            this.settings = new UserSettings(DataFolders.getUserFolder("settings.toml"), this);
+
+            music.start();
         }
         this.world = null;
         Entities.init();
@@ -307,5 +306,15 @@ public class Game implements ILoopable, INetworked {
 
     public void respawn() {
         System.out.println("TODO: Respawn");
+    }
+
+    public void setVolume(float volume) {
+        FloatControl gainControl = (FloatControl)music.getControl(FloatControl.Type.MASTER_GAIN);
+        double decibels = Math.log(volume) / Math.log(2) * 20.0;
+        if (decibels < gainControl.getMinimum()) {
+            decibels = -1/0f;
+        }
+        decibels = Math.min(decibels, gainControl.getMaximum());
+        gainControl.setValue((float)decibels);
     }
 }
