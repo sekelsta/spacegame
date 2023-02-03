@@ -266,8 +266,8 @@ public class Window {
         );
     }
 
-    public int getMouseButton(int button) {
-        return GLFW.glfwGetMouseButton(window, button);
+    public boolean isMouseButtonPressed(int button) {
+        return GLFW.glfwGetMouseButton(window, button) == GLFW.GLFW_PRESS;
     }
 
     public boolean isKeyDown(int key) {

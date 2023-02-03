@@ -92,6 +92,12 @@ public class Overlay {
         return false;
     }
 
+    public void holdLeftMouseButton() {
+        if (hasScreen()) {
+            screenStack.peek().holdLeftMouseButton(xPointer, yPointer);
+        }
+    }
+
     public void up() {
         if (hasScreen()) {
             screenStack.peek().up();

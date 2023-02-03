@@ -39,7 +39,19 @@ public class Screen {
 
     public boolean click(double xPos, double yPos) {
         positionPointer(xPos, yPos);
+        GuiElement selected = selectable.getSelected();
+        if (selected instanceof Slider) {
+            ((Slider)selected).click(xPos, yPos);
+            return true;
+        }
         return trigger();
+    }
+
+    public void holdLeftMouseButton(double xPos, double yPos) {
+        GuiElement selected = selectable.getSelected();
+        if (selected instanceof Slider) {
+            ((Slider)selected).holdLeftMouseButton(xPos, yPos);
+        }
     }
 
     public void up() {

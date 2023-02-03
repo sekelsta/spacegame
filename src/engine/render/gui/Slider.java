@@ -27,6 +27,19 @@ public class Slider extends GuiElement {
         onValChanged.run();
     }
 
+    public void click(double xPos, double yPos) {
+        double v = (xPos - this.x - BAR_WIDTH) / usableWidth();
+        float vf = Math.max(0f, Math.min(1f, (float)v));
+        if (val != vf) {
+            val = vf;
+            onValChanged.run();
+        }
+    }
+
+    public void holdLeftMouseButton(double xPos, double yPos) {
+        click(xPos, yPos);
+    }
+
     @Override
     public int getWidth() {
         return 256;
@@ -37,6 +50,10 @@ public class Slider extends GuiElement {
         return 26;
     }
 
+    private int usableWidth() {
+        return getWidth() - 3 * BAR_WIDTH;
+    }
+
     @Override
     public void blit(SpriteBatch spritebatch, boolean focused) {
         if (focused) {
@@ -45,8 +62,7 @@ public class Slider extends GuiElement {
         else {
             spritebatch.blit(x, y, getWidth(), getHeight(), 0, 0);
         }
-        int usableWidth = getWidth() - 3 * BAR_WIDTH;
-        int slide = BAR_WIDTH + (int)(val * usableWidth);
+        int slide = BAR_WIDTH + (int)(val * usableWidth());
         spritebatch.blit(x + slide, y, BAR_WIDTH, getHeight(), 0, 0);
     }
 }

@@ -105,9 +105,9 @@ public class Input extends InputManager implements IController {
     @Override
     public void moveCursor(double xPos, double yPos) {
         overlay.positionPointer(xPos, yPos);
-        if (window.getMouseButton(GLFW.GLFW_MOUSE_BUTTON_MIDDLE) == GLFW.GLFW_PRESS
+        if (window.isMouseButtonPressed(GLFW.GLFW_MOUSE_BUTTON_MIDDLE)
             // TEMP DEBUG
-            || window.getMouseButton(GLFW.GLFW_MOUSE_BUTTON_RIGHT) == GLFW.GLFW_PRESS
+            || window.isMouseButtonPressed(GLFW.GLFW_MOUSE_BUTTON_RIGHT)
             ) {
             if (camera != null) {
                 double diffX = xPos - prevCursorX;
@@ -193,6 +193,10 @@ public class Input extends InputManager implements IController {
             else if (y < -PRESS_THRESHOLD && prevY >= -PRESS_THRESHOLD) {
                 overlay.up();
             }
+        }
+
+        if (window.isMouseButtonPressed(GLFW.GLFW_MOUSE_BUTTON_LEFT)) {
+            overlay.holdLeftMouseButton();
         }
     }
 
