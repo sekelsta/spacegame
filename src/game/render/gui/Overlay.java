@@ -12,12 +12,12 @@ import shadowfox.math.Vector2f;
 
 // For rendering 2D text and images in front of the world
 public class Overlay {
-    private static final double scale = 1.0;
-
     private Deque<Screen> screenStack = new ArrayDeque<>();
     private double xPointer, yPointer;
+    private Game game;
 
     public Overlay(Game game) {
+        this.game = game;
         screenStack.push(new MainMenuScreen(this, game));
     }
 
@@ -43,8 +43,8 @@ public class Overlay {
         return screenStack.size() > 0;
     }
 
-    public static double getScale() {
-        return scale;
+    public float getScale() {
+        return game.getSettings().uiScale;
     }
 
     public boolean isPaused() {
@@ -57,8 +57,8 @@ public class Overlay {
     }
 
     public void positionPointer(double xPos, double yPos) {
-        xPointer = xPos * scale;
-        yPointer = yPos * scale;
+        xPointer = xPos * getScale();
+        yPointer = yPos * getScale();
         if (hasScreen()) {
             screenStack.peek().positionPointer(xPointer, yPointer);
         }

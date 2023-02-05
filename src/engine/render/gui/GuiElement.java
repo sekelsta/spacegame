@@ -34,11 +34,23 @@ public abstract class GuiElement {
         return false;
     }
 
+    public void click(double xPos, double yPos) {
+        trigger();
+    }
+
     public void inputCharacter(char character) {
         // Do nothing
     }
 
     public void backspace() {
+        // Do nothing
+    }
+
+    public void left() {
+        // Do nothing
+    }
+
+    public void right() {
         // Do nothing
     }
 

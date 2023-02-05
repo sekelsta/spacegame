@@ -82,6 +82,15 @@ public class SpriteBatch extends Mesh {
     // Params: Screen rect, texture x and y to draw from, texture size, and color to draw
     // Will render if the buffer is full, so be sure the texture is bound before calling
     public void blit(int x, int y, int width, int height, int texX, int texY, float red, float green, float blue) {
+        blitStretched(x, y, width, height, texX, texY, width, height, red, green, blue);
+    }
+
+    public void blitStretched(int x, int y, int width, int height, int texX, int texY, int texWidth, int texHeight) {
+        blitStretched(x, y, width, height, texX, texY, texWidth, texHeight, 1f, 1f, 1f);
+    }
+
+    public void blitStretched(int x, int y, int width, int height, int texX, int texY, int texWidth, int texHeight,
+            float red, float green, float blue) {
         assert(texture != null);
 
         // Check if we can't fit another four vertices
@@ -92,8 +101,8 @@ public class SpriteBatch extends Mesh {
 
         float u0 = (float)texX / (float)texture.getWidth();
         float v0 = (float)texY / (float)texture.getHeight();
-        float u1 = (float)(texX + width) / (float)texture.getWidth();
-        float v1 = (float)(texY + height) / (float)texture.getHeight();
+        float u1 = (float)(texX + texWidth) / (float)texture.getWidth();
+        float v1 = (float)(texY + texHeight) / (float)texture.getHeight();
 
         // Top-left
         vertices.put(x).put(-y);

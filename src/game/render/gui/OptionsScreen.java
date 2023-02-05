@@ -1,5 +1,7 @@
 package sekelsta.game.render.gui;
 
+import java.util.ArrayList;
+
 import sekelsta.engine.render.SpriteBatch;
 import sekelsta.engine.render.Texture;
 import sekelsta.engine.render.gui.*;
@@ -10,15 +12,34 @@ public class OptionsScreen extends Screen {
     private SpriteBatch spritebatch = new SpriteBatch();
     private Texture texture = new Texture("ui.png");
     private Slider slider;
+    private TextChoice uiScale;
 
     public OptionsScreen(Overlay overlay, Game game) {
         BitmapFont font = Fonts.getButtonFont();
+
         items.add(new TextElement(font, "Audio volume:"));
         slider = new Slider(
             game.getSettings().getVolume(),
             () -> game.getSettings().setVolume(slider.getValue())
         );
         addSelectableItem(slider);
+
+        items.add(new TextElement(font, "UI Scale:"));
+        ArrayList<String> scales = new ArrayList<>();
+        scales.add("Small");
+        scales.add("Medium");
+        scales.add("Large");
+        int startscale = 1;
+        if (game.getSettings().uiScale < 0.9f) {
+            startscale = 2;
+        }
+        else if (game.getSettings().uiScale > 1.1f) {
+            startscale = 0;
+        }
+        uiScale = new TextChoice(Fonts.getTextFont(), scales, startscale,
+            (v) -> game.getSettings().uiScale = 1 - 0.25f * (v - 1));
+        addSelectableItem(uiScale);
+
         addSelectableItem(new TextButton(font, "Credits", () -> overlay.pushScreen(new CreditsScreen(game))));
         addSelectableItem(new TextButton(font, "Done", () -> game.escape()));
     }

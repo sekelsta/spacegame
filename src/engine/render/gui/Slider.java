@@ -17,16 +17,21 @@ public class Slider extends GuiElement {
         return val;
     }
 
-    public void increment() {
+    // Increment
+    @Override
+    public void right() {
         val = Math.min(1f, val + 0.05f);
         onValChanged.run();
     }
 
-    public void decrement() {
+    // Decrement
+    @Override
+    public void left() {
         val = Math.max(0f, val - 0.05f);
         onValChanged.run();
     }
 
+    @Override
     public void click(double xPos, double yPos) {
         double v = (xPos - this.x - BAR_WIDTH) / usableWidth();
         float vf = Math.max(0f, Math.min(1f, (float)v));

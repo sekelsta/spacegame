@@ -129,12 +129,31 @@ public class BitmapFont {
     }
 
     // TODO #31: Handle newlines and such
-    public void blit(String s, int x, int y, float r, float g, float b) {
+    public int blit(String s, int x, int y, float r, float g, float b) {
         int w = 0;
         for (char c : s.toCharArray()) {
             blit(c, x + w, y, r, g, b);
             w += glyphs[c - STARTING_CHAR].width;
         }
+        return w;
+    }
+
+
+    public void blitUnderlined(String s, int x, int y) {
+        blitUnderlined(s, x, y, 1f, 1f, 1f);
+    }
+
+    public void blitUnderlined(String s, int x, int y, Color color) {
+        blitUnderlined(s, x, y, color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f);
+    }
+
+    public void blitUnderlined(String s, int x, int y, float r, float g, float b) {
+        int w = blit(s, x, y, r, g, b);
+        Glyph underscore = glyphs['_' - STARTING_CHAR];
+        // Adjust texture position to avoid blurring at the edges
+        spritebatch.blitStretched(x, y, w, underscore.height, 
+                underscore.x + 1, underscore.y + 1, underscore.width - 2, underscore.height - 2,
+                r, g, b);
     }
 
     public void blitCursor(int x, int y, float r, float g, float b) {

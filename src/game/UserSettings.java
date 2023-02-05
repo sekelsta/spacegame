@@ -14,6 +14,7 @@ public class UserSettings {
 
     public String lastJoinedIP;
     private float volume;
+    public float uiScale;
 
     public UserSettings(String filePath, Game game) {
         this.game = game;
@@ -34,6 +35,9 @@ public class UserSettings {
         if (lastJoinedIP == null) {
             lastJoinedIP = "";
         }
+
+        Double configScale = toml.getDouble("uiScale");
+        uiScale = configScale == null? 1f : (float)configScale.doubleValue();
     }
 
     public float getVolume() {
@@ -49,9 +53,9 @@ public class UserSettings {
         TomlWriter tomlWriter = new TomlWriter();
         HashMap<String, Object> map = new HashMap<>();
 
-        map.put("volume", this.volume);
-
         map.put("lastJoinedIP", this.lastJoinedIP);
+        map.put("volume", this.volume);
+        map.put("uiScale", this.uiScale);
 
         try {
             File config = new File(filePath);

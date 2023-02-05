@@ -82,7 +82,7 @@ public class JoinScreen extends PortEntryScreen {
         if (used) {
             return true;
         }
-        return super.trigger();
+        return super.click(xPos, yPos);
     }
 
     public void blit(double screenWidth, double screenHeight) {

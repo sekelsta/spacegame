@@ -37,6 +37,9 @@ public class Renderer implements IFramebufferSizeListener {
     private final Matrix3f identity3f = new Matrix3f();
     private final Vector2f uiDimensions = new Vector2f(1, 1);
 
+    private int frameWidth;
+    private int frameHeight;
+
     private Vector3f lightPos = new Vector3f(0, 0, 0);
     private final float[] quadVertices = {
         // Position, normal, texture
@@ -225,7 +228,13 @@ public class Renderer implements IFramebufferSizeListener {
     private void renderOverlay(Overlay overlay) {
         // Set up for two-dimensional rendering
         shader2D.use();
+
+        // This is the size of UI's canvas, so the scale is inversly proportional to actual element size
+        float uiScale = overlay.getScale();
+        uiDimensions.x = frameWidth * uiScale;
+        uiDimensions.y = frameHeight * uiScale;
         shader2D.setUniform("dimensions", uiDimensions);
+
         GL11.glDisable(GL11.GL_DEPTH_TEST);
         overlay.render(uiDimensions);
     }
@@ -249,18 +258,12 @@ public class Renderer implements IFramebufferSizeListener {
     @Override
     public void windowResized(int width, int height) {
         // Ban 0 width or height
-        width = Math.max(width, 1);
-        height = Math.max(height, 1);
+        frameWidth = Math.max(width, 1);
+        frameHeight = Math.max(height, 1);
 
-        frustum.setAspectRatio(width, height);
+        frustum.setAspectRatio(frameWidth, frameHeight);
         frustum.calcMatrix(perspective);
         Matrix4f.mul(coordinate_convert, perspective, perspective);
-
-        // This is the size of UI's canvas, so the scale is inversly proportional to actual element size
-        // TODO #24: Make this scale adjustable
-        float uiScale = (float)Overlay.getScale();
-        uiDimensions.x = width * uiScale;
-        uiDimensions.y = height * uiScale;
     }
 
     public void enterWireframe() {

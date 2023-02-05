@@ -27,6 +27,11 @@ public class Screen {
     public void positionPointer(double xPos, double yPos) {
         selectable.clearSelection();
         selectable.selectByPointer(xPos, yPos);
+
+        GuiElement selected = selectable.getSelected();
+        if (selected instanceof TextChoice) {
+            ((TextChoice)selected).hover(xPos, yPos);
+        }
     }
 
     public boolean trigger() {
@@ -40,11 +45,11 @@ public class Screen {
     public boolean click(double xPos, double yPos) {
         positionPointer(xPos, yPos);
         GuiElement selected = selectable.getSelected();
-        if (selected instanceof Slider) {
-            ((Slider)selected).click(xPos, yPos);
+        if (selected != null) {
+            selected.click(xPos, yPos);
             return true;
         }
-        return trigger();
+        return false;
     }
 
     public void holdLeftMouseButton(double xPos, double yPos) {
@@ -64,15 +69,15 @@ public class Screen {
 
     public void left() {
         GuiElement selected = selectable.getSelected();
-        if (selected instanceof Slider) {
-            ((Slider)selected).decrement();
+        if (selected != null) {
+            selected.left();
         }
     }
 
     public void right() {
         GuiElement selected = selectable.getSelected();
-        if (selected instanceof Slider) {
-            ((Slider)selected).increment();
+        if (selected != null) {
+            selected.right();
         }
     }
 
