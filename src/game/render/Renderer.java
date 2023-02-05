@@ -52,8 +52,7 @@ public class Renderer implements IFramebufferSizeListener {
     private final Texture sunTexture = new Texture("sun.png");
     private final Texture circleTexture = new Texture("white_circle.png");
 
-    // sqrt 3 is because of the shape of a cube; not sure why the 0.8 is needed but it is
-    private final float CUBE_FACTOR = 0.8f / (float)Math.sqrt(3);
+    private final float CUBE_FACTOR = 1f / (float)Math.sqrt(3);
     private final RigidMesh skybox = new RigidMesh(
         ObjParser.parse(
             new Scanner(Renderer.class.getResourceAsStream("/assets/obj/skybox.obj"))

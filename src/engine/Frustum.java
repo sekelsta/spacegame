@@ -3,9 +3,9 @@ package sekelsta.engine;
 import shadowfox.math.Matrix4f;
 
 public class Frustum {
-    private final float height = 0.001f; // height from middle to top, AKA half the height
+    private final float height = 0.1f; // height from middle to top, AKA half the height
     private float width = height; // distance from middle to side, AKA half width
-    private float near = 0.1f;
+    private float near = height;
     private float far = 5000;
 
     private Matrix4f matrix = null;
