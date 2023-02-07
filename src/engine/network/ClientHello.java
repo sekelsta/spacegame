@@ -47,7 +47,9 @@ public class ClientHello extends Message {
 
     @Override
     public void handle(INetworked game) {
-        if (game.getNetworkManager().isBroadcastRecipient(sender)) {
+        // Check for socket address equality, not Connection equality, in case this address connected in the time
+        // between when this.sender was set and this code actually runs
+        if (game.getNetworkManager().isBroadcastRecipient(sender.getSocketAddress())) {
             return;
         }
         if (this.handshakeProtocolVersion != HANDSHAKE_PROTOCOL_VERSION) {
