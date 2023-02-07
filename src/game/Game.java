@@ -1,5 +1,7 @@
 package sekelsta.game;
 
+import java.io.BufferedInputStream;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
 import javax.sound.sampled.*;
 
@@ -51,7 +53,11 @@ public class Game implements ILoopable, INetworked {
 
             try {
                 music = AudioSystem.getClip();
-                AudioInputStream input = AudioSystem.getAudioInputStream(Game.class.getResourceAsStream("/assets/audio/planetrise.wav"));
+                // Use BufferedInputStream so that mark/reset is supported
+                InputStream bufferedAudio = new BufferedInputStream(
+                    Game.class.getResourceAsStream("/assets/audio/planetrise.wav")
+                );
+                AudioInputStream input = AudioSystem.getAudioInputStream(bufferedAudio);
                 music.open(input);
             }
             catch (Exception e) {
