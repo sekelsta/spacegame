@@ -29,6 +29,10 @@ public class Camera {
         this.focus = focus;
     }
 
+    public void setFocus(Entity focus) {
+        this.focus = focus;
+    }
+
     public void transform(MatrixStack matrixStack, float lerp) {
         if (mode == Mode.FIRST_PERSON) {
             Vector3f eye = focus.getEyeOffset();

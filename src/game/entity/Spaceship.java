@@ -5,6 +5,8 @@ import java.util.Random;
 import sekelsta.engine.Particle;
 import sekelsta.engine.entity.*;
 import sekelsta.engine.network.ByteVector;
+import sekelsta.game.Input;
+import sekelsta.game.RemotePlayer;
 import sekelsta.game.World;
 import shadowfox.math.Vector3f;
 
@@ -36,6 +38,22 @@ public class Spaceship extends Entity implements ICollider {
         skin = buffer.getInt();
         isThrusting = buffer.get() != 0;
         isReversing = buffer.get() != 0;
+    }
+
+    public boolean isLocalPlayer() {
+        return controller instanceof Input;
+    }
+
+    public boolean isControlledBy(Long connectionID) {
+        if (connectionID == null) {
+            return controller instanceof Input;
+        }
+
+        if (controller instanceof RemotePlayer) {
+            return ((RemotePlayer)controller).connectionID == connectionID;
+        }
+
+        return false;
     }
 
     @Override

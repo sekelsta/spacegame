@@ -75,7 +75,8 @@ public class Game implements ILoopable, INetworked {
     public void enterWorld() {
         this.world = new World(this, true);
         if (isGraphical()) {
-            this.world.spawnLocalPlayer(input);
+            world.spawnLocalPlayer(input);
+            input.setPlayer(world.getLocalPlayer());
         }
         initGraphical();
     }
@@ -100,19 +101,21 @@ public class Game implements ILoopable, INetworked {
     }
 
     public void takePawn(Spaceship pawn) {
-        if (world.localPlayer != null) {
-            Log.warn("takePawn() called when a pawn is already set. Old: " + world.localPlayer + ", new: " + pawn);
-        }
         world.localPlayer = pawn;
         pawn.setController(input);
-        initGraphical();
+        input.setPlayer(world.getLocalPlayer());
+        if (camera == null) {
+            initGraphical();
+        }
+        else {
+            camera.setFocus(world.getLocalPlayer());
+        }
     }
 
     private void initGraphical() {
         if (isGraphical()) {
             this.camera = new Camera(world.getLocalPlayer());
             this.input.setCamera(camera);
-            this.input.setPlayer(this.world.getLocalPlayer());
             while (overlay.hasScreen()) {
                 overlay.popScreen();
             }
@@ -162,6 +165,7 @@ public class Game implements ILoopable, INetworked {
         networkManager.registerMessageType(ServerRemoveEntity::new);
         networkManager.registerMessageType(EntityUpdate::new);
         networkManager.registerMessageType(ServerExplodeShip::new);
+        networkManager.registerMessageType(ClientRespawn::new);
         networkManager.start();
 
         if (world != null && world.isPaused()) {
@@ -310,8 +314,18 @@ public class Game implements ILoopable, INetworked {
         }
     }
 
+    public void onLocalPlayerShipDestroyed() {
+        overlay.pushScreen(new ShipDestroyedScreen(this, overlay));
+    }
+
     public void respawn() {
-        System.out.println("TODO: Respawn");
+        if (world.authoritative) {
+            world.respawn(null);
+        }
+        else {
+            ClientRespawn message = new ClientRespawn();
+            networkManager.queueBroadcast(message);
+        }
     }
 
     public void setVolume(float volume) {

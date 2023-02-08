@@ -26,6 +26,9 @@ public class World implements IEntitySpace {
 
     private List<Particle> particles = new ArrayList<>();
 
+    // Players that died and haven't respawned yet
+    private List<Spaceship> limbo = new ArrayList<>();
+
     public Spaceship localPlayer;
 
     private int nextID = 0;
@@ -44,6 +47,22 @@ public class World implements IEntitySpace {
         this.localPlayer = new Spaceship(0, -100, 0, playerController);
         localPlayer.skin = random.nextInt(Spaceship.NUM_SKINS);
         this.spawn(this.localPlayer);
+    }
+
+    public Spaceship respawn(Long connectionID) {
+        assert(authoritative);
+        Spaceship pawn = null;
+        for (Spaceship ship : limbo) {
+            if (ship.isControlledBy(connectionID)) {
+                pawn = ship;
+                break;
+            }
+        }
+        pawn.teleport(0, -200, 0);
+        pawn.setVelocity(0, 0, 0);
+        limbo.remove(pawn);
+        spawn(pawn);
+        return pawn;
     }
 
     public void togglePaused() {
@@ -166,6 +185,10 @@ public class World implements IEntitySpace {
     }
 
     public Entity remove(Entity entity) {
+        if (entity instanceof Spaceship && ((Spaceship)entity).isLocalPlayer()) {
+            game.onLocalPlayerShipDestroyed();
+        }
+
         this.killed.add(entity);
         return entity;
     }
@@ -235,6 +258,8 @@ public class World implements IEntitySpace {
             ServerExplodeShip message = new ServerExplodeShip(ship.getID());
             game.getNetworkManager().queueBroadcast(message);
         }
+
+        limbo.add(ship);
     }
 
     private boolean isNetworkServer() {
