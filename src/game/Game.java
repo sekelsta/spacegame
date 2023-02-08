@@ -110,6 +110,10 @@ public class Game implements ILoopable, INetworked {
         else {
             camera.setFocus(world.getLocalPlayer());
         }
+
+        if (world.isDead(pawn)) {
+            onLocalPlayerShipDestroyed();
+        }
     }
 
     private void initGraphical() {

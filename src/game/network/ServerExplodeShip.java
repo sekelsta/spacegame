@@ -36,7 +36,10 @@ public class ServerExplodeShip extends Message {
     @Override
     public void handle(INetworked game) {
         World world = ((Game)game).getWorld();
-        Entity entity = world.getEntityByID(entityID);
+        world.runWhenEntitySpawns(entity -> explodeShip(entity), entityID);
+    }
+
+    private void explodeShip(Entity entity) {
         if (! (entity instanceof Spaceship)) {
             Log.debug("ServerExplodeShip message received for invalid entity ID " + entityID + ", entity " + entity);
             return;
@@ -44,5 +47,4 @@ public class ServerExplodeShip extends Message {
         Spaceship spaceship = (Spaceship)entity;
         spaceship.explode();
     }
-
 }

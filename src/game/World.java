@@ -135,6 +135,7 @@ public class World implements IEntitySpace {
             for (Entity mob : killed) {
                 ServerRemoveEntity message = new ServerRemoveEntity(mob.getID());
                 game.getNetworkManager().queueBroadcast(message);
+                mob.enterWorld(null);
             }
         }
         killed.clear();
@@ -251,7 +252,6 @@ public class World implements IEntitySpace {
 
     public void destroyShip(Spaceship ship) {
         assert(authoritative);
-        remove(ship);
         ship.explode();
 
         if (isNetworkServer()) {
@@ -259,7 +259,21 @@ public class World implements IEntitySpace {
             game.getNetworkManager().queueBroadcast(message);
         }
 
+        remove(ship);
         limbo.add(ship);
+    }
+
+    public boolean isDead(Entity entity) {
+        if (killed.contains(entity)) {
+            return true;
+        }
+        if (spawned.contains(entity)) {
+            return false;
+        }
+        if (mobs.contains(entity)) {
+            return false;
+        }
+        return true;
     }
 
     private boolean isNetworkServer() {
