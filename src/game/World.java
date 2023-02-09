@@ -63,6 +63,9 @@ public class World implements IEntitySpace {
         }
         pawn.teleport(0, -200, 0);
         pawn.setVelocity(0, 0, 0);
+        if (connectionID != null) {
+            pawn.setController(new RemotePlayer(pawn, connectionID));
+        }
         limbo.remove(pawn);
         spawn(pawn);
         return pawn;
