@@ -6,7 +6,7 @@ import sekelsta.engine.network.ByteVector;
 import shadowfox.math.Matrix3f;
 import shadowfox.math.Vector3f;
 
-public abstract class Entity {
+public class Entity {
     public static final double ONE_METER = 1.0;
     public static final float TAU = 2 * (float)Math.PI; // Full circle
     private int id = -1;
@@ -97,9 +97,13 @@ public abstract class Entity {
         updateFrom(other);
     }
 
-    public abstract EntityType getType();
+    public EntityType getType() {
+        return null;
+    }
 
-    public abstract double getCollisionRadius();
+    public double getCollisionRadius() {
+        throw new RuntimeException("getCollisionRadius() not implemented");
+    }
 
     public int getID() {
         return id;

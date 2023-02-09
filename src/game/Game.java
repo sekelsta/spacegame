@@ -319,12 +319,15 @@ public class Game implements ILoopable, INetworked {
     }
 
     public void onLocalPlayerShipDestroyed() {
+        Entity focus = new Entity(world.localPlayer.getX(), world.localPlayer.getY(), world.localPlayer.getZ());
+        camera.setFocus(focus);
         overlay.pushScreen(new ShipDestroyedScreen(this, overlay));
     }
 
     public void respawn() {
         if (world.authoritative) {
             world.respawn(null);
+            camera.setFocus(world.localPlayer);
         }
         else {
             ClientRespawn message = new ClientRespawn();
