@@ -40,7 +40,6 @@ public class Renderer implements IFramebufferSizeListener {
     private int frameWidth;
     private int frameHeight;
 
-    private Vector3f lightPos = new Vector3f(0, 0, 0);
     private final float[] quadVertices = {
         // Position, normal, texture
         0.5f, 0, 0.5f, 0, -1, 0, 1, 1,
@@ -150,6 +149,8 @@ public class Renderer implements IFramebufferSizeListener {
             lerp = 0;
         }
 
+        Vector3f lightPos = world.lightPos;
+
         // Move to camera coords
         camera.transform(matrixStack, lerp);
         Vector4f tlight = new Vector4f(lightPos);
@@ -214,7 +215,7 @@ public class Renderer implements IFramebufferSizeListener {
         // Render the sun
         matrixStack.push();
         matrixStack.translate(lightPos.x, lightPos.y, lightPos.z);
-        matrixStack.scale(100);
+        matrixStack.scale(2 * world.sunRadius);
         matrixStack.billboard();
         Textures.TRANSPARENT.bind();
         sunTexture.bindEmission();

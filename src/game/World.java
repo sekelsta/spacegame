@@ -13,6 +13,9 @@ public class World implements IEntitySpace {
     private static final double spawnRadius = 1000;
     private static final int MOB_CAP = 400;
 
+    public final Vector3f lightPos = new Vector3f(0, 0, 0);
+    public final float sunRadius = 100;
+
     public final boolean authoritative;
     private long tick = 0;
     private boolean paused;
@@ -123,9 +126,41 @@ public class World implements IEntitySpace {
 
             // Despawn
             for (Entity mob : mobs) {
-                if (mob.distSquared(0, 0, 0) > 100 * spawnRadius * spawnRadius
+                double d = mob.distSquared(0, 0, 0);
+                if (d > 100 * spawnRadius * spawnRadius
                         && mob.mayDespawn()) {
                     remove(mob);
+                }
+                float warning_factor = 9;
+                if (d < sunRadius * sunRadius) {
+                    if (mob instanceof Spaceship) {
+                        destroyShip((Spaceship)mob);
+                    }
+                    else {
+                        remove(mob);
+                    }
+                }
+                else if (d < warning_factor * sunRadius * sunRadius) {
+                    double f = 1 - d / (warning_factor * sunRadius * sunRadius);
+                    int numParticles = (int)(8 * f);
+                    for (int i = 0; i < numParticles; ++i) {
+                        int lifespan = random.nextInt(20) + 20;
+                        float x = (float)mob.getX() + 0.5f * (random.nextFloat() - 0.5f) * (float)mob.getCollisionRadius();
+                        float y = (float)mob.getY() + 0.5f * (random.nextFloat() - 0.5f) * (float)mob.getCollisionRadius();
+                        float z = (float)mob.getZ() + 0.5f * (random.nextFloat() - 0.5f) * (float)mob.getCollisionRadius();
+                        Particle particle = new Particle(x, y, z, lifespan);
+                        //Vector3f v = Vector3f.randomNonzero();
+                        //v.scale(0.03f, 0.1f, 0.03f);
+                        float vx = random.nextFloat() * (float)mob.getX() * -1;
+                        float vy = random.nextFloat() * (float)mob.getY() * -1;
+                        float vz = random.nextFloat() * (float)mob.getZ() * -1;
+                        float s = 0.1f / (float)Math.sqrt(vx * vx + vy * vy + vz * vz);
+                        vx *= s;
+                        vy *= s;
+                        vz *= s;
+                        particle.setVelocity(mob.getVelocityX() + vx, mob.getVelocityY() + vy, mob.getVelocityZ() + vz);
+                        addParticle(particle);
+                    }
                 }
             }
         }

@@ -104,7 +104,7 @@ public class Spaceship extends Entity implements ICollider {
             Vector3f spawnPoint = new Vector3f(0, -1.3f, 0);
             spawnPoint.rotate(yaw, pitch, roll);
             // Ratio of minimum backwards velocity to sideways velocity
-            float velocityRatio = 6;
+            float velocityRatio = 4;
             float maxVelocity = -16 * thrustSpeed;
             for (int i = 0; i < 20; ++i) {
                 spawnParticle(spawnPoint, velocityRatio, maxVelocity);
@@ -137,17 +137,11 @@ public class Spaceship extends Entity implements ICollider {
         Random random = world.getRandom();
         int lifespan = random.nextInt(15) + 15;
         Particle particle = new Particle((float)getX() + spawnPoint.x, (float)getY() + spawnPoint.y, (float)getZ() + spawnPoint.z, lifespan);
-        float vy = random.nextFloat() * maxVelocity;
-        float vx = 1;
-        float vz = 1;
-        while (vx * vx + vz * vz > 0.5f * 0.5f) {
-            vx = random.nextFloat() - 0.5f;
-            vz = random.nextFloat() - 0.5f;
-        }
-        float s = Math.abs(vy * 2 / velocityRatio);
-        vx *= s;
-        vz *= s;
-        Vector3f velocity = new Vector3f(vx, vy, vz);
+        Vector3f velocity = Vector3f.randomNonzero(random);
+        velocity.y = Math.abs(velocity.y);
+        float s = velocity.y * maxVelocity / velocityRatio;
+        velocity.scale(s, maxVelocity, s);
+
         velocity.rotate(yaw, pitch, roll);
         particle.setVelocity(getVelocityX() + velocity.x, getVelocityY() + velocity.y, getVelocityZ() + velocity.z);
         world.addParticle(particle);
@@ -198,18 +192,12 @@ public class Spaceship extends Entity implements ICollider {
 
     public void explode() {
         Random random = world.getRandom();
-        for (int i = 0; i < 200; ++i) {
-            int lifespan = random.nextInt(15) + 15;
+        for (int i = 0; i < 300; ++i) {
+            int lifespan = random.nextInt(20) + 20;
             Particle particle = new Particle((float)getX(), (float)getY(), (float)getZ(), lifespan);
-            float vx = 1;
-            float vy = 1;
-            float vz = 1;
-            while (vx * vx + vy * vy + vz * vz > 1) {
-                vx = 2 * random.nextFloat() - 1;
-                vy = 2 * random.nextFloat() - 1;
-                vz = 2 * random.nextFloat() - 1;
-            }
-            particle.setVelocity(getVelocityX() + vx, getVelocityY() + vy, getVelocityZ() + vz);
+            Vector3f v = Vector3f.randomNonzero(random);
+            v.scale(0.5f);
+            particle.setVelocity(getVelocityX() + v.x, getVelocityY() + v.y, getVelocityZ() + v.z);
             world.addParticle(particle);
         }
     }
