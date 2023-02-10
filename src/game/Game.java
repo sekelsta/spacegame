@@ -170,6 +170,7 @@ public class Game implements ILoopable, INetworked {
         networkManager.registerMessageType(EntityUpdate::new);
         networkManager.registerMessageType(ServerExplodeShip::new);
         networkManager.registerMessageType(ClientRespawn::new);
+        networkManager.registerMessageType(ClientSpawnEntity::new);
         networkManager.start();
 
         if (world != null && world.isPaused()) {

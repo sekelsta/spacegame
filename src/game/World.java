@@ -216,6 +216,16 @@ public class World implements IEntitySpace {
         return entity;
     }
 
+    public void clientSpawn(Entity entity) {
+        if (authoritative) {
+            spawn(entity);
+        }
+        else {
+            ClientSpawnEntity message = new ClientSpawnEntity(entity);
+            game.getNetworkManager().queueBroadcast(message);
+        }
+    }
+
     public Entity remove(Entity entity) {
         if (entity instanceof Spaceship && ((Spaceship)entity).isLocalPlayer()) {
             game.onLocalPlayerShipDestroyed();

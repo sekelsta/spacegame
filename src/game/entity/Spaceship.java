@@ -184,10 +184,11 @@ public class Spaceship extends Entity implements ICollider {
     }
 
     public void fire() {
-        Entity projectile = world.spawn(new Projectile(this, getX(), getY(), getZ()));
+        Entity projectile = new Projectile(this, getX(), getY(), getZ());
         projectile.accelerate(getVelocityX(), getVelocityY(), getVelocityZ());
         projectile.setAngle(getYaw(), getPitch(), getRoll());
         projectile.accelerateForwards(shootSpeed);
+        ((World)world).clientSpawn(projectile);
     }
 
     public void explode() {

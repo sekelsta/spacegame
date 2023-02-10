@@ -7,7 +7,7 @@ import sekelsta.engine.network.ByteVector;
 import sekelsta.game.World;
 
 public class Projectile extends Entity implements ICollider {
-    int ownerID;
+    private int ownerID;
 
     public Projectile(Entity owner, double x, double y, double z) {
         super(x, y, z);
@@ -50,5 +50,9 @@ public class Projectile extends Entity implements ICollider {
 
     public boolean isOwnedBy(Entity entity) {
         return entity.getID() == ownerID;
+    }
+
+    public int getOwnerID() {
+        return ownerID;
     }
 }

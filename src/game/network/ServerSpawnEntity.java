@@ -9,7 +9,7 @@ import sekelsta.game.Game;
 import sekelsta.game.RemoteController;
 
 public class ServerSpawnEntity extends Message {
-    private Entity entity;
+    protected Entity entity;
 
     public ServerSpawnEntity() {}
 
