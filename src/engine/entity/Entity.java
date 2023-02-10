@@ -175,6 +175,15 @@ public class Entity {
         angularVelocityZ *= s;
     }
 
+    public void snapToAngle(float yaw, float pitch, float roll) {
+        this.yaw =  yaw;
+        this.pitch = pitch;
+        this.roll = roll;
+        this.prevYaw = yaw;
+        this.prevPitch = pitch;
+        this.prevRoll = roll;
+    }
+
     protected void tick() {
         prevX = x;
         prevY = y;

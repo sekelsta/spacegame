@@ -46,8 +46,19 @@ public class World implements IEntitySpace {
         this.mobs = new ArrayList<>();
     }
 
+    public void moveToSpawnPoint(Entity entity) {
+        entity.setVelocity(0, 0, 0);
+        entity.scaleAngularVelocity(0);
+        float angle = random.nextFloat() * 2 * (float)Math.PI;
+        float dist = 400;
+        entity.teleport(dist * (float)Math.cos(angle), dist * (float)Math.sin(angle), 0);
+        float yaw = random.nextFloat() * Entity.TAU;
+        entity.snapToAngle(yaw, 0, 0);
+    }
+
     public void spawnLocalPlayer(IController playerController) {
-        this.localPlayer = new Spaceship(0, -100, 0, playerController);
+        this.localPlayer = new Spaceship(playerController);
+        moveToSpawnPoint(localPlayer);
         localPlayer.skin = random.nextInt(Spaceship.NUM_SKINS);
         this.spawn(this.localPlayer);
     }
@@ -61,8 +72,7 @@ public class World implements IEntitySpace {
                 break;
             }
         }
-        pawn.teleport(0, -200, 0);
-        pawn.setVelocity(0, 0, 0);
+        moveToSpawnPoint(pawn);
         if (connectionID != null) {
             pawn.setController(new RemotePlayer(pawn, connectionID));
         }

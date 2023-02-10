@@ -23,9 +23,18 @@ public class Spaceship extends Entity implements ICollider {
     private boolean isReversing = false;
     private boolean wasReversing = false;
 
+    public Spaceship() {
+        this(0, 0, 0, null);
+    }
+
     public Spaceship(int x, int y, int z) {
         this(x, y, z, null);
     }
+
+    public Spaceship(IController controller) {
+        this(0, 0, 0, controller);
+    }
+
 
     public Spaceship(int x, int y, int z, IController controller) {
         super(x, y, z);
