@@ -144,8 +144,11 @@ public class World implements IEntitySpace {
                     }
                 }
                 else if (d < warning_factor * sunRadius * sunRadius) {
-                    double f = 1 - d / (warning_factor * sunRadius * sunRadius);
-                    int numParticles = (int)(8 * f);
+                    double p = 1 - d / (warning_factor * sunRadius * sunRadius);
+                    p *= mob.getCollisionRadius() * mob.getCollisionRadius() * mob.getCollisionRadius();
+                    p /= 3;
+                    int r = random.nextFloat() > p % 1? 0 : 1;
+                    int numParticles = r + (int)p;
                     for (int i = 0; i < numParticles; ++i) {
                         int lifespan = random.nextInt(20) + 20;
                         float x = (float)mob.getX() + 0.5f * (random.nextFloat() - 0.5f) * (float)mob.getCollisionRadius();
