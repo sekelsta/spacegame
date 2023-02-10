@@ -7,23 +7,22 @@ import sekelsta.engine.network.ByteVector;
 import sekelsta.game.World;
 
 public class Projectile extends Entity implements ICollider {
-    Entity owner;
+    int ownerID;
 
     public Projectile(Entity owner, double x, double y, double z) {
         super(x, y, z);
-        this.owner = owner;
+        this.ownerID = owner.getID();
     }
 
     public Projectile(ByteBuffer buffer) {
         super(buffer);
-        // TODO #27
-        this.owner = null;
+        ownerID = buffer.getInt();
     }
 
     @Override
     public void encode(ByteVector buffer) {
         super.encode(buffer);
-        // TODO #27
+        buffer.putInt(ownerID);
     }
 
     @Override
@@ -38,7 +37,7 @@ public class Projectile extends Entity implements ICollider {
 
     @Override
     public void collide(Entity other) {
-        if (other == owner) {
+        if (isOwnedBy(other)) {
             return;
         }
 
@@ -50,6 +49,6 @@ public class Projectile extends Entity implements ICollider {
     }
 
     public boolean isOwnedBy(Entity entity) {
-        return entity == owner;
+        return entity.getID() == ownerID;
     }
 }
