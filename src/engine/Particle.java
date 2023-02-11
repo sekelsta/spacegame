@@ -4,6 +4,7 @@ public class Particle {
     protected float x, y, z;
     protected float prevX, prevY, prevZ;
     protected float velocityX, velocityY, velocityZ;
+    protected float drag = 0.999f;
 
     protected int age = 0;
     protected int lifespan;
@@ -38,6 +39,9 @@ public class Particle {
         x += velocityX;
         y += velocityY;
         z += velocityZ;
+        velocityX *= drag;
+        velocityY *= drag;
+        velocityZ *= drag;
 
         age += 1;
     }

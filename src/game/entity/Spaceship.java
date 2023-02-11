@@ -39,6 +39,7 @@ public class Spaceship extends Entity implements ICollider {
     public Spaceship(int x, int y, int z, IController controller) {
         super(x, y, z);
         this.controller = controller;
+        drag = 0.999f;
         angularDrag = 0.7f;
     }
 
