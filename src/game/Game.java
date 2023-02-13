@@ -345,4 +345,8 @@ public class Game implements ILoopable, INetworked {
         decibels = Math.min(decibels, gainControl.getMaximum());
         gainControl.setValue((float)decibels);
     }
+
+    public void toggleFullscreen() {
+        window.toggleFullscreen();
+    }
 }
