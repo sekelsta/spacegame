@@ -56,7 +56,7 @@ public class Input extends InputManager implements IController {
             if (key == GLFW.GLFW_KEY_F11) {
                 window.toggleFullscreen();
             }
-            else if (key == GLFW.GLFW_KEY_F5) {
+            else if (key == GLFW.GLFW_KEY_F5 && camera != null) {
                 camera.nextMode();
             }
             else if (key == GLFW.GLFW_KEY_X) {
