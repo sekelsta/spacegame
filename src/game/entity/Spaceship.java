@@ -109,7 +109,8 @@ public class Spaceship extends Entity implements ICollider {
     }
 
     @Override
-    protected void tick() {
+    public void update() {
+        super.update();
         if (isThrusting) {
             Vector3f spawnPoint = new Vector3f(0, -1.3f, 0);
             spawnPoint.rotate(yaw, pitch, roll);
@@ -135,7 +136,6 @@ public class Spaceship extends Entity implements ICollider {
         isThrusting = false;
         wasReversing = isReversing;
         isReversing = false;
-        super.tick();
     }
 
     @Override

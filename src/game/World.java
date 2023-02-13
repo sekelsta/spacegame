@@ -96,6 +96,18 @@ public class World implements IEntitySpace {
         if (paused) {
             return;
         }
+
+        // Update particles
+        ArrayList<Particle> removedParticles = new ArrayList<>();
+        for (Particle particle : particles) {
+            particle.update();
+            if (particle.isDead()) {
+                removedParticles.add(particle);
+            }
+        }
+        particles.removeAll(removedParticles);
+        removedParticles.clear();
+
         // Spawn
         mobs.addAll(spawned);
         if (isNetworkServer()) {
@@ -183,17 +195,6 @@ public class World implements IEntitySpace {
             }
         }
         killed.clear();
-
-        // Update particles
-        ArrayList<Particle> removedParticles = new ArrayList<>();
-        for (Particle particle : particles) {
-            particle.update();
-            if (particle.isDead()) {
-                removedParticles.add(particle);
-            }
-        }
-        particles.removeAll(removedParticles);
-        removedParticles.clear();
 
 
         tick += 1;

@@ -8,5 +8,6 @@ public class RemotePlayer extends RemoteController {
     public RemotePlayer(Entity entity, long connectionID) {
         super(entity);
         this.connectionID = connectionID;
+        this.maxUpdatesStored = 8;
     }
 }

@@ -10,6 +10,7 @@ public class RemoteController implements IController {
     private final Entity entity;
     private LinkedList<Entity> pastUpdates = new LinkedList<>();
     private long lastUpdateTick;
+    protected int maxUpdatesStored = 4;
 
     public RemoteController(Entity entity) {
         this.entity = entity;
@@ -22,8 +23,7 @@ public class RemoteController implements IController {
             }
             pastUpdates.add(entity);
             lastUpdateTick = tick;
-            final int MAX_UPDATES_STORED = 4;
-            while (pastUpdates.size() > MAX_UPDATES_STORED || pastUpdates.getFirst() == null) {
+            while (pastUpdates.size() > maxUpdatesStored || pastUpdates.getFirst() == null) {
                 pastUpdates.removeFirst();
             }
         }

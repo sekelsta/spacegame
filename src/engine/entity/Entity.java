@@ -93,8 +93,10 @@ public class Entity {
     }
 
     public void updateFromLate(Entity other, int ticksLate) {
-        // TODO #22: Better way of handling this???
         updateFrom(other);
+        for (int i = 0; i < ticksLate; ++i) {
+            tick();
+        }
     }
 
     public EntityType getType() {
