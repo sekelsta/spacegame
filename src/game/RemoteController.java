@@ -40,7 +40,7 @@ public class RemoteController implements IController {
         }
 
         // Minus 1, because our entity hasn't ticked yet
-        long currentTick = ((World)entity.getWorld()).getCurrentTick() - 1;
+        long currentTick = entity.getWorld().getCurrentTick() - 1;
         if (currentTick == lastUpdateTick) {
             // Handle updates that came in just one tick late
             entity.updateFrom(pastUpdates.getLast());
@@ -52,7 +52,7 @@ public class RemoteController implements IController {
 
     @Override
     public void postUpdate() {
-        long currentTick = ((World)entity.getWorld()).getCurrentTick();
+        long currentTick = entity.getWorld().getCurrentTick();
         int index = pastUpdates.size() - 1 + (int)(currentTick - lastUpdateTick);
         if (index >= 0 && index < pastUpdates.size() && pastUpdates.get(index) != null) {
             // Handle updates that came in too early or right on time

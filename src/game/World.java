@@ -291,6 +291,7 @@ public class World implements IEntitySpace {
         return random;
     }
 
+    @Override
     public long getCurrentTick() {
         return tick;
     }

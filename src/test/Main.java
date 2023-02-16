@@ -14,12 +14,12 @@ import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
 import sekelsta.engine.network.NetworkManager;
-import sekelsta.game.network.GameContext;
+import sekelsta.engine.network.MessageContext;
 
 public class Main {
     public static void main(String[] args) {
         // Set up for all tests
-        NetworkManager.context = new GameContext(-1);
+        NetworkManager.context = new MessageContext();
 
         System.out.println("Starting tests");
 

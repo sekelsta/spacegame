@@ -28,7 +28,7 @@ public class ServerSetWorldTick extends Message {
     @Override
     public void handle(INetworked game) {
         World world = ((Game)game).getWorld();
-        long tick = ((GameContext)context).tick;
+        long tick = context.tick;
         world.setTickIfClient(tick);
     }
 }

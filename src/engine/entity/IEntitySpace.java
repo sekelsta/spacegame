@@ -9,4 +9,5 @@ public interface IEntitySpace {
     Entity remove(Entity mob);
     Random getRandom();
     Particle addParticle(Particle particle);
+    long getCurrentTick();
 }

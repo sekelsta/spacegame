@@ -9,9 +9,7 @@ import sekelsta.engine.*;
 import sekelsta.engine.SoftwareVersion;
 import sekelsta.engine.entity.IController;
 import sekelsta.engine.entity.Entity;
-import sekelsta.engine.network.Connection;
-import sekelsta.engine.network.INetworked;
-import sekelsta.engine.network.NetworkManager;
+import sekelsta.engine.network.*;
 import sekelsta.engine.render.Camera;
 import sekelsta.engine.render.Window;
 import sekelsta.game.entity.Entities;
@@ -159,7 +157,7 @@ public class Game implements ILoopable, INetworked {
     }
 
     public void allowConnections(int port) {
-        NetworkManager.context = new GameContext(-1);
+        NetworkManager.context = new MessageContext();
         assert(networkManager == null);
         networkManager = new NetworkManager(port);
         networkManager.registerMessageType(ClientJoinGame::new);
@@ -197,7 +195,7 @@ public class Game implements ILoopable, INetworked {
         }
         if (networkManager != null) {
             if (world != null) {
-                ((GameContext)NetworkManager.context).tick = world.getCurrentTick();
+                NetworkManager.context.tick = world.getCurrentTick();
                 if (world.getLocalPlayer() != null && !world.authoritative) {
                     networkManager.queueBroadcast(new EntityUpdate(world.getLocalPlayer()));
                 }

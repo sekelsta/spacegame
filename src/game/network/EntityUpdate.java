@@ -57,6 +57,6 @@ public class EntityUpdate extends Message {
             return;
         }
 
-        ((RemoteController)controller).handleUpdateMessage(((GameContext)context).tick, entity);
+        ((RemoteController)controller).handleUpdateMessage(context.tick, entity);
     }
 }
