@@ -172,32 +172,37 @@ public class World implements IEntitySpace {
                         && mob.mayDespawn()) {
                     remove(mob);
                 }
-                float warning_factor = 9;
-                if (d < sunRadius * sunRadius) {
-                    if (mob instanceof Spaceship) {
-                        destroyShip((Spaceship)mob);
-                    }
-                    else {
-                        remove(mob);
-                    }
+            }
+        }
+
+        // Collide with sun
+        for (Entity mob : mobs) {
+            double d = mob.distSquared(lightPos.x, lightPos.y, lightPos.z);
+            float warning_factor = 9;
+            if (authoritative && d < sunRadius * sunRadius) {
+                if (mob instanceof Spaceship) {
+                    destroyShip((Spaceship)mob);
                 }
-                else if (d < warning_factor * sunRadius * sunRadius) {
-                    double p = 1 - d / (warning_factor * sunRadius * sunRadius);
-                    p *= mob.getCollisionRadius() * mob.getCollisionRadius() * mob.getCollisionRadius();
-                    p /= 3;
-                    int r = random.nextFloat() > p % 1? 0 : 1;
-                    int numParticles = r + (int)p;
-                    for (int i = 0; i < numParticles; ++i) {
-                        int lifespan = random.nextInt(20) + 20;
-                        float x = (float)mob.getX() + 0.5f * (random.nextFloat() - 0.5f) * (float)mob.getCollisionRadius();
-                        float y = (float)mob.getY() + 0.5f * (random.nextFloat() - 0.5f) * (float)mob.getCollisionRadius();
-                        float z = (float)mob.getZ() + 0.5f * (random.nextFloat() - 0.5f) * (float)mob.getCollisionRadius();
-                        Particle particle = new Particle(x, y, z, lifespan);
-                        Vector3f v = Vector3f.randomNonzero(random);
-                        v.scale(0.1f);
-                        particle.setVelocity(mob.getVelocityX() + v.x, mob.getVelocityY() + v.y, mob.getVelocityZ() + v.z);
-                        addParticle(particle);
-                    }
+                else {
+                    remove(mob);
+                }
+            }
+            else if (d < warning_factor * sunRadius * sunRadius) {
+                double p = 1 - d / (warning_factor * sunRadius * sunRadius);
+                p *= mob.getCollisionRadius() * mob.getCollisionRadius() * mob.getCollisionRadius();
+                p /= 3;
+                int r = random.nextFloat() > p % 1? 0 : 1;
+                int numParticles = r + (int)p;
+                for (int i = 0; i < numParticles; ++i) {
+                    int lifespan = random.nextInt(20) + 20;
+                    float x = (float)mob.getX() + 0.5f * (random.nextFloat() - 0.5f) * (float)mob.getCollisionRadius();
+                    float y = (float)mob.getY() + 0.5f * (random.nextFloat() - 0.5f) * (float)mob.getCollisionRadius();
+                    float z = (float)mob.getZ() + 0.5f * (random.nextFloat() - 0.5f) * (float)mob.getCollisionRadius();
+                    Particle particle = new Particle(x, y, z, lifespan);
+                    Vector3f v = Vector3f.randomNonzero(random);
+                    v.scale(0.1f);
+                    particle.setVelocity(mob.getVelocityX() + v.x, mob.getVelocityY() + v.y, mob.getVelocityZ() + v.z);
+                    addParticle(particle);
                 }
             }
         }
