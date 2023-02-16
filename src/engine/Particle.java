@@ -13,6 +13,9 @@ public class Particle {
         this.x = x;
         this.y = y;
         this.z = z;
+        this.prevX = x;
+        this.prevY = y;
+        this.prevZ = z;
         this.lifespan = lifespan;
     }
 
