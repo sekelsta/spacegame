@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import sekelsta.engine.entity.*;
 import sekelsta.engine.network.*;
 import sekelsta.game.Game;
+import sekelsta.game.World;
 import sekelsta.game.RemoteController;
 import sekelsta.game.RemotePlayer;
 
@@ -43,7 +44,8 @@ public class EntityUpdate extends Message {
 
     @Override
     public void handle(INetworked game) {
-        Entity mob = ((Game)game).getWorld().getEntityByID(entity.getID());
+        World world = ((Game)game).getWorld();
+        Entity mob = world.getEntityByID(entity.getID());
         if (mob == null) {
             return;
         }
@@ -54,6 +56,9 @@ public class EntityUpdate extends Message {
         }
         if (controller instanceof RemotePlayer 
             && ((RemotePlayer)controller).connectionID != sender.getID()) {
+            return;
+        }
+        if (world.authoritative && !(controller instanceof RemotePlayer)) {
             return;
         }
 
