@@ -8,6 +8,9 @@ import sekelsta.game.entity.Projectile;
 import sekelsta.game.entity.Spaceship;
 
 public class ClientSpawnEntity extends ServerSpawnEntity {
+    private static final int MIN_DELAY = -5;
+    private static final int MAX_DELAY = 10;
+
     public ClientSpawnEntity() {}
 
     public ClientSpawnEntity(Entity entity) {
@@ -38,6 +41,22 @@ public class ClientSpawnEntity extends ServerSpawnEntity {
         if (!spaceship.isControlledBy(sender.getID())) {
             return;
         }
+        // Must be sent recently
+        long tickSent = context.tick;
+        long currentTick = ((World)world).getCurrentTick();
+        int timePassed = (int)(currentTick - tickSent);
+
+        if (timePassed < MIN_DELAY) {
+            return;
+        }
+        if (timePassed > MAX_DELAY) {
+            return;
+        }
+        // Update to current tick
+        if (timePassed >= 0) {
+            projectile.updateFromLate(projectile, timePassed);
+        }
+
         // Projectile must spawn reasonably near to the shooting ship
         if (spaceship.distSquared(projectile) > spaceship.getCollisionRadius() * spaceship.getCollisionRadius()) {
             return;

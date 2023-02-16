@@ -40,6 +40,8 @@ public class World implements IEntitySpace {
 
     private Map<Integer, List<Consumer<Entity>>> onSpawnFunctions = new HashMap<>();
 
+    private List<List<Runnable>> delayedActions = new ArrayList<>();
+
     public World(Game game, boolean authoritative) {
         this.game = game;
         this.authoritative = authoritative;
@@ -92,9 +94,23 @@ public class World implements IEntitySpace {
         return paused;
     }
 
+    public void runDelayed(Runnable runnable, int delayTicks) {
+        while (delayTicks >= delayedActions.size()) {
+            delayedActions.add(new ArrayList<Runnable>());
+        }
+        delayedActions.get(delayTicks).add(runnable);
+    }
+
     public void update() {
         if (paused) {
             return;
+        }
+
+        if (delayedActions.size() > 0) {
+            for (Runnable action : delayedActions.get(0)) {
+                action.run();
+            }
+            delayedActions.remove(0);
         }
 
         // Update particles
