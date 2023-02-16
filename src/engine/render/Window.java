@@ -227,7 +227,7 @@ public class Window {
                     height = heightIn;
                     GL11.glViewport(0, 0, width, height);
                     listener.windowResized(width, height);
-                    if (!fullscreen) {
+                    if (!fullscreen && !isMaximized()) {
                         GLFW.glfwGetWindowSize(window, windowWidth, windowHeight);
                         // Apparently resizing can change pos without calling that callback, so update here too
                         GLFW.glfwGetWindowPos(window, windowPosX, windowPosY);
