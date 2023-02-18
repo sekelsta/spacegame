@@ -5,9 +5,12 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.security.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
+import javax.net.ssl.*;
+
 import sekelsta.engine.Log;
 
 public class Connection {
@@ -28,6 +31,8 @@ public class Connection {
     private Map<DatagramPacket, PacketHeader> readyPackets = new HashMap<>();
     private Map<Integer, DatagramPacket> resendingPackets = new ConcurrentHashMap<>();
     private SortedSet<Integer> receivedPacketIDs = new TreeSet<>();
+
+    private SSLEngine engine;
 
     private class RetryTask extends TimerTask {
         private int retriesSent;
@@ -81,6 +86,25 @@ public class Connection {
         }
         // Don't mark packet 0 as a duplicate if packet 1 arrives first
         receivedPacketIDs.add(-1);
+
+
+        SSLContext sslContext = null;
+        try {
+            sslContext = SSLContext.getInstance("DTLS");
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+            sslContext.init(null, null, null);
+        }
+        catch (KeyManagementException e) {
+            throw new RuntimeException(e);
+        }
+
+        engine = sslContext.createSSLEngine(socketAddress.getHostString(), socketAddress.getPort());
+        engine.setUseClientMode(isClient);
     }
 
     public InetSocketAddress getSocketAddress() {
