@@ -195,13 +195,11 @@ public class World implements IEntitySpace {
                 int numParticles = r + (int)p;
                 for (int i = 0; i < numParticles; ++i) {
                     int lifespan = random.nextInt(20) + 20;
-                    float x = (float)mob.getX() + 0.5f * (random.nextFloat() - 0.5f) * (float)mob.getCollisionRadius();
-                    float y = (float)mob.getY() + 0.5f * (random.nextFloat() - 0.5f) * (float)mob.getCollisionRadius();
-                    float z = (float)mob.getZ() + 0.5f * (random.nextFloat() - 0.5f) * (float)mob.getCollisionRadius();
-                    Particle particle = new Particle(x, y, z, lifespan);
-                    Vector3f v = Vector3f.randomNonzero(random);
-                    v.scale(0.1f);
-                    particle.setVelocity(mob.getVelocityX() + v.x, mob.getVelocityY() + v.y, mob.getVelocityZ() + v.z);
+                    Vector3f offset = Vector3f.randomNonzero(random);
+                    offset.scale(0.5f * (float)mob.getCollisionRadius());
+                    Vector3f velocity = Vector3f.randomNonzero(random);
+                    velocity.scale(0.1f);
+                    Particle particle = mob.getParticleRelative(offset, lifespan, velocity);
                     addParticle(particle);
                 }
             }

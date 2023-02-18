@@ -2,6 +2,7 @@ package sekelsta.engine.entity;
 
 import java.nio.ByteBuffer;
 
+import sekelsta.engine.Particle;
 import sekelsta.engine.network.ByteVector;
 import shadowfox.math.Matrix3f;
 import shadowfox.math.Vector3f;
@@ -12,9 +13,9 @@ public class Entity {
     private int id = -1;
     protected IEntitySpace world;
     protected IController controller = null;
-    private double x, y, z;
-    private double prevX, prevY, prevZ;
-    private float velocityX, velocityY, velocityZ;
+    protected double x, y, z;
+    protected double prevX, prevY, prevZ;
+    protected float velocityX, velocityY, velocityZ;
 
     // Angular values range from 0.0 to 1.0
     protected float yaw, pitch, roll;
@@ -362,5 +363,11 @@ public class Entity {
 
     public Vector3f getEyeOffset() {
         return new Vector3f(0, 0, 0);
+    }
+
+    public Particle getParticleRelative(Vector3f offset, int lifespan, Vector3f velocity) {
+        Particle particle = new Particle((float)x + offset.x, (float)y + offset.y, (float)z + offset.z, lifespan, (float)prevX + offset.x, (float)prevY + offset.y, (float)prevZ + offset.z);
+        particle.setVelocity(getVelocityX() + velocity.x, getVelocityY() + velocity.y, getVelocityZ() + velocity.z);
+        return particle;
     }
 }

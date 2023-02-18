@@ -146,14 +146,14 @@ public class Spaceship extends Entity implements ICollider {
     private void spawnParticle(Vector3f spawnPoint, float velocityRatio, float maxVelocity) {
         Random random = world.getRandom();
         int lifespan = random.nextInt(15) + 15;
-        Particle particle = new Particle((float)getX() + spawnPoint.x, (float)getY() + spawnPoint.y, (float)getZ() + spawnPoint.z, lifespan);
+
         Vector3f velocity = Vector3f.randomNonzero(random);
         velocity.y = Math.abs(velocity.y);
         float s = velocity.y * maxVelocity / velocityRatio;
         velocity.scale(s, maxVelocity, s);
 
         velocity.rotate(yaw, pitch, roll);
-        particle.setVelocity(getVelocityX() + velocity.x, getVelocityY() + velocity.y, getVelocityZ() + velocity.z);
+        Particle particle = getParticleRelative(spawnPoint, lifespan, velocity);
         world.addParticle(particle);
     }
 
@@ -205,10 +205,9 @@ public class Spaceship extends Entity implements ICollider {
         Random random = world.getRandom();
         for (int i = 0; i < 300; ++i) {
             int lifespan = random.nextInt(20) + 20;
-            Particle particle = new Particle((float)getX(), (float)getY(), (float)getZ(), lifespan);
-            Vector3f v = Vector3f.randomNonzero(random);
-            v.scale(0.5f);
-            particle.setVelocity(getVelocityX() + v.x, getVelocityY() + v.y, getVelocityZ() + v.z);
+            Vector3f velocity = Vector3f.randomNonzero(random);
+            velocity.scale(0.5f);
+            Particle particle = getParticleRelative(new Vector3f(), lifespan, velocity);
             world.addParticle(particle);
         }
     }
