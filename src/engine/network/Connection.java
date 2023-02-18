@@ -8,7 +8,6 @@ import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
-
 import sekelsta.engine.Log;
 
 public class Connection {
@@ -16,7 +15,7 @@ public class Connection {
     // We initialize with a fake -1 id
     private static final int WRAP_POINT = -2;
     private static final long TIMEOUT_NANOS = 16000000000L;
-    private static final int[] retryWaitsMillis = new int[] {250, 500, 1000, 2000, 3000, 4000, 4000};
+    private static final int[] retryWaitsMillis = new int[] {250, 500, 750, 1000, 1500, 2000, 2000, 2000, 2000};
     private static Timer retryTimer;
 
     private InetSocketAddress socketAddress;
@@ -74,7 +73,7 @@ public class Connection {
         }
     }
 
-    public Connection(InetSocketAddress address) {
+    public Connection(InetSocketAddress address, boolean isClient) {
         this.socketAddress = address;
         this.connectionID = address.hashCode();
         if (retryTimer == null) {

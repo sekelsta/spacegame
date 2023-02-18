@@ -105,7 +105,12 @@ public class NetworkManager {
     }
 
     public boolean isPendingConnection(Connection client) {
-        return pendingConnections.containsKey(client);
+        for (Connection connection : pendingConnections.keySet()) {
+            if (connection.getSocketAddress().equals(client.getSocketAddress())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void addPendingClient(Connection client, long nonce) {
@@ -115,7 +120,14 @@ public class NetworkManager {
     }
 
     public long getExpectedNonce(Connection client) {
-        return pendingConnections.get(client);
+        // TO_OPTIMIZE: If safe to do so, could have Connection implement a hash and equals based on the socket address
+        // Same for GetPendingConnection above
+        for (Connection connection : pendingConnections.keySet()) {
+            if (connection.getSocketAddress().equals(client.getSocketAddress())) {
+                return pendingConnections.get(connection);
+            }
+        }
+        throw new IllegalArgumentException("Not found");
     }
 
     public boolean confirmPendingClient(Connection client, long nonce) {
@@ -186,7 +198,7 @@ public class NetworkManager {
     public Connection getOrCreateConnection(InetSocketAddress address) {
         Connection connection = getConnection(address);
         if (connection == null) {
-            return new Connection(address);
+            return new Connection(address, acceptDirection == NetworkDirection.SERVER_TO_CLIENT);
         }
         return connection;
     }
