@@ -12,12 +12,10 @@ import org.lwjgl.opengl.GL31;
 import org.lwjgl.opengl.GL33;
 import org.lwjgl.system.MemoryUtil;
 
-import sekelsta.engine.render.*;
 import sekelsta.engine.Frustum;
 import sekelsta.engine.Particle;
 import sekelsta.engine.entity.Entity;
-import sekelsta.engine.render.Camera;
-import sekelsta.engine.render.Texture;
+import sekelsta.engine.render.*;
 import sekelsta.engine.render.entity.EntityRenderer;
 import sekelsta.engine.render.mesh.RigidMesh;
 import sekelsta.game.World;
