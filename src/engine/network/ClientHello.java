@@ -71,14 +71,8 @@ public class ClientHello extends Message {
             Log.debug("Accepting connection with nearly-matching version " + version);
         }
 
-        long nonce = new SecureRandom().nextLong();
-        if (game.getNetworkManager().isPendingConnection(sender)) {
-            nonce = game.getNetworkManager().getExpectedNonce(sender);
-        }
-        else {
-            game.getNetworkManager().addPendingClient(sender, nonce);
-        }
-        ServerHello serverHello = new ServerHello(nonce, game.getVersion());
+        game.getNetworkManager().addBroadcastRecipient(sender);
+        ServerHello serverHello = new ServerHello(game.getVersion());
         game.getNetworkManager().queueMessage(sender, serverHello);
     }
 }

@@ -24,7 +24,6 @@ public class NetworkManager {
 
     private Set<Connection> queuedMessages = new HashSet<>();
     protected Set<Connection> broadcastRecipients = new HashSet<>();
-    private Map<Connection, Long> pendingConnections = new HashMap<>();
 
     public NetworkManager(int port) {
         try {
@@ -41,7 +40,6 @@ public class NetworkManager {
         registerMessageType(ClientHello::new);
         registerMessageType(ServerRejectIncompatibleVersion::new);
         registerMessageType(ServerHello::new);
-        registerMessageType(ClientConnect::new);
         registerMessageType(DisconnectMessage::new);
     }
 
@@ -78,12 +76,6 @@ public class NetworkManager {
                 game.connectionTimedOut(connection.getID());
             }
         }
-        for (Connection connection : pendingConnections.keySet()) {
-            if (connection.shouldTimeOut(currentTime)) {
-                pendingConnections.remove(connection);
-                connection.close();
-            }
-        }
     }
 
     public void close() {
@@ -104,45 +96,6 @@ public class NetworkManager {
         queueBroadcast(clientHello);
     }
 
-    public boolean isPendingConnection(Connection client) {
-        for (Connection connection : pendingConnections.keySet()) {
-            if (connection.getSocketAddress().equals(client.getSocketAddress())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void addPendingClient(Connection client, long nonce) {
-        assert(acceptDirection == NetworkDirection.CLIENT_TO_SERVER);
-        assert(!hasConnection(client.getSocketAddress()));
-        pendingConnections.put(client, nonce);
-    }
-
-    public long getExpectedNonce(Connection client) {
-        // TO_OPTIMIZE: If safe to do so, could have Connection implement a hash and equals based on the socket address
-        // Same for GetPendingConnection above
-        for (Connection connection : pendingConnections.keySet()) {
-            if (connection.getSocketAddress().equals(client.getSocketAddress())) {
-                return pendingConnections.get(connection);
-            }
-        }
-        throw new IllegalArgumentException("Not found");
-    }
-
-    public boolean confirmPendingClient(Connection client, long nonce) {
-        if (!pendingConnections.containsKey(client)) {
-            return false;
-        }
-        if (nonce != pendingConnections.get(client)) {
-            return false;
-        }
-        pendingConnections.remove(client);
-        client.initEncryption();
-        broadcastRecipients.add(client);
-        return true;
-    }
-
     public void queueBroadcast(Message message) {
         assert(message.getDirection() != acceptDirection);
         // TO_OPTIMIZE: In case encoding the message is slow, it only really needs to be done once here
@@ -156,6 +109,12 @@ public class NetworkManager {
         assert(broadcastRecipients.contains(recipient) || !message.reliable());
         queuedMessages.add(recipient);
         recipient.queueMessage(registry, message);
+    }
+
+    public void addBroadcastRecipient(Connection connection) {
+        if (!isBroadcastRecipient(connection.getSocketAddress())) {
+            broadcastRecipients.add(connection);
+        }
     }
 
     public void addBroadcastRecipient(InetSocketAddress socketAddress) {
@@ -204,11 +163,6 @@ public class NetworkManager {
         for (Connection connection : broadcastRecipients) {
             if (connection.getSocketAddress().equals(address)) {
                 return connection;
-            }
-        }
-        for (Map.Entry<Connection, Long> entry : pendingConnections.entrySet()) {
-            if (entry.getKey().getSocketAddress().equals(address)) {
-                return entry.getKey();
             }
         }
         return null;
