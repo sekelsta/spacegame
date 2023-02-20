@@ -138,6 +138,7 @@ public class NetworkManager {
             return false;
         }
         pendingConnections.remove(client);
+        client.initEncryption();
         broadcastRecipients.add(client);
         return true;
     }
@@ -161,10 +162,6 @@ public class NetworkManager {
         if (!isBroadcastRecipient(socketAddress)) {
             broadcastRecipients.add(getOrCreateConnection(socketAddress));
         }
-    }
-
-    public boolean isBroadcastRecipient(Connection connection) {
-        return broadcastRecipients.contains(connection);
     }
 
     public boolean isBroadcastRecipient(InetSocketAddress socketAddress) {

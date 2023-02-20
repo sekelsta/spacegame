@@ -54,8 +54,8 @@ class TestHandshake {
         Connection serverConnection = client.getOrCreateConnection(server.getAddress());
         assertTrue(!server.isPendingConnection(clientConnection));
         assertTrue(!client.isPendingConnection(serverConnection));
-        assertTrue(server.isBroadcastRecipient(clientConnection));
-        assertTrue(client.isBroadcastRecipient(serverConnection));
+        assertTrue(server.isBroadcastRecipient(clientConnection.getSocketAddress()));
+        assertTrue(client.isBroadcastRecipient(serverConnection.getSocketAddress()));
     }
 
     @Test
@@ -77,7 +77,7 @@ class TestHandshake {
         Connection serverConnection = client.getOrCreateConnection(server.getAddress());
         assertTrue(!server.isPendingConnection(clientConnection));
         assertTrue(!client.isPendingConnection(serverConnection));
-        assertTrue(!server.isBroadcastRecipient(clientConnection));
-        assertTrue(!client.isBroadcastRecipient(serverConnection));
+        assertTrue(!server.isBroadcastRecipient(clientConnection.getSocketAddress()));
+        assertTrue(!client.isBroadcastRecipient(serverConnection.getSocketAddress()));
     }
 }

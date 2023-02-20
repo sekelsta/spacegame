@@ -10,6 +10,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 import javax.net.ssl.*;
+import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 
 import sekelsta.engine.Log;
 
@@ -25,6 +26,7 @@ public class Connection {
     private final long connectionID;
     protected int sequenceNumber = 0;
     private long aliveTime = System.nanoTime();
+    private final boolean isClient;
 
     protected PacketHeader header;
     private ByteVector buffer;
@@ -81,13 +83,15 @@ public class Connection {
     public Connection(InetSocketAddress address, boolean isClient) {
         this.socketAddress = address;
         this.connectionID = address.hashCode();
+        this.isClient = isClient;
         if (retryTimer == null) {
             retryTimer = new Timer("network_retry_thread", true);
         }
         // Don't mark packet 0 as a duplicate if packet 1 arrives first
         receivedPacketIDs.add(-1);
+    }
 
-
+    public void initEncryption() {
         SSLContext sslContext = null;
         try {
             sslContext = SSLContext.getInstance("DTLS");
@@ -105,6 +109,13 @@ public class Connection {
 
         engine = sslContext.createSSLEngine(socketAddress.getHostString(), socketAddress.getPort());
         engine.setUseClientMode(isClient);
+
+        try {
+            engine.beginHandshake();
+        }
+        catch (SSLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public InetSocketAddress getSocketAddress() {
