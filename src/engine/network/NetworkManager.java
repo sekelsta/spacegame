@@ -24,6 +24,7 @@ public class NetworkManager {
 
     private Set<Connection> queuedMessages = new HashSet<>();
     protected Set<Connection> broadcastRecipients = new HashSet<>();
+    private Set<Connection> pendingConnections = new HashSet<>();
 
     public NetworkManager(int port) {
         try {
@@ -76,6 +77,12 @@ public class NetworkManager {
                 game.connectionTimedOut(connection.getID());
             }
         }
+        for (Connection connection : pendingConnections) {
+            if (connection.shouldTimeOut(currentTime)) {
+                pendingConnections.remove(connection);
+                connection.close();
+            }
+        }
     }
 
     public void close() {
@@ -96,6 +103,36 @@ public class NetworkManager {
         queueBroadcast(clientHello);
     }
 
+    public boolean isPendingConnection(Connection client) {
+        for (Connection connection : pendingConnections) {
+            if (connection.getSocketAddress().equals(client.getSocketAddress())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void addPendingClient(Connection client) {
+        assert(acceptDirection == NetworkDirection.CLIENT_TO_SERVER);
+        assert(!hasConnection(client.getSocketAddress()));
+        pendingConnections.add(client);
+    }
+
+    public boolean confirmPendingClient(InetSocketAddress address) {
+        Connection pending = null;
+        for (Connection connection : pendingConnections) {
+            if (connection.getSocketAddress().equals(address)) {
+                pending = connection;
+            }
+        }
+        if (pending == null) {
+            return false;
+        }
+        pendingConnections.remove(pending);
+        broadcastRecipients.add(pending);
+        return true;
+    }
+
     public void queueBroadcast(Message message) {
         assert(message.getDirection() != acceptDirection);
         // TO_OPTIMIZE: In case encoding the message is slow, it only really needs to be done once here
@@ -109,12 +146,6 @@ public class NetworkManager {
         assert(broadcastRecipients.contains(recipient) || !message.reliable());
         queuedMessages.add(recipient);
         recipient.queueMessage(registry, message);
-    }
-
-    public void addBroadcastRecipient(Connection connection) {
-        if (!isBroadcastRecipient(connection.getSocketAddress())) {
-            broadcastRecipients.add(connection);
-        }
     }
 
     public void addBroadcastRecipient(InetSocketAddress socketAddress) {
@@ -161,6 +192,11 @@ public class NetworkManager {
 
     private Connection getConnection(InetSocketAddress address) {
         for (Connection connection : broadcastRecipients) {
+            if (connection.getSocketAddress().equals(address)) {
+                return connection;
+            }
+        }
+        for (Connection connection : pendingConnections) {
             if (connection.getSocketAddress().equals(address)) {
                 return connection;
             }

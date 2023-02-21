@@ -71,7 +71,8 @@ public class ClientHello extends Message {
             Log.debug("Accepting connection with nearly-matching version " + version);
         }
 
-        game.getNetworkManager().addBroadcastRecipient(sender);
+        game.getNetworkManager().addPendingClient(sender);
+        game.getNetworkManager().confirmPendingClient(sender.getSocketAddress());
         ServerHello serverHello = new ServerHello(game.getVersion());
         game.getNetworkManager().queueMessage(sender, serverHello);
     }

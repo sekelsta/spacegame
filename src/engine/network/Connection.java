@@ -89,9 +89,8 @@ public class Connection {
         }
         // Don't mark packet 0 as a duplicate if packet 1 arrives first
         receivedPacketIDs.add(-1);
-    }
 
-    public void initEncryption() {
+        // Init encryption
         SSLContext sslContext = null;
         try {
             sslContext = SSLContext.getInstance("DTLS");
