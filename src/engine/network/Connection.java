@@ -170,10 +170,6 @@ public class Connection {
     // Beware, this may be called from a different thread than everything else
     public synchronized MessageContext processPacketHeader(ByteBuffer packetData) {
         prepareHeader();
-        if (header.sizeInBytes() + Integer.BYTES > BUFFER_SIZE) {
-            preparePacket();
-            prepareHeader();
-        }
         PacketHeader inHeader = null;
         try {
             inHeader = new PacketHeader(packetData);
@@ -278,7 +274,7 @@ public class Connection {
 
     private synchronized void preparePacket(int length) {
         ByteBuffer packetBuffer = ByteBuffer.allocate(BUFFER_SIZE);
-        header.write(packetBuffer);
+        List<Integer> overflow = header.write(packetBuffer, BUFFER_SIZE);
 
         if (buffer != null && length > 0) {
             packetBuffer.put(buffer.array(), 0, length);
@@ -291,6 +287,11 @@ public class Connection {
             buffer.limit(buffer.position());
             buffer.position(length);
             buffer.compact();
+        }
+
+        if (overflow != null) {
+            prepareHeader();
+            header.packetIDsToAck.addAll(overflow);
         }
     }
 }

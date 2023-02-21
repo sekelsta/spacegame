@@ -6,7 +6,7 @@ import java.util.*;
 public class PacketHeader {
     public final int packetID;
     private boolean reliable = false;
-    public final Set<Integer> packetIDsToAck = new HashSet<>();
+    public final List<Integer> packetIDsToAck = new ArrayList<>();
     public final MessageContext context;
 
     public PacketHeader(int packetID) {
@@ -30,14 +30,28 @@ public class PacketHeader {
         this.context = NetworkManager.context.read(buffer);
     }
 
-    public void write(ByteBuffer buffer) {
+    public List<Integer> write(ByteBuffer buffer, int maxLength) {
         buffer.putInt(packetID);
         buffer.put((byte)(reliable? 1 : 0));
+
+        int maxPacketIDs = packetIDsToAck.size();
+        int size = sizeInBytes();
+        if (size > maxLength) {
+            int baseSize = size - packetIDsToAck.size() * Integer.BYTES;
+            int ackSpace = maxLength - baseSize;
+            maxPacketIDs = ackSpace / Integer.BYTES;
+        }
+
         buffer.putInt(packetIDsToAck.size());
-        for (int id : packetIDsToAck) {
-            buffer.putInt(id);
+        for (int i = 0; i < maxPacketIDs; ++i) {
+            buffer.putInt(packetIDsToAck.get(i));
         }
         NetworkManager.context.write(buffer);
+
+        if (maxPacketIDs < packetIDsToAck.size()) {
+            return packetIDsToAck.subList(maxPacketIDs, packetIDsToAck.size());
+        }
+        return null;
     }
 
     public int sizeInBytes() {
