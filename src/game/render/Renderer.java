@@ -12,7 +12,6 @@ import org.lwjgl.opengl.GL31;
 import org.lwjgl.opengl.GL33;
 import org.lwjgl.system.MemoryUtil;
 
-import sekelsta.engine.Frustum;
 import sekelsta.engine.Particle;
 import sekelsta.engine.entity.Entity;
 import sekelsta.engine.render.*;

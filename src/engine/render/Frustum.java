@@ -1,4 +1,4 @@
-package sekelsta.engine;
+package sekelsta.engine.render;
 
 import shadowfox.math.Matrix4f;
 
