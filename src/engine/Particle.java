@@ -9,6 +9,10 @@ public class Particle {
     protected int age = 0;
     protected int lifespan;
 
+    public Particle(float x, float y, float z, int lifespan) {
+        this(x, y, z, lifespan, x, y, z);
+    }
+
     public Particle(float x, float y, float z, int lifespan, float prevX, float prevY, float prevZ) {
         this.x = x;
         this.y = y;
