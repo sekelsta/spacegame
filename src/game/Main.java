@@ -15,7 +15,10 @@ public class Main {
         DataFolders.init(Game.GAME_ID);
         Log.info("Starting " + Game.GAME_ID + " " + Game.VERSION + " with args: " + String.join(" ", args));
         int port = Game.DEFAULT_PORT;
-        if (args.length == 0 || args[0].equals("singleplayer")) {
+        if (args.length == 0) {
+            run();
+        }
+        else if (args[0].equals("singleplayer")) {
             runSingleplayer();
         }
         else if (args[0].equals("integrated")) {
@@ -48,8 +51,15 @@ public class Main {
         }
     }
 
+    public static void run() {
+        Game game = new Game(true);
+        new Gameloop(game, DEFAULT_FRAME_CAP).run();
+    }
+
     public static void runSingleplayer() {
         Game game = new Game(true);
+        Log.info("Skipping menu screen");
+        game.enterWorld();
         new Gameloop(game, DEFAULT_FRAME_CAP).run();
     }
 
