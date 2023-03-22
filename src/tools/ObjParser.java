@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Scanner;
 
-import sekelsta.engine.render.mesh.ModelData;
 import shadowfox.math.Vector2f;
 import shadowfox.math.Vector3f;
 

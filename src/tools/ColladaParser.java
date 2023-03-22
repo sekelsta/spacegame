@@ -14,7 +14,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import sekelsta.engine.Pair;
-import sekelsta.engine.render.mesh.ModelData;
 import shadowfox.math.Matrix4f;
 import shadowfox.math.Vector2f;
 import shadowfox.math.Vector3f;

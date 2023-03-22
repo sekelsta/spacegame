@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 
 import sekelsta.engine.render.Bone;
-import sekelsta.engine.render.mesh.ModelData;
-import sekelsta.engine.render.mesh.Vertex;
 import shadowfox.math.Matrix4f;
 import shadowfox.math.Vector2f;
 import shadowfox.math.Vector3f;

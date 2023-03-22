@@ -1,4 +1,4 @@
-package sekelsta.engine.render.mesh;
+package sekelsta.tools;
 
 import java.util.*;
 import shadowfox.math.Vector2f;
