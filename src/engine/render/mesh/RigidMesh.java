@@ -28,16 +28,6 @@ public class RigidMesh extends Mesh {
     private void init(float[] vertices, int[] faces) {
         bufferVertexData(vertices);
         bufferFaceElements(faces);
-
-        // First argument depends on the layout value in the vertex shader
-        // 0 = vertex
-        GL20.glVertexAttribPointer(0, 3, GL20.GL_FLOAT, false, 8 * Float.BYTES, 0);
-        GL20.glEnableVertexAttribArray(0);
-        // 1 = normal
-        GL20.glVertexAttribPointer(1, 3, GL20.GL_FLOAT, true, 8 * Float.BYTES, 3 * Float.BYTES);
-        GL20.glEnableVertexAttribArray(1);
-        // 2 = texture
-        GL20.glVertexAttribPointer(2, 2, GL20.GL_FLOAT, false, 8 * Float.BYTES, 6 * Float.BYTES);
-        GL20.glEnableVertexAttribArray(2);
+        enablePositionNormalTexture();
     }
 }

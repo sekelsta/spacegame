@@ -20,8 +20,8 @@ public class SkeletalMesh extends Mesh {
         float[] vertices = buildVertices(data);
 
         final int size = getVertexBufferStride();
-        for (int i = 0; i < data.vertices.size(); ++i) {
-            ModelData.VertexData vertex = data.vertices.get(i);
+        for (int i = 0; i < data.getVertices().size(); ++i) {
+            Vertex vertex = data.getVertices().get(i);
             for (int j = 0; j < ModelData.MAX_BONE_INFLUENCE; j++) {
                 int index = size * i + 8 + j;
                 if (vertex.boneWeights != null && j < vertex.boneWeights.length) {
@@ -33,11 +33,11 @@ public class SkeletalMesh extends Mesh {
             }
         }
 
-        int[] boneIDs = new int[ModelData.MAX_BONE_INFLUENCE * data.vertices.size()];
-        for (int i = 0; i < data.vertices.size(); ++i) {
+        int[] boneIDs = new int[ModelData.MAX_BONE_INFLUENCE * data.getVertices().size()];
+        for (int i = 0; i < data.getVertices().size(); ++i) {
             for (int j = 0; j < ModelData.MAX_BONE_INFLUENCE; ++j) {
                 int index = i * ModelData.MAX_BONE_INFLUENCE + j;
-                int[] boneData = data.vertices.get(i).boneIDs;
+                int[] boneData = data.getVertices().get(i).boneIDs;
                 if (boneData != null && j < boneData.length) {
                     boneIDs[index] = boneData[j];
                 }
@@ -60,9 +60,9 @@ public class SkeletalMesh extends Mesh {
         bufferVertexData(vertices);
         bufferFaceElements(faces);
 
-        // First argument depends on the layout value in the vertex shader
+        // TODO: Re-use code by calling enablePositionNormalTexture()
         final int LEN = getVertexBufferStride();
-        // 0 = vertex
+        // 0 = position
         GL20.glVertexAttribPointer(0, 3, GL20.GL_FLOAT, false, LEN * Float.BYTES, 0);
         GL20.glEnableVertexAttribArray(0);
         // 1 = normal
@@ -83,6 +83,8 @@ public class SkeletalMesh extends Mesh {
 
         // 4 = bone IDs
         GL20.glVertexAttribPointer(4, ModelData.MAX_BONE_INFLUENCE, GL20.GL_FLOAT, false, 0, 0);
+        // TODO: Check if the above needs to be replaced with
+        // GL30.glVertexAttribIPointer(4, ModelData.MAX_BONE_INFLUENCE, GL20.GL_INT, 0, 0);
         GL20.glEnableVertexAttribArray(4);
     }
 }

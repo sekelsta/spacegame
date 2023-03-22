@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 import sekelsta.engine.render.Bone;
 import sekelsta.engine.render.mesh.ModelData;
-import sekelsta.engine.render.mesh.ModelData.VertexData;
+import sekelsta.engine.render.mesh.Vertex;
 import shadowfox.math.Matrix4f;
 import shadowfox.math.Vector2f;
 import shadowfox.math.Vector3f;
@@ -60,14 +60,14 @@ public class ColladaData {
 
     public ModelData getModelData() {
         ModelData obj = new ModelData();
-        HashMap<VertexData, Integer> map = new HashMap<>();
-        HashMap<VertexData, Integer> ref = new HashMap<>();
+        HashMap<Vertex, Integer> map = new HashMap<>();
+        HashMap<Vertex, Integer> ref = new HashMap<>();
         for (int i = 0; i < faces.length / 3; ++i) {
             obj.faces.add(new int[3]);
         }
         for (int i = 0; i < faces.length; ++i) {
-            VertexData data = new VertexData();
-            data.vertex = positions[faces[i]];
+            Vertex data = new Vertex();
+            data.position = positions[faces[i]];
             if (textureIndices.length > 0) {
                 data.texture = textureCoords[textureIndices[i]];
             }
@@ -75,12 +75,12 @@ public class ColladaData {
                 data.normal = normals[normalIndices[i]];
             }
 
-            int num = obj.vertices.size();
+            int num = obj.getVertices().size();
             if (map.containsKey(data)) {
                 num = map.get(data);
             }
             else {
-                obj.vertices.add(data);
+                obj.getVertices().add(data);
                 map.put(data, num);
                 ref.put(data, faces[i]);
             }
@@ -95,12 +95,12 @@ public class ColladaData {
         return obj;
     }
 
-    private void setMeshWeights(ModelData modelData, HashMap<VertexData, Integer> ref) {
+    private void setMeshWeights(ModelData modelData, HashMap<Vertex, Integer> ref) {
         assert(weights != null);
         float[][] merged = mergeWeights(weights, weightIndices);
         trimInfluence(merged, bones, ModelData.MAX_BONE_INFLUENCE);
         // Iterate over vertices, not weights, because weights are sorted by the old mapping
-        for (VertexData vertex : modelData.vertices) {
+        for (Vertex vertex : modelData.getVertices()) {
             vertex.boneIDs = new int[ModelData.MAX_BONE_INFLUENCE];
             vertex.boneWeights = new float[ModelData.MAX_BONE_INFLUENCE];
             int index = ref.get(vertex);

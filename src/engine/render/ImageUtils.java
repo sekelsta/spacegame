@@ -1,5 +1,7 @@
 package sekelsta.engine.render;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.InputStream;
@@ -23,13 +25,28 @@ public class ImageUtils {
         return image;
     }
 
+    public static BufferedImage makeSinglePixelImage(Color color) {
+        BufferedImage image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = image.createGraphics();
+        g.setColor(color);
+        g.fillRect(0, 0, 1, 1);
+        g.dispose();
+        return image;
+    }
+
     public static void updateImageBuffer(ByteBuffer buffer, BufferedImage image) {
         assert(buffer.remaining() == 4 * image.getWidth() * image.getHeight());
+        buffer.clear();
+        internalUpdateImageBuffer(buffer, image);
+        buffer.flip();
+    }
+
+    private static void internalUpdateImageBuffer(ByteBuffer buffer, BufferedImage image) {
+        assert(buffer.remaining() >= 4 * image.getWidth() * image.getHeight());
 
         int[] pixels = new int[image.getWidth() * image.getHeight()];
         image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
 
-        buffer.clear();
         for (int y = 0; y < image.getHeight(); ++y) {
             for (int x = 0; x < image.getWidth(); ++x) {
                 int pixel = pixels[y * image.getWidth() + x];
@@ -40,8 +57,6 @@ public class ImageUtils {
                 buffer.put((byte)((pixel >> 24) & 0xff));
             }
         }
-
-        buffer.flip();
     }
 
     public static ByteBuffer bufferedImageToByteBuffer(BufferedImage image)
@@ -50,6 +65,18 @@ public class ImageUtils {
         // See https://stackoverflow.com/questions/65599336/whats-the-difference-between-bufferutils-and-memoryutil-lwjgl
         ByteBuffer buffer = ByteBuffer.allocateDirect(4 * image.getWidth() * image.getHeight());
         updateImageBuffer(buffer, image);
+        return buffer;
+    }
+
+    public static ByteBuffer bufferedImagesToByteBuffer(BufferedImage[] images)
+    {
+        // TO_OPTIMIZE: Can use MemoryUtil.memAlloc() instead if I free the memory afterwards
+        // See https://stackoverflow.com/questions/65599336/whats-the-difference-between-bufferutils-and-memoryutil-lwjgl
+        ByteBuffer buffer = ByteBuffer.allocateDirect(4 * images[0].getWidth() * images[0].getHeight() * images.length);
+        for (BufferedImage image : images) {
+            internalUpdateImageBuffer(buffer, image);
+        }
+        buffer.flip();
         return buffer;
     }
 }

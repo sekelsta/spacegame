@@ -5,15 +5,15 @@ import shadowfox.math.Vector3f;
 
 public class Camera {
     private Entity focus;
-    private float distance = 6f;
-    private float minDistance = 4f;
+    private float distance = 16f;
+    private float minDistance = 1f;
     private float maxDistance = 200f; // Don't set this higher than frustum.far
     private float zoomSpeed = 1f;
 
     private float pitch = (float)Math.toRadians(45);
     private float yaw = 0f;
 
-    private Mode mode = Mode.FIRST_PERSON;
+    private Mode mode = Mode.THIRD_PERSON;
 
     private static enum Mode {
         FIRST_PERSON,
@@ -48,6 +48,16 @@ public class Camera {
             matrixStack.rotate(-1 * yaw, 0, 0, 1);
             matrixStack.translate(-1 * getX(lerp), -1 * getY(lerp), -1 * getZ(lerp));
         }
+    }
+
+    public float getYaw() {
+        if (mode == Mode.FIRST_PERSON) {
+            return focus.getYaw();
+        }
+        else if (mode == Mode.THIRD_PERSON) {
+            return yaw;
+        }
+        throw new RuntimeException("Can't get yaw for camera mode " + mode);
     }
 
     public void addYaw(float gain) {

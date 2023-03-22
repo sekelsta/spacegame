@@ -2,6 +2,7 @@ package sekelsta.engine.render.mesh;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.List;
 
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
@@ -27,22 +28,25 @@ public abstract class Mesh {
     protected abstract int getVertexBufferStride();
 
     protected float[] buildVertices(ModelData obj) {
-        final int size = getVertexBufferStride();
-        float[] vertices = new float[size * obj.vertices.size()];
-        for (int i = 0; i < obj.vertices.size(); ++i) {
-            ModelData.VertexData data = obj.vertices.get(i);
-            vertices[size * i + 0] = data.vertex.x;
-            vertices[size * i + 1] = data.vertex.y;
-            vertices[size * i + 2] = data.vertex.z;
+        return buildVertices(obj.getVertices(), getVertexBufferStride());
+    }
+
+    public static float[] buildVertices(List<Vertex> vertexList, int stride) {
+        float[] vertices = new float[stride * vertexList.size()];
+        for (int i = 0; i < vertexList.size(); ++i) {
+            Vertex data = vertexList.get(i);
+            vertices[stride * i + 0] = data.position.x;
+            vertices[stride * i + 1] = data.position.y;
+            vertices[stride * i + 2] = data.position.z;
             if (data.normal != null) {
-                vertices[size * i + 3] = data.normal.x;
-                vertices[size * i + 4] = data.normal.y;
-                vertices[size * i + 5] = data.normal.z;
+                vertices[stride * i + 3] = data.normal.x;
+                vertices[stride * i + 4] = data.normal.y;
+                vertices[stride * i + 5] = data.normal.z;
             }
 
             if (data.texture != null) {
-                vertices[size * i + 6] = data.texture.x;
-                vertices[size * i + 7] = data.texture.y;
+                vertices[stride * i + 6] = data.texture.x;
+                vertices[stride * i + 7] = data.texture.y;
             }
         }
         return vertices;
@@ -62,6 +66,10 @@ public abstract class Mesh {
     }
 
     protected void bufferVertexData(float[] vertices) {
+        bufferVertexData(vertices, VBO);
+    }
+
+    public static void bufferVertexData(float[] vertices, int VBO) {
         // Needs to be off-heap memory
         FloatBuffer vertexBuffer = MemoryUtil.memAllocFloat(vertices.length);
         vertexBuffer.put(vertices).flip();
@@ -79,6 +87,24 @@ public abstract class Mesh {
         // Note faces is already a flattened array; its length is the number
         // of vertices to draw
         this.numIndices = faces.length;
+    }
+
+    protected void enablePositionNormalTexture() {
+        int strideBytes = getVertexBufferStride() * Float.BYTES;
+        enablePositionNormalTexture(strideBytes);
+    }
+
+    public static void enablePositionNormalTexture(int strideBytes) {
+        // First argument depends on the layout value in the vertex shader
+        // 0 = position
+        GL20.glVertexAttribPointer(0, 3, GL20.GL_FLOAT, false, strideBytes, 0);
+        GL20.glEnableVertexAttribArray(0);
+        // 1 = normal
+        GL20.glVertexAttribPointer(1, 3, GL20.GL_FLOAT, true, strideBytes, 3 * Float.BYTES);
+        GL20.glEnableVertexAttribArray(1);
+        // 2 = texture
+        GL20.glVertexAttribPointer(2, 2, GL20.GL_FLOAT, false, strideBytes, 6 * Float.BYTES);
+        GL20.glEnableVertexAttribArray(2);
     }
 
     // Calling function is responsible for setting the shader

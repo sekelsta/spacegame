@@ -1,7 +1,6 @@
 package sekelsta.engine.render;
 
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 
@@ -12,11 +11,11 @@ import org.lwjgl.system.MemoryUtil;
 
 
 public class Texture {
-    private static final String TEXTURE_LOCATION = "/assets/textures/";
-    private int handle;
-    private int width;
-    private int height;
-    private ByteBuffer pixels;
+    protected static final String TEXTURE_LOCATION = "/assets/textures/";
+    protected int handle;
+    protected int width;
+    protected int height;
+    protected ByteBuffer pixels;
 
     public Texture(String name) {
         BufferedImage image = ImageUtils.loadResource(TEXTURE_LOCATION + name);
@@ -27,17 +26,15 @@ public class Texture {
     }
 
     public Texture(Color color) {
-        BufferedImage image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = image.createGraphics();
-        g.setColor(color);
-        g.fillRect(0, 0, 1, 1);
-        g.dispose();
+        BufferedImage image = ImageUtils.makeSinglePixelImage(color);
         init(image, false);
     }
 
     public Texture(BufferedImage image, boolean needsMipmaps) {
         init(image, needsMipmaps);
     }
+
+    protected Texture() {}
 
     private void init(BufferedImage image, boolean needsMipmaps) {
         // TODO #30: handle non-rgba textures
@@ -67,7 +64,7 @@ public class Texture {
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, handle);
     }
 
-    private boolean isPowerOfTwo(int n) {
+    protected boolean isPowerOfTwo(int n) {
         return n > 0 && ((n & n - 1) == 0);
     }
 
@@ -80,9 +77,14 @@ public class Texture {
     private void internalUpdate(BufferedImage image, boolean needsMipmaps) {
         this.width = image.getWidth();
         this.height = image.getHeight();
+        if (!needsMipmaps) {
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+        }
+
         GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, pixels);
-        // TO_OPTIMIZE: set blend mode that doesn't expect mipmaps for these
-        if (true || needsMipmaps) {
+
+        if (needsMipmaps) {
             GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
         }
     }
