@@ -1,7 +1,7 @@
 package sekelsta.engine.render;
 
 import java.awt.Color;
-import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -13,35 +13,37 @@ public class TextureArray extends Texture {
 
     public TextureArray(String... names) {
         this.numLayers = names.length;
-        BufferedImage[] layers = new BufferedImage[names.length];
+        ImageRGBA[] layers = new ImageRGBA[names.length];
         for (int i = 0; i < names.length; ++i) {
-            layers[i] = ImageUtils.loadResource(TEXTURE_LOCATION + names[i]);
+            layers[i] = ImageUtils.loadPNG(TEXTURE_LOCATION + names[i]);
         }
         init(layers);
     }
 
     public TextureArray(Color color, int numLayers) {
         this.numLayers = numLayers;
-        BufferedImage[] layers = new BufferedImage[numLayers];
-        BufferedImage image = ImageUtils.makeSinglePixelImage(color);
+        ImageRGBA[] layers = new ImageRGBA[numLayers];
+        ImageRGBA image = ImageUtils.makeSinglePixelImage(color);
         for (int i = 0; i < numLayers; ++i) {
             layers[i] = image;
         }
         init(layers);
     }
 
-    private void init(BufferedImage... layers) {
+    private void init(ImageRGBA... layers) {
         handle = GL11.glGenTextures();
         bind();
         GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
         assert(layers.length > 0);
-        width = layers[0].getWidth();
-        height = layers[0].getHeight();
+        int width = layers[0].getWidth();
+        int height = layers[0].getHeight();
+        ByteBuffer pixels = ByteBuffer.allocateDirect(4 * width * height * numLayers);
         for (int i = 1; i < layers.length; ++i) {
             assert(layers[i].getWidth() == width);
             assert(layers[i].getHeight() == height);
+            pixels.put(layers[i].pixels);
+            layers[i].pixels.flip();
         }
-        this.pixels = ImageUtils.bufferedImagesToByteBuffer(layers);
 
         GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
         GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
@@ -60,10 +62,5 @@ public class TextureArray extends Texture {
     public void bindEmission() {
         GL13.glActiveTexture(GL13.GL_TEXTURE1);
         GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, handle);
-    }
-
-    @Override
-    public void update(BufferedImage image, boolean needsMipmaps) {
-        throw new RuntimeException("Not implemented");
     }
 }

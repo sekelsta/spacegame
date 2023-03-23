@@ -172,10 +172,9 @@ public class Window {
     }
 
     private GLFWImage loadIcon(String name) {
-        BufferedImage image = ImageUtils.loadResource(name);
-        ByteBuffer pixels = ImageUtils.bufferedImageToByteBuffer(image);
+        ImageRGBA image = ImageUtils.loadPNG(name);
         GLFWImage icon = GLFWImage.malloc();
-        icon.set(image.getWidth(), image.getHeight(), pixels);
+        icon.set(image.getWidth(), image.getHeight(), image.pixels);
         return icon;
     }
 

@@ -8,6 +8,7 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import sekelsta.engine.render.ImageRGBA;
 import sekelsta.engine.render.SpriteBatch;
 import sekelsta.engine.render.Texture;
 
@@ -86,7 +87,7 @@ public class BitmapFont {
         g.fillRect(cursor.x, cursor.y, cursor.width, cursor.height);
         g.dispose();
 
-        spritebatch.setTexture(new Texture(image, false));
+        spritebatch.setTexture(new Texture(new ImageRGBA(image), false));
     }
 
     private Glyph makeGlyph(int charWidth, int charHeight, ArrayList<Integer> lengths) {

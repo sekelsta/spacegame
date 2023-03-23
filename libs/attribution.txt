@@ -6,3 +6,7 @@ gson:
 https://github.com/google/gson
 Apache-2.0 license, by Google
 
+PNGDecoder:
+https://github.com/MatthiasMann/twl/blob/master/src/de/matthiasmann/twl/utils/PNGDecoder.java
+BSD 3-clause license
+
